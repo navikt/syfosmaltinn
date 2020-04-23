@@ -34,7 +34,7 @@ spec:
       cpu: 400m
       memory: 768Mi
   vault:
-    enabled: false
+    enabled: true
   ingresses:
     - "https://syfosmaltinn.nais.adeo.no"
   webproxy: true
