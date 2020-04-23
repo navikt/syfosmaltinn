@@ -35,6 +35,9 @@ spec:
       memory: 768Mi
   vault:
     enabled: true
+    paths:
+      - kvPath: serviceuser/data/dev/srvsyfosmaltinn
+        mountPath: /secrets/serviceuser
   ingresses:
     - "https://syfosmaltinn.nais.preprod.local"
   webproxy: true
