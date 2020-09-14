@@ -2,9 +2,9 @@ apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
   name: syfosmaltinn
-  namespace: default
+  namespace: teamsykmelding
   labels:
-    team: teamsykefravr
+    team: teamsykmelding
 spec:
   image: {{ image }}
   replicas:
@@ -38,6 +38,8 @@ spec:
     paths:
       - kvPath: serviceuser/data/dev/srvsyfosmaltinn
         mountPath: /secrets/serviceuser
+      - kvPath: azuread/data/dev/creds/syfosmaltinn
+        mountPath: /secrets/azuread
   ingresses:
     - "https://syfosmaltinn.nais.preprod.local"
   webproxy: true
