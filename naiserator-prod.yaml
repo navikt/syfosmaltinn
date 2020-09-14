@@ -36,9 +36,9 @@ spec:
   vault:
     enabled: true
     paths:
-      - kvPath: serviceuser/data/prod/srvsyfosmaltinn
+      - kvPath: /serviceuser/data/prod/srvsyfosmaltinn
         mountPath: /secrets/serviceuser
-      - kvPath: azuread/data/prod/creds/syfosmaltinn
+      - kvPath: /azuread/data/prod/creds/syfosmaltinn
         mountPath: /secrets/azuread
   ingresses:
     - "https://syfosmaltinn.nais.adeo.no"
