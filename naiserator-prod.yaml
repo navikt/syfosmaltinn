@@ -14,13 +14,13 @@ spec:
   port: 8080
   liveness:
     path: /is_alive
-    initialDelay: 300
+    initialDelay: 30
     timeout: 5
     periodSeconds: 5
     failureThreshold: 30
   readiness:
     path: /is_ready
-    initialDelay: 300
+    initialDelay: 60
     periodSeconds: 5
     timeout: 5
   prometheus:
@@ -36,8 +36,10 @@ spec:
   vault:
     enabled: true
     paths:
-      - kvPath: /serviceuser/data/prod/srvsyfosmaltinn
+      - kvPath: serviceuser/data/prod/srvsyfosmaltinn
         mountPath: /secrets/serviceuser
+      - kvPath: azuread/data/prod/creds/syfosmaltinn
+        mountPath: /secrets/azuread
   ingresses:
     - "https://syfosmaltinn.nais.adeo.no"
   webproxy: true
