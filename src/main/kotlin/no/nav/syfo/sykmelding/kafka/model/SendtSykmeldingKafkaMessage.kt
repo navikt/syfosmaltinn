@@ -6,6 +6,6 @@ import no.nav.syfo.sykmelding.model.SendtSykmelding
 
 data class SendtSykmeldingKafkaMessage(
     val sykmelding: SendtSykmelding,
-    val kafkaMetadataDTO: KafkaMetadataDTO,
-    val sendtEvent: SykmeldingStatusKafkaEventDTO
+    val kafkaMetadata: KafkaMetadataDTO,
+    val event: SykmeldingStatusKafkaEventDTO
 )

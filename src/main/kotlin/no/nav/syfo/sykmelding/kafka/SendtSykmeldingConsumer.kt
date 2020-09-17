@@ -9,6 +9,6 @@ class SendtSykmeldingConsumer(
     private val topic: String
 ) {
     fun poll(): List<SendtSykmeldingKafkaMessage> {
-        return kafkaConsumer.poll(Duration.ofMillis(0)).map { it.value() }
+        return kafkaConsumer.poll(Duration.ofMillis(10_000)).map { it.value() }
     }
 }

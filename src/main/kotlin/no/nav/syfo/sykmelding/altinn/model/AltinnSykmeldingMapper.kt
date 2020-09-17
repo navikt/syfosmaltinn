@@ -16,7 +16,9 @@ import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLPrognose
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmelding
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLTiltak
-import no.nav.syfo.model.sykmeldingstatus.SykmeldingStatusKafkaEventDTO
+import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
+import no.nav.syfo.pdl.client.model.Navn
+import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
 import no.nav.syfo.sykmelding.model.AktivitetIkkeMuligDTO
 import no.nav.syfo.sykmelding.model.ArbeidsgiverDTO
 import no.nav.syfo.sykmelding.model.ArbeidsrelatertArsakTypeDTO
@@ -25,32 +27,35 @@ import no.nav.syfo.sykmelding.model.ErIArbeidDTO
 import no.nav.syfo.sykmelding.model.GradertDTO
 import no.nav.syfo.sykmelding.model.KontaktMedPasientDTO
 import no.nav.syfo.sykmelding.model.PrognoseDTO
-import no.nav.syfo.sykmelding.model.SendtSykmelding
 import no.nav.syfo.sykmelding.model.SykmeldingsperiodeDTO
 
 class AltinnSykmeldingMapper private constructor() {
     companion object {
         fun toAltinnXMLSykmelding(
-            sendtSykmelding: SendtSykmelding,
-            sykmeldingStatusKafkaEventDTO: SykmeldingStatusKafkaEventDTO
+            sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage,
+            navn: Navn
         ): XMLSykmeldingArbeidsgiver {
             val xmlSykmeldingArbeidsgiver = ObjectFactory().createXMLSykmeldingArbeidsgiver()
             xmlSykmeldingArbeidsgiver.juridiskOrganisasjonsnummer =
-                sykmeldingStatusKafkaEventDTO.arbeidsgiver!!.juridiskOrgnummer
-            xmlSykmeldingArbeidsgiver.mottattidspunkt = sendtSykmelding.mottattTidspunkt.toLocalDateTime()
-            xmlSykmeldingArbeidsgiver.sykmeldingId = sendtSykmelding.id
-            xmlSykmeldingArbeidsgiver.virksomhetsnummer = sykmeldingStatusKafkaEventDTO.arbeidsgiver!!.orgnummer
-            xmlSykmeldingArbeidsgiver.sykmelding = toXMLSykmelding(sendtSykmelding)
+                sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.juridiskOrgnummer
+            xmlSykmeldingArbeidsgiver.mottattidspunkt = sendtSykmeldingKafkaMessage.sykmelding.mottattTidspunkt.toLocalDateTime()
+            xmlSykmeldingArbeidsgiver.sykmeldingId = sendtSykmeldingKafkaMessage.sykmelding.id
+            xmlSykmeldingArbeidsgiver.virksomhetsnummer = sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.orgnummer
+            xmlSykmeldingArbeidsgiver.sykmelding = toXMLSykmelding(sendtSykmeldingKafkaMessage, navn)
             return xmlSykmeldingArbeidsgiver
         }
 
-        private fun toXMLSykmelding(sendtSykmelding: SendtSykmelding): XMLSykmelding {
+        private fun toXMLSykmelding(
+            sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage,
+            navn: Navn
+        ): XMLSykmelding {
+            val sendtSykmelding = sendtSykmeldingKafkaMessage.sykmelding
             val xmlSykmelding = ObjectFactory().createXMLSykmelding()
             xmlSykmelding.arbeidsgiver = getArbeidsgiver(sendtSykmelding.arbeidsgiver)
             xmlSykmelding.behandler = getBehandler(sendtSykmelding.behandler)
             xmlSykmelding.kontaktMedPasient = getKontaktMedPasient(sendtSykmelding.kontaktMedPasient)
             xmlSykmelding.meldingTilArbeidsgiver = getMeldingTilArbeidsgiver(sendtSykmelding.meldingTilArbeidsgiver)
-            xmlSykmelding.pasient = getPasient(sendtSykmelding)
+            xmlSykmelding.pasient = getPasient(sendtSykmeldingKafkaMessage.kafkaMetadata, navn)
             xmlSykmelding.perioder.addAll(getPerioder(sendtSykmelding.sykmeldingsperioder))
             xmlSykmelding.prognose = getPrognose(sendtSykmelding.prognose)
             xmlSykmelding.syketilfelleFom = sendtSykmelding.syketilfelleStartDato
@@ -145,11 +150,16 @@ class AltinnSykmeldingMapper private constructor() {
             }
         }
 
-        private fun getPasient(sendtSykmelding: SendtSykmelding): XMLPasient? {
+        private fun getPasient(
+            metadata: KafkaMetadataDTO,
+            navn: Navn
+        ): XMLPasient? {
             val pasient = ObjectFactory().createXMLPasient()
-            TODO("GET PASIENT NAVN FRA PDL")
-            // pasient.ident = sendtSykmelding.pasienFnr
-            pasient.navn = XMLNavn()
+            pasient.ident = metadata.fnr
+            val xmlNavn = XMLNavn()
+            xmlNavn.fornavn = navn.fornavn
+            xmlNavn.mellomnavn = navn.mellomnavn
+            xmlNavn.etternavn = navn.etternavn
             return pasient
         }
 
