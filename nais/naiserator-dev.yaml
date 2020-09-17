@@ -43,3 +43,10 @@ spec:
   ingresses:
     - "https://syfosmaltinn.nais.preprod.local"
   webproxy: true
+  env:
+    - name: PDL_BASE_PATH
+      value: https://pdl-api.nais.preprod.local/graphql
+    - name: AAD_ACCESS_TOKEN_URL
+      value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
+    - name: NARMESTELEDER_CLIENT_ID
+      value: a7e7ad0e-4e17-4f19-8aa6-39d73e62fff8

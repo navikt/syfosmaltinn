@@ -2,6 +2,7 @@ package no.nav.syfo.narmesteleder
 
 import io.ktor.client.features.ClientRequestException
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.headersOf
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking

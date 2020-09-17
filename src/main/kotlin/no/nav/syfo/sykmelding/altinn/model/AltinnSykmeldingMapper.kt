@@ -18,6 +18,7 @@ import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLTiltak
 import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
 import no.nav.syfo.pdl.client.model.Navn
+import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
 import no.nav.syfo.sykmelding.model.AktivitetIkkeMuligDTO
 import no.nav.syfo.sykmelding.model.ArbeidsgiverDTO
@@ -32,8 +33,8 @@ import no.nav.syfo.sykmelding.model.SykmeldingsperiodeDTO
 class AltinnSykmeldingMapper private constructor() {
     companion object {
         fun toAltinnXMLSykmelding(
-            sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage,
-            navn: Navn
+                sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage,
+                person: Person
         ): XMLSykmeldingArbeidsgiver {
             val xmlSykmeldingArbeidsgiver = ObjectFactory().createXMLSykmeldingArbeidsgiver()
             xmlSykmeldingArbeidsgiver.juridiskOrganisasjonsnummer =
@@ -41,13 +42,13 @@ class AltinnSykmeldingMapper private constructor() {
             xmlSykmeldingArbeidsgiver.mottattidspunkt = sendtSykmeldingKafkaMessage.sykmelding.mottattTidspunkt.toLocalDateTime()
             xmlSykmeldingArbeidsgiver.sykmeldingId = sendtSykmeldingKafkaMessage.sykmelding.id
             xmlSykmeldingArbeidsgiver.virksomhetsnummer = sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.orgnummer
-            xmlSykmeldingArbeidsgiver.sykmelding = toXMLSykmelding(sendtSykmeldingKafkaMessage, navn)
+            xmlSykmeldingArbeidsgiver.sykmelding = toXMLSykmelding(sendtSykmeldingKafkaMessage, person)
             return xmlSykmeldingArbeidsgiver
         }
 
         private fun toXMLSykmelding(
             sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage,
-            navn: Navn
+            person: Person
         ): XMLSykmelding {
             val sendtSykmelding = sendtSykmeldingKafkaMessage.sykmelding
             val xmlSykmelding = ObjectFactory().createXMLSykmelding()
@@ -55,7 +56,7 @@ class AltinnSykmeldingMapper private constructor() {
             xmlSykmelding.behandler = getBehandler(sendtSykmelding.behandler)
             xmlSykmelding.kontaktMedPasient = getKontaktMedPasient(sendtSykmelding.kontaktMedPasient)
             xmlSykmelding.meldingTilArbeidsgiver = getMeldingTilArbeidsgiver(sendtSykmelding.meldingTilArbeidsgiver)
-            xmlSykmelding.pasient = getPasient(sendtSykmeldingKafkaMessage.kafkaMetadata, navn)
+            xmlSykmelding.pasient = getPasient(sendtSykmeldingKafkaMessage.kafkaMetadata, person)
             xmlSykmelding.perioder.addAll(getPerioder(sendtSykmelding.sykmeldingsperioder))
             xmlSykmelding.prognose = getPrognose(sendtSykmelding.prognose)
             xmlSykmelding.syketilfelleFom = sendtSykmelding.syketilfelleStartDato
@@ -152,14 +153,14 @@ class AltinnSykmeldingMapper private constructor() {
 
         private fun getPasient(
             metadata: KafkaMetadataDTO,
-            navn: Navn
+            person: Person
         ): XMLPasient? {
             val pasient = ObjectFactory().createXMLPasient()
             pasient.ident = metadata.fnr
             val xmlNavn = XMLNavn()
-            xmlNavn.fornavn = navn.fornavn
-            xmlNavn.mellomnavn = navn.mellomnavn
-            xmlNavn.etternavn = navn.etternavn
+            xmlNavn.fornavn = person.fornavn
+            xmlNavn.mellomnavn = person.mellomnavn
+            xmlNavn.etternavn = person.etternavn
             return pasient
         }
 

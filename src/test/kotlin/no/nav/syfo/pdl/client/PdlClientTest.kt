@@ -42,7 +42,7 @@ class PdlClientTest : Spek({
     describe("getPerson OK") {
         it("Skal få hentet ugradert person fra pdl") {
             runBlocking {
-                val response = pdlClient.getNavn("12345678901", "Bearer token", "sykmeldingId")
+                val response = pdlClient.getPerson("12345678901", "Bearer token", "sykmeldingId")
                 response shouldNotEqual null
                 response.fornavn shouldEqual "RASK"
                 response.etternavn shouldEqual "SAKS"
