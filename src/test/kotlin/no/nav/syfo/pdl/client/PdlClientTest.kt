@@ -17,6 +17,9 @@ import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotEqual
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
+import java.lang.Exception
+import kotlin.test.assertFails
+import kotlin.test.assertFailsWith
 
 class PdlClientTest : Spek({
 
@@ -40,12 +43,11 @@ class PdlClientTest : Spek({
     val pdlClient = PdlClient(httpClient, "graphqlend", graphQlQuery)
 
     describe("getPerson OK") {
-        it("Skal få hentet ugradert person fra pdl") {
+        it("Kaster exception hvis person ikke finnes i PDL") {
             runBlocking {
-                val response = pdlClient.getPerson("12345678901", "Bearer token", "sykmeldingId")
-                response shouldNotEqual null
-                response.fornavn shouldEqual "RASK"
-                response.etternavn shouldEqual "SAKS"
+                assertFailsWith<RuntimeException> {
+                    pdlClient.getPerson("12345678901", "Bearer token", "sykmeldingId")
+                }
             }
         }
     }
