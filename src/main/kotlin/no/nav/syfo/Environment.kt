@@ -10,7 +10,7 @@ data class Environment(
     val pdlBasePath: String = getEnvVar("PDL_BASE_PATH"),
     val applicationPort: Int = getEnvVar("APPLICATION_PORT", "8080").toInt(),
     val applicationName: String = getEnvVar("NAIS_APP_NAME", "syfosmaltinn"),
-    val sendtSykmeldingKafkaTopic: String = "privat-syfo-sendt-sykmelding",
+    val sendtSykmeldingKafkaTopic: String = "syfo-sendt-sykmelding",
     override val kafkaBootstrapServers: String = getEnvVar("KAFKA_BOOTSTRAP_SERVERS_URL"),
     val aadAccessTokenUrl: String = getEnvVar("AAD_ACCESS_TOKEN_URL"),
     val clientId: String = getFileAsString("/secrets/azuread/client_id"),
