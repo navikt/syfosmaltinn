@@ -15,7 +15,8 @@ data class Environment(
     val aadAccessTokenUrl: String = getEnvVar("AAD_ACCESS_TOKEN_URL"),
     val clientId: String = getFileAsString("/secrets/azuread/client_id"),
     val clientSecret: String = getFileAsString("/secrets/azuread/client_secret"),
-    val narmestelederClientId: String = getEnvVar("NARMESTELEDER_CLIENT_ID")
+    val narmestelederClientId: String = getEnvVar("NARMESTELEDER_CLIENT_ID"),
+    val stsOidcUrl: String = "http://security-token-service.default/rest/v1/sts/token"
 ) : KafkaConfig
 
 data class VaultSecrets(
