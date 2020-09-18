@@ -17,7 +17,6 @@ import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmelding
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLTiltak
 import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
-import no.nav.syfo.pdl.client.model.Navn
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
 import no.nav.syfo.sykmelding.model.AktivitetIkkeMuligDTO
@@ -33,8 +32,8 @@ import no.nav.syfo.sykmelding.model.SykmeldingsperiodeDTO
 class AltinnSykmeldingMapper private constructor() {
     companion object {
         fun toAltinnXMLSykmelding(
-                sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage,
-                person: Person
+            sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage,
+            person: Person
         ): XMLSykmeldingArbeidsgiver {
             val xmlSykmeldingArbeidsgiver = ObjectFactory().createXMLSykmeldingArbeidsgiver()
             xmlSykmeldingArbeidsgiver.juridiskOrganisasjonsnummer =

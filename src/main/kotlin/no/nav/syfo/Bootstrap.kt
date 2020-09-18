@@ -18,7 +18,6 @@ import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
 import no.nav.syfo.azuread.AccessTokenClient
 import no.nav.syfo.client.StsOidcClient
-import no.nav.syfo.kafka.KafkaCredentials
 import no.nav.syfo.kafka.loadBaseConfig
 import no.nav.syfo.kafka.toConsumerConfig
 import no.nav.syfo.narmesteleder.NarmestelederClient

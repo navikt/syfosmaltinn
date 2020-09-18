@@ -12,14 +12,10 @@ import io.ktor.client.features.json.JsonFeature
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import java.io.File
+import kotlin.test.assertFailsWith
 import kotlinx.coroutines.runBlocking
-import org.amshove.kluent.shouldEqual
-import org.amshove.kluent.shouldNotEqual
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import java.lang.Exception
-import kotlin.test.assertFails
-import kotlin.test.assertFailsWith
 
 class PdlClientTest : Spek({
 

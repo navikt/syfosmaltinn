@@ -11,12 +11,12 @@ import no.nav.syfo.sykmelding.kafka.SendtSykmeldingConsumer
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
 
 class SendtSykmeldingService(
-        private val applicationState: ApplicationState,
-        private val sendtSykmeldingConsumer: SendtSykmeldingConsumer,
-        private val altinnSykmeldingService: AltinnSykmeldingService,
-        private val pdlClient: PdlClient,
-        private val stsTokenClient: StsOidcClient,
-        private val narmestelederClient: NarmestelederClient
+    private val applicationState: ApplicationState,
+    private val sendtSykmeldingConsumer: SendtSykmeldingConsumer,
+    private val altinnSykmeldingService: AltinnSykmeldingService,
+    private val pdlClient: PdlClient,
+    private val stsTokenClient: StsOidcClient,
+    private val narmestelederClient: NarmestelederClient
 ) {
     suspend fun start() {
         sendtSykmeldingConsumer.subscribe()

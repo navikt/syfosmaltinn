@@ -5,6 +5,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import io.mockk.coEvery
 import io.mockk.mockk
+import kotlin.test.assertFailsWith
 import kotlinx.coroutines.runBlocking
 import no.nav.syfo.azuread.AccessTokenClient
 import no.nav.syfo.util.HttpClientTest
@@ -14,7 +15,6 @@ import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotBe
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import kotlin.test.assertFailsWith
 
 class NarmestelederClientTest : Spek({
     val httpClientTest = HttpClientTest()

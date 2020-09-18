@@ -1,11 +1,9 @@
 package no.nav.syfo.pdl.client.model
 
-import no.nav.syfo.log
-import java.lang.Exception
 import java.lang.RuntimeException
 
 data class GetPersonResponse(
-        val data: ResponseData
+    val data: ResponseData
 )
 
 fun GetPersonResponse.toPerson(): Person {
@@ -23,25 +21,24 @@ fun GetPersonResponse.toPerson(): Person {
 }
 
 data class ResponseData(
-        val personResponse: PersonResponse?,
-        val aktorIdResponse: AktorIdResponse?
+    val personResponse: PersonResponse?,
+    val aktorIdResponse: AktorIdResponse?
 )
 
 data class AktorIdResponse(
-        val aktorIder: List<AktorId>
+    val aktorIder: List<AktorId>
 )
 
 data class AktorId(
-        val aktorId: String
+    val aktorId: String
 )
 
 data class PersonResponse(
-        val navn: List<Navn>?
+    val navn: List<Navn>?
 )
 
 data class Navn(
-        val fornavn: String,
-        val mellomnavn: String?,
-        val etternavn: String
+    val fornavn: String,
+    val mellomnavn: String?,
+    val etternavn: String
 )
-
