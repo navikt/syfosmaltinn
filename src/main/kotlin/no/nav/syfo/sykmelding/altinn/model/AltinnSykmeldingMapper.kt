@@ -16,18 +16,18 @@ import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLPrognose
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmelding
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLTiltak
+import no.nav.syfo.model.sykmelding.model.AktivitetIkkeMuligDTO
+import no.nav.syfo.model.sykmelding.model.ArbeidsgiverDTO
+import no.nav.syfo.model.sykmelding.model.ArbeidsrelatertArsakTypeDTO
+import no.nav.syfo.model.sykmelding.model.BehandlerDTO
+import no.nav.syfo.model.sykmelding.model.ErIArbeidDTO
+import no.nav.syfo.model.sykmelding.model.GradertDTO
+import no.nav.syfo.model.sykmelding.model.KontaktMedPasientDTO
+import no.nav.syfo.model.sykmelding.model.PrognoseDTO
+import no.nav.syfo.model.sykmelding.model.SykmeldingsperiodeDTO
 import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
-import no.nav.syfo.sykmelding.model.AktivitetIkkeMuligDTO
-import no.nav.syfo.sykmelding.model.ArbeidsgiverDTO
-import no.nav.syfo.sykmelding.model.ArbeidsrelatertArsakTypeDTO
-import no.nav.syfo.sykmelding.model.BehandlerDTO
-import no.nav.syfo.sykmelding.model.ErIArbeidDTO
-import no.nav.syfo.sykmelding.model.GradertDTO
-import no.nav.syfo.sykmelding.model.KontaktMedPasientDTO
-import no.nav.syfo.sykmelding.model.PrognoseDTO
-import no.nav.syfo.sykmelding.model.SykmeldingsperiodeDTO
 
 class AltinnSykmeldingMapper private constructor() {
     companion object {
