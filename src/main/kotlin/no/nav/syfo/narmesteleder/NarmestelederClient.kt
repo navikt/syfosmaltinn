@@ -8,11 +8,11 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import no.nav.syfo.azuread.AccessTokenClient
 
-class NarmestelederClient(private val httpClient: HttpClient, private val accessTokenClient: AccessTokenClient) {
+class NarmestelederClient(private val httpClient: HttpClient, private val accessTokenClient: AccessTokenClient, private val baseUrl: String) {
 
     suspend fun getNarmesteleder(orgnummer: String, aktorId: String): NarmestelederResponse {
         val token = accessTokenClient.getAccessToken()
-        return httpClient.get("$NARMESTE_LEDER_URL/$aktorId?orgnummer=$orgnummer") {
+        return httpClient.get("$baseUrl$NARMESTE_LEDER_URL/$aktorId?orgnummer=$orgnummer") {
             headers {
                 append(HttpHeaders.Authorization, "Bearer $token")
             }

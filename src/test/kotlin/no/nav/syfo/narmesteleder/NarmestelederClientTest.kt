@@ -20,7 +20,7 @@ class NarmestelederClientTest : Spek({
     val httpClientTest = HttpClientTest()
     val accessTokenClient = mockk<AccessTokenClient>()
     coEvery { accessTokenClient.getAccessToken() } returns "token"
-    val narmesteLederClient = NarmestelederClient(httpClientTest.httpClient, accessTokenClient)
+    val narmesteLederClient = NarmestelederClient(httpClientTest.httpClient, accessTokenClient, "url")
 
     describe("Get response from NarmesteLeder") {
         it("get null response") {

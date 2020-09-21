@@ -38,10 +38,9 @@ class SendtSykmeldingService(
         )
         log.info("Mottok svar fra PDL for sykmeldingId: ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}")
 
-        if (sendtSykmeldingKafkaMessage.event.arbeidsgiver == null) {
-            throw ArbeidsgiverNotFoundException(sendtSykmeldingKafkaMessage.event)
-        }
-        val arbeidsgiver = sendtSykmeldingKafkaMessage.event.arbeidsgiver ?: throw RuntimeException("")
+        val arbeidsgiver = sendtSykmeldingKafkaMessage.event.arbeidsgiver
+            ?: throw ArbeidsgiverNotFoundException(sendtSykmeldingKafkaMessage.event)
+
         val aktorId = person.aktorId
         val narmesteleder = narmestelederClient.getNarmesteleder(arbeidsgiver.orgnummer, aktorId)
         log.info("Mottok narmesteleder: ${narmesteleder.narmesteLederRelasjon == null} for sykmeldingId: ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}")
