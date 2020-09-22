@@ -15,7 +15,6 @@ class NarmestelederClient(private val httpClient: HttpClient, private val access
 
     suspend fun getNarmesteleder(orgnummer: String, aktorId: String): NarmestelederResponse {
         val token = accessTokenClient.getAccessToken()
-        log.info("got token from azuread")
         val statement = httpClient.get<HttpStatement>("$baseUrl$NARMESTE_LEDER_URL/$aktorId?orgnummer=$orgnummer") {
             headers {
                 append(HttpHeaders.Authorization, "Bearer $token")
