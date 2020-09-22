@@ -12,9 +12,8 @@ import io.ktor.client.features.json.JsonFeature
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import java.io.File
+import kotlin.test.assertFailsWith
 import kotlinx.coroutines.runBlocking
-import org.amshove.kluent.shouldEqual
-import org.amshove.kluent.shouldNotEqual
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
@@ -40,12 +39,11 @@ class PdlClientTest : Spek({
     val pdlClient = PdlClient(httpClient, "graphqlend", graphQlQuery)
 
     describe("getPerson OK") {
-        it("Skal få hentet ugradert person fra pdl") {
+        it("Kaster exception hvis person ikke finnes i PDL") {
             runBlocking {
-                val response = pdlClient.getNavn("12345678901", "Bearer token", "sykmeldingId")
-                response shouldNotEqual null
-                response.fornavn shouldEqual "RASK"
-                response.etternavn shouldEqual "SAKS"
+                assertFailsWith<RuntimeException> {
+                    pdlClient.getPerson("12345678901", "Bearer token", "sykmeldingId")
+                }
             }
         }
     }

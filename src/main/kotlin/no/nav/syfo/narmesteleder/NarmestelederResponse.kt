@@ -9,11 +9,11 @@ data class NarmestelederResponse(
 data class NarmesteLederRelasjon(
     val aktorId: String,
     val orgnummer: String,
-    val narmesteLederAktorId: String,
-    val narmesteLederTelefonnummer: String,
-    val narmesteLederEpost: String,
-    val aktivFom: LocalDate,
-    val arbeidsgiverForskutterer: Boolean,
-    val skrivetilgang: Boolean,
-    val tilganger: List<String>
+    val narmesteLederAktorId: String?,
+    val narmesteLederTelefonnummer: String?,
+    val narmesteLederEpost: String?,
+    val aktivFom: LocalDate?,
+    val arbeidsgiverForskutterer: Boolean?,
+    val skrivetilgang: Boolean?,
+    val tilganger: List<String>?
 )

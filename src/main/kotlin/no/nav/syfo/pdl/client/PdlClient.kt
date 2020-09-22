@@ -4,12 +4,12 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.http.HttpHeaders
-import java.lang.RuntimeException
 import no.nav.syfo.log
 import no.nav.syfo.pdl.client.model.GetPersonRequest
 import no.nav.syfo.pdl.client.model.GetPersonResponse
 import no.nav.syfo.pdl.client.model.GetPersonVeriables
-import no.nav.syfo.pdl.client.model.Navn
+import no.nav.syfo.pdl.client.model.Person
+import no.nav.syfo.pdl.client.model.toPerson
 
 class PdlClient(
     private val httpClient: HttpClient,
@@ -21,7 +21,7 @@ class PdlClient(
     private val temaHeader = "TEMA"
     private val tema = "SYM"
 
-    suspend fun getNavn(fnr: String, stsToken: String, sykmeldingId: String): Navn {
+    suspend fun getPerson(fnr: String, stsToken: String, sykmeldingId: String): Person {
         val getPersonRequest = GetPersonRequest(query = graphQlQuery, variables = GetPersonVeriables(ident = fnr))
         val pdlResponse = httpClient.post<GetPersonResponse>(basePath) {
             body = getPersonRequest
@@ -30,15 +30,11 @@ class PdlClient(
             header(HttpHeaders.ContentType, "application/json")
             header(navConsumerToken, "Bearer $stsToken")
         }
-
-        if (pdlResponse.data.hentPerson == null) {
-            log.error("Fant ikke person i PDL {} for sykmelidng: {}", sykmeldingId)
-            throw RuntimeException("Fant ikke person i PDL")
+        try {
+            return pdlResponse.toPerson()
+        } catch (e: Exception) {
+            log.error("${e.message} for sykmeldingid: $sykmeldingId")
+            throw e
         }
-        if (pdlResponse.data.hentPerson.navn.isNullOrEmpty()) {
-            log.error("Fant ikke navn på person i PDL {} for sykmelding: {}", sykmeldingId)
-            throw RuntimeException("Fant ikke navn på person i PDL")
-        }
-        return pdlResponse.data.hentPerson.navn.first()
     }
 }
