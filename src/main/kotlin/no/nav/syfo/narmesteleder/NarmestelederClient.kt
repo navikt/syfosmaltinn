@@ -24,7 +24,6 @@ class NarmestelederClient(private val httpClient: HttpClient, private val access
         val status = statement.status
         log.info("Got status $status from NarmesteLeder")
         return statement.receive()
-
     }
 
     companion object {

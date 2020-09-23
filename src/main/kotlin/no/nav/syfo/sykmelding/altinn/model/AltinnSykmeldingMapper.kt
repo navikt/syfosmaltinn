@@ -1,6 +1,9 @@
 package no.nav.syfo.sykmelding.altinn.model
 
+import javax.xml.bind.JAXBElement
+import javax.xml.namespace.QName
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
+import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLPasient
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
 
 class AltinnSykmeldingMapper private constructor() {
@@ -15,7 +18,18 @@ class AltinnSykmeldingMapper private constructor() {
 
         fun sykmeldingTilCorrespondence(sykmeldingArbeidsgiver: XMLSykmeldingArbeidsgiver, brukernavn: String): InsertCorrespondenceV2 {
             val insertCorrespondenceV2 = InsertCorrespondenceV2()
-                .withAllowForwarding(javax.xml.bind.JAXBElement())
+                .withAllowForwarding(JAXBElement(QName(NAMESPACE, "AllowForwarding"), Boolean::class.java, false))
+                .withReportee(JAXBElement(QName(NAMESPACE, "Reportee"), String::class.java, sykmeldingArbeidsgiver.virksomhetsnummer))
+                .withMessageSender(JAXBElement(QName(NAMESPACE, "MessageSender"), String::class.java, getFormatetUsername(sykmeldingArbeidsgiver.sykmelding.pasient, brukernavn)))
+                .withServiceCode(JAXBElement(QName(NAMESPACE, "ServiceCode"), String::class.java, SYKMELDING_TJENESTEKODE))
+                .withServiceEdition(JAXBElement(QName(NAMESPACE, "ServiceEdition"), String::class.java, SYKMELDING_TJENESTEVERSJON))
+                // .withNotifications(JAXBElement(QName(NAMESPACE, )))
+            return insertCorrespondenceV2
+        }
+
+        private fun getFormatetUsername(pasient: XMLPasient?, brukernavn: String): String {
+            val fnr = pasient?.ident
+            return "$brukernavn - $fnr"
         }
     }
 }
