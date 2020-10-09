@@ -1,4 +1,4 @@
-package no.nav.syfo.narmesteleder
+package no.nav.syfo.narmesteleder.client
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.receive

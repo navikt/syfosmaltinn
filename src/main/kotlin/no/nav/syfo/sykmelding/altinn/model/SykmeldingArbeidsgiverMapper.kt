@@ -115,7 +115,7 @@ class SykmeldingArbeidsgiverMapper private constructor() {
             xmlAktivitet.avventendeSykmelding = it.innspillTilArbeidsgiver
             xmlAktivitet.gradertSykmelding = getGradertAktivitet(it.gradert)
             xmlAktivitet.aktivitetIkkeMulig = getAktivitetIkkeMulig(it.aktivitetIkkeMulig)
-            xmlAktivitet.isHarReisetilskudd = it.reisetilskudd
+            xmlAktivitet.isHarReisetilskudd = it.reisetilskudd.let { when (it) { true -> true else -> null } }
             xmlAktivitet.antallBehandlingsdagerUke = it.behandlingsdager
             return xmlAktivitet
         }
@@ -160,6 +160,7 @@ class SykmeldingArbeidsgiverMapper private constructor() {
             xmlNavn.fornavn = person.fornavn
             xmlNavn.mellomnavn = person.mellomnavn
             xmlNavn.etternavn = person.etternavn
+            pasient.navn = xmlNavn
             return pasient
         }
 

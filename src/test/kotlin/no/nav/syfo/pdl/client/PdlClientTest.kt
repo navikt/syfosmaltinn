@@ -42,7 +42,7 @@ class PdlClientTest : Spek({
         it("Kaster exception hvis person ikke finnes i PDL") {
             runBlocking {
                 assertFailsWith<RuntimeException> {
-                    pdlClient.getPerson("12345678901", "Bearer token", "sykmeldingId")
+                    pdlClient.getPerson("12345678901", "Bearer token")
                 }
             }
         }
