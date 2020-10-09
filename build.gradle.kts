@@ -19,6 +19,14 @@ val mockkVersion = "1.9.3"
 val nimbusdsVersion = "7.5.1"
 val testContainerKafkaVersion = "1.12.5"
 val sykmeldingArbeidsgiverVersion = "1.9daf0fa"
+val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
+val flyingSaucerVersion = "9.0.4"
+val baticVersion = "1.9.1"
+val iTextVersion = "2.1.7"
+val saxonVersion = "9.7.0-8"
+val pdfBoxVersion = "1.8.13"
+val dialogarenaVersion = "2.0.3"
+
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
 }
@@ -33,7 +41,6 @@ plugins {
 
 buildscript {
     dependencies {
-        classpath("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
         classpath("org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438")
         classpath("com.sun.activation:javax.activation:1.2.0")
     }
@@ -63,6 +70,7 @@ repositories {
             password = githubPassword
         }
     }
+
 }
 
 
@@ -83,7 +91,7 @@ dependencies {
     implementation("no.nav.helse.xml:sykmeldingArbeidsgiver:$sykmeldingArbeidsgiverVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
-
+    implementation("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
 
     implementation("com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
@@ -93,6 +101,24 @@ dependencies {
     implementation("no.nav.helse:syfosm-common-models:$smCommonVersion")
     implementation("no.nav.helse:syfosm-common-rest-sts:$smCommonVersion")
 
+    implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external:$altinnCorrespondenceAgencyExternalVersion")
+    implementation("org.xhtmlrenderer:flying-saucer-pdf:$flyingSaucerVersion")
+    implementation("org.xhtmlrenderer:flying-saucer-core:$flyingSaucerVersion")
+    implementation("org.apache.xmlgraphics:batik-transcoder:$baticVersion") {
+        exclude("xml-apis", "xml-apis")
+        exclude("commons-logging", "commons-logging")
+        exclude("org.python", "jython")
+    }
+    runtimeOnly("org.apache.xmlgraphics:batik-codec:$baticVersion")
+    implementation("com.lowagie:itext:$iTextVersion") {
+        exclude("bouncycastle", "bcmail-jdk14")
+        exclude("bouncycastle", "bcprov-jdk14")
+        exclude("bouncycastle", "bctsp-jdk14")
+    }
+    implementation("net.sf.saxon:Saxon-HE:$saxonVersion")
+    implementation("org.apache.pdfbox:pdfbox:$pdfBoxVersion") {
+        exclude("commons-logging", "commons-logging")
+    }
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("org.spekframework.spek2:spek-dsl-jvm:$spekVersion")

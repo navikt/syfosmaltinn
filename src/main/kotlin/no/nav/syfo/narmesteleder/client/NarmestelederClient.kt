@@ -1,4 +1,4 @@
-package no.nav.syfo.narmesteleder
+package no.nav.syfo.narmesteleder.client
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.receive
@@ -24,7 +24,6 @@ class NarmestelederClient(private val httpClient: HttpClient, private val access
         val status = statement.status
         log.info("Got status $status from NarmesteLeder")
         return statement.receive()
-
     }
 
     companion object {

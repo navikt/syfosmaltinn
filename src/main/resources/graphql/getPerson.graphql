@@ -1,14 +1,16 @@
 query($ident: ID!){
-  personResponse: hentPerson(ident: $ident) {
+  person: hentPerson(ident: $ident) {
   	navn(historikk: false) {
   	  fornavn
   	  mellomnavn
   	  etternavn
     }
   }
-  aktorIdResponse: hentIdenter(ident: $ident, grupper: AKTORID, historikk: false) {
-      aktorIder: identer {
-        aktorId: ident
+  identer: hentIdenter(ident: $ident, historikk: false) {
+      identer {
+        ident,
+        gruppe
       }
     }
 }
+
