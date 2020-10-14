@@ -1,4 +1,4 @@
-package no.nav.syfo.sykmelding.altinn.model
+package no.nav.syfo.altinn.model
 
 import java.time.LocalTime
 import no.nav.helse.xml.sykmeldingarbeidsgiver.ObjectFactory
@@ -29,7 +29,7 @@ import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
 
-class AltinnSykmeldingMapper private constructor() {
+class SykmeldingArbeidsgiverMapper private constructor() {
     companion object {
         fun toAltinnXMLSykmelding(
             sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage,
@@ -115,7 +115,7 @@ class AltinnSykmeldingMapper private constructor() {
             xmlAktivitet.avventendeSykmelding = it.innspillTilArbeidsgiver
             xmlAktivitet.gradertSykmelding = getGradertAktivitet(it.gradert)
             xmlAktivitet.aktivitetIkkeMulig = getAktivitetIkkeMulig(it.aktivitetIkkeMulig)
-            xmlAktivitet.isHarReisetilskudd = it.reisetilskudd
+            xmlAktivitet.isHarReisetilskudd = it.reisetilskudd.let { when (it) { true -> true else -> null } }
             xmlAktivitet.antallBehandlingsdagerUke = it.behandlingsdager
             return xmlAktivitet
         }
@@ -160,6 +160,7 @@ class AltinnSykmeldingMapper private constructor() {
             xmlNavn.fornavn = person.fornavn
             xmlNavn.mellomnavn = person.mellomnavn
             xmlNavn.etternavn = person.etternavn
+            pasient.navn = xmlNavn
             return pasient
         }
 

@@ -1,11 +1,11 @@
 package no.nav.syfo.sykmelding
 
+import no.nav.syfo.altinn.AltinnSykmeldingService
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.log
-import no.nav.syfo.narmesteleder.NarmestelederClient
+import no.nav.syfo.narmesteleder.service.NarmesteLederService
 import no.nav.syfo.pdl.client.PdlClient
-import no.nav.syfo.sykmelding.altinn.AltinnSykmeldingService
 import no.nav.syfo.sykmelding.exceptions.ArbeidsgiverNotFoundException
 import no.nav.syfo.sykmelding.kafka.SendtSykmeldingConsumer
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
@@ -16,7 +16,7 @@ class SendtSykmeldingService(
     private val altinnSykmeldingService: AltinnSykmeldingService,
     private val pdlClient: PdlClient,
     private val stsTokenClient: StsOidcClient,
-    private val narmestelederClient: NarmestelederClient
+    private val narmesteLederService: NarmesteLederService
 ) {
     suspend fun start() {
         sendtSykmeldingConsumer.subscribe()
@@ -32,19 +32,17 @@ class SendtSykmeldingService(
         log.info("Mottok sendt sykmelding fra Kafka med sykmeldingId: ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}")
 
         val person = pdlClient.getPerson(
-                fnr = sendtSykmeldingKafkaMessage.kafkaMetadata.fnr,
-                stsToken = stsTokenClient.oidcToken().access_token,
-                sykmeldingId = sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId
+                ident = sendtSykmeldingKafkaMessage.kafkaMetadata.fnr,
+                stsToken = stsTokenClient.oidcToken().access_token
         )
         log.info("Mottok svar fra PDL for sykmeldingId: ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}")
 
         val arbeidsgiver = sendtSykmeldingKafkaMessage.event.arbeidsgiver
             ?: throw ArbeidsgiverNotFoundException(sendtSykmeldingKafkaMessage.event)
 
-        val aktorId = person.aktorId
-        val narmesteleder = narmestelederClient.getNarmesteleder(arbeidsgiver.orgnummer, aktorId)
-        log.info("Mottok narmesteleder: ${narmesteleder.narmesteLederRelasjon == null} for sykmeldingId: ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}")
+        val narmesteLeder = narmesteLederService.getNarmesteLeder(arbeidsgiver.orgnummer, person.aktorId)
 
-        altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage, person)
+        log.info("Mottok narmesteleder: ${narmesteLeder == null} for sykmeldingId: ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}")
+        altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage, person, narmesteLeder)
     }
 }

@@ -8,6 +8,7 @@ import io.mockk.mockk
 import kotlin.test.assertFailsWith
 import kotlinx.coroutines.runBlocking
 import no.nav.syfo.azuread.AccessTokenClient
+import no.nav.syfo.narmesteleder.client.NarmestelederClient
 import no.nav.syfo.util.HttpClientTest
 import no.nav.syfo.util.ResponseData
 import org.amshove.kluent.shouldBe

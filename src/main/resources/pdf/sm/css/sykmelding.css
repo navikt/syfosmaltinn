@@ -1,0 +1,139 @@
+html {
+    font-family: "Source Sans Pro", SourceSansPro, Source_Sans_Pro, ArialSystem, sans-serif;
+    color: #3e3832;
+}
+
+p {
+    margin-bottom: 15px;
+    margin-top: 0;
+    font-size: 15px;
+}
+
+img {
+    background: #fff;
+}
+
+@page {
+    padding-bottom: 60px;
+    margin-top: 60px;
+    margin-left: 1cm;
+    margin-right: 1cm;
+}
+
+@page :first {
+    margin-top: 1cm;
+}
+
+.header h1 {
+    background-color: #e0dae7;
+    margin: 0;
+    margin-bottom: 1cm;
+    font-weight: normal;
+    padding: .25cm;
+    font-size: 18px;
+}
+
+.header span {
+    display: inline-block;
+    height: 24px;
+    font-size: 18px;
+    line-height: 24px;
+}
+
+.header-ikon {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    float: left;
+    margin-right: .25cm;
+    background-color: #e0dae7;
+}
+
+.sykmelding-seksjon .sykmeldt-navn {
+    font-size: 34px;
+    margin: 0;
+    margin-bottom: 10px;
+    padding: 0;
+    width: 17cm;
+    word-break: break-all;
+}
+
+.arbeidsgivers-fodselsnummer {
+    font-size: 16px;
+    color: #7f756c;
+    margin-bottom: 2em;
+    padding: 0;
+}
+
+.sykmelding-til-arbeidsgiver h3 {
+    text-transform: uppercase;
+    margin-top: 0;
+    margin-bottom: 3px;
+    padding: 0;
+    font-size: 13px;
+    font-weight: normal;
+    color: #7f756c;
+}
+
+.sykmelding-nokkelopplysning {
+    margin-bottom: 15px;
+}
+
+.sykmelding-nokkelopplysning p {
+    margin-bottom: 0;
+}
+
+.sykmelding-nokkelopplysning p + h3 {
+    margin-top: 15px;
+}
+
+.sykmelding-subopplysning {
+    padding-left: 15px;
+}
+
+.resten {
+    page-break-before: avoid;
+}
+
+.resten h3 {
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+.skravert {
+    background: #7f756c;
+    width: 5cm;
+    height: .6cm;
+    text-indent: -9999cm;
+    margin-bottom: 15px!important;
+}
+
+.sykmelding-seksjon {
+    margin-bottom: .5cm;
+    border-bottom: 1px solid #7f756c;
+    page-break-inside: avoid;
+}
+
+.sykmelding-seksjon h2 {
+    font-size: 17px;
+    margin-bottom: 10px;
+    margin-top: 0;
+}
+
+.strong {
+    font-weight: 700;
+}
+
+.checkbox {
+    width: 11px;
+    height: 11px;
+    display: inline-block;
+}
+
+.sykmelding-checkbox-label {
+    display: inline-block;
+}
+
+.luft {
+    margin-bottom: 15px;
+}

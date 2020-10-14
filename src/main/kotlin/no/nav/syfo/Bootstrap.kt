@@ -11,8 +11,14 @@ import io.ktor.client.engine.apache.ApacheEngineConfig
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.prometheus.client.hotspot.DefaultExports
+import java.net.ProxySelector
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import no.nav.altinn.admin.ws.configureFor
+import no.nav.altinn.admin.ws.stsClient
+import no.nav.syfo.altinn.AltinnClient
+import no.nav.syfo.altinn.AltinnSykmeldingService
+import no.nav.syfo.altinn.config.createPort
 import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
@@ -20,10 +26,10 @@ import no.nav.syfo.azuread.AccessTokenClient
 import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.kafka.loadBaseConfig
 import no.nav.syfo.kafka.toConsumerConfig
-import no.nav.syfo.narmesteleder.NarmestelederClient
+import no.nav.syfo.narmesteleder.client.NarmestelederClient
+import no.nav.syfo.narmesteleder.service.NarmesteLederService
 import no.nav.syfo.pdl.client.PdlClient
 import no.nav.syfo.sykmelding.SendtSykmeldingService
-import no.nav.syfo.sykmelding.altinn.AltinnSykmeldingService
 import no.nav.syfo.sykmelding.kafka.SendtSykmeldingConsumer
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
 import no.nav.syfo.sykmelding.kafka.utils.JacksonKafkaDeserializer
@@ -33,7 +39,6 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.net.ProxySelector
 
 val log: Logger = LoggerFactory.getLogger("no.nav.syfo.syfosmaltinn")
 
@@ -54,7 +59,11 @@ fun main() {
     properties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "latest"
     val kafkaConsumer = KafkaConsumer<String, SendtSykmeldingKafkaMessage>(properties, StringDeserializer(), JacksonKafkaDeserializer(SendtSykmeldingKafkaMessage::class))
     val sendtSykmeldingConsumer = SendtSykmeldingConsumer(kafkaConsumer, env.sendtSykmeldingKafkaTopic)
-    val altinnSendtSykmeldingService = AltinnSykmeldingService()
+    val iCorrespondenceAgencyExternalBasic = createPort(env.altinnUrl).apply {
+        stsClient(env.altinSTSUrl, vaultSecrets.serviceuserUsername to vaultSecrets.serviceuserPassword).configureFor(this)
+    }
+    val altinnClient = AltinnClient(username = env.altinnUsername, password = env.altinnPassword, iCorrespondenceAgencyExternalBasic = iCorrespondenceAgencyExternalBasic)
+    val altinnSendtSykmeldingService = AltinnSykmeldingService(altinnClient)
     val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
         install(JsonFeature) {
             serializer = JacksonSerializer {
@@ -80,7 +89,8 @@ fun main() {
     val stsOidcClient = StsOidcClient(username = vaultSecrets.serviceuserUsername, password = vaultSecrets.serviceuserPassword, stsUrl = env.stsOidcUrl)
     val accessTokenClient = AccessTokenClient(aadAccessTokenUrl = env.aadAccessTokenUrl, clientId = env.clientId, clientSecret = env.clientSecret, resource = env.narmestelederClientId, httpClient = httpClientWithProxy)
     val narmestelederClient = NarmestelederClient(httpClient, accessTokenClient, env.narmesteLederBasePath)
-    val sendtSykmeldingService = SendtSykmeldingService(applicationState, sendtSykmeldingConsumer, altinnSendtSykmeldingService, pdlClient, stsOidcClient, narmestelederClient)
+    val narmesteLederService = NarmesteLederService(narmestelederClient, pdlClient, stsOidcClient)
+    val sendtSykmeldingService = SendtSykmeldingService(applicationState, sendtSykmeldingConsumer, altinnSendtSykmeldingService, pdlClient, stsOidcClient, narmesteLederService)
 
     GlobalScope.launch {
         try {

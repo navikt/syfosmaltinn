@@ -21,8 +21,8 @@ class PdlClient(
     private val temaHeader = "TEMA"
     private val tema = "SYM"
 
-    suspend fun getPerson(fnr: String, stsToken: String, sykmeldingId: String): Person {
-        val getPersonRequest = GetPersonRequest(query = graphQlQuery, variables = GetPersonVeriables(ident = fnr))
+    suspend fun getPerson(ident: String, stsToken: String): Person {
+        val getPersonRequest = GetPersonRequest(query = graphQlQuery, variables = GetPersonVeriables(ident = ident))
         val pdlResponse = httpClient.post<GetPersonResponse>(basePath) {
             body = getPersonRequest
             header(HttpHeaders.Authorization, "Bearer $stsToken")
@@ -33,7 +33,7 @@ class PdlClient(
         try {
             return pdlResponse.toPerson()
         } catch (e: Exception) {
-            log.error("${e.message} for sykmeldingid: $sykmeldingId")
+            log.error("Error when getting pdlResponse")
             throw e
         }
     }
