@@ -6,7 +6,6 @@ group = "no.nav.syfo"
 version = "1.0.0"
 
 val coroutinesVersion = "1.3.3"
-val activationVersion = "1.2.1"
 val jacksonVersion = "2.9.8"
 val kluentVersion = "1.49"
 val ktorVersion = "1.3.0"
@@ -30,6 +29,8 @@ val cxfVersion = "3.3.1"
 val jaxsWsApiVersion = "2.3.1"
 val jaxwsRiVersion = "2.3.2"
 val jaxwsToolsVersion = "2.3.1"
+val javaxActivationVersion = "1.1.1"
+
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
 }
@@ -73,17 +74,26 @@ repositories {
             password = githubPassword
         }
     }
+}
 
+
+buildscript {
+    dependencies {
+        classpath("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
+        classpath("org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438")
+        classpath("com.sun.activation:javax.activation:1.2.0")
+        classpath("com.sun.xml.ws:jaxws-tools:2.3.1") {
+            exclude(group = "com.sun.xml.ws", module = "policy")
+        }
+    }
 }
 
 
 dependencies {
     implementation(kotlin("stdlib"))
-
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:$coroutinesVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
-
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     implementation("io.ktor:ktor-client-auth-basic:$ktorVersion")
@@ -94,10 +104,7 @@ dependencies {
     implementation("no.nav.helse.xml:sykmeldingArbeidsgiver:$sykmeldingArbeidsgiverVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
-    implementation("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
-    implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
-        exclude(group = "com.sun.xml.ws", module = "policy")
-    }
+
     implementation("com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
@@ -106,7 +113,6 @@ dependencies {
     implementation("no.nav.helse:syfosm-common-models:$smCommonVersion")
     implementation("no.nav.helse:syfosm-common-rest-sts:$smCommonVersion")
 
-   implementation("no.nav.tjenestespesifikasjoner:behandle-altinnmelding-v1-tjenestespesifikasjon:$altinnCorrespondenceAgencyExternalVersion")
     implementation("org.xhtmlrenderer:flying-saucer-pdf:$flyingSaucerVersion")
     implementation("org.xhtmlrenderer:flying-saucer-core:$flyingSaucerVersion")
     implementation("org.apache.xmlgraphics:batik-transcoder:$baticVersion") {
@@ -124,12 +130,19 @@ dependencies {
     implementation("org.apache.pdfbox:pdfbox:$pdfBoxVersion") {
         exclude("commons-logging", "commons-logging")
     }
-    implementation("org.apache.cxf:cxf-spring-boot-starter-jaxws:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion") {
-        exclude("commons-logging", "commons-logging")
-    }
+    implementation("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
+    implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:$altinnCorrespondenceAgencyExternalVersion")
+    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
+    implementation("org.apache.ws.xmlschema:xmlschema-core:2.2.4")
+    implementation("javax.activation:activation:$javaxActivationVersion")
     implementation("javax.xml.ws:jaxws-api:$jaxsWsApiVersion")
-    implementation("com.sun.activation:jakarta.activation:$activationVersion")
+    implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
+        exclude(group = "com.sun.xml.ws", module = "policy")
+    }
+
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("org.spekframework.spek2:spek-dsl-jvm:$spekVersion")

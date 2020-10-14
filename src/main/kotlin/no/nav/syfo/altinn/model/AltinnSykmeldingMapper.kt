@@ -3,8 +3,6 @@ package no.nav.syfo.altinn.model
 import java.io.StringWriter
 import java.lang.Boolean.FALSE
 import java.time.format.DateTimeFormatter
-import javax.xml.bind.JAXBElement
-import javax.xml.namespace.QName
 import javax.xml.transform.OutputKeys
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
@@ -33,8 +31,6 @@ class AltinnSykmeldingMapper private constructor() {
         private const val SYKMELDING_TJENESTEVERSJON = "2"
         private const val NORSK_BOKMAL = "1044"
 
-        private const val NAMESPACE = "http://schemas.altinn.no/services/ServiceEngine/Correspondence/2010/10"
-        private const val BINARY_NAMESPACE = "http://www.altinn.no/services/ServiceEngine/ReporteeElementList/2010/10"
         private const val NARMESTE_LEDER_TAG_NAME = "naermesteLeder"
 
         fun sykmeldingTilCorrespondence(
@@ -43,97 +39,61 @@ class AltinnSykmeldingMapper private constructor() {
         ): InsertCorrespondenceV2 {
 
             val insertCorrespondenceV2 = InsertCorrespondenceV2()
-                .withAllowForwarding(JAXBElement(QName(NAMESPACE, "AllowForwarding"), Boolean::class.javaObjectType, FALSE))
+                .withAllowForwarding(FALSE)
                 .withReportee(
-                    JAXBElement(
-                        QName(NAMESPACE, "Reportee"),
-                        String::class.java,
-                        sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer
-                    )
+                    sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer
                 )
                 .withMessageSender(
-                    JAXBElement(
-                        QName(NAMESPACE, "MessageSender"),
-                        String::class.java,
-                        getFormatetUsername(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmelding.pasient, brukernavn)
-                    )
+                    getFormatetUsername(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmelding.pasient, brukernavn)
                 )
                 .withServiceCode(
-                    JAXBElement(
-                        QName(NAMESPACE, "ServiceCode"),
-                        String::class.java,
-                        SYKMELDING_TJENESTEKODE
-                    )
+                    SYKMELDING_TJENESTEKODE
                 )
                 .withServiceEdition(
-                    JAXBElement(
-                        QName(NAMESPACE, "ServiceEdition"),
-                        String::class.java,
-                        SYKMELDING_TJENESTEVERSJON
-                    )
-                )
-                .withNotifications(NotificationAltinnGenerator.createNotifications(NAMESPACE))
-                .withContent(
-                    JAXBElement(
-                        QName(NAMESPACE, "Content"), ExternalContentV2::class.java, ExternalContentV2()
-                            .withLanguageCode(
-                                JAXBElement(
-                                    QName(NAMESPACE, "LanguageCode"),
-                                    String::class.java,
-                                    NORSK_BOKMAL
-                                )
-                            )
-                            .withMessageTitle(
-                                JAXBElement(
-                                    QName(NAMESPACE, "MessageTitle"),
-                                    String::class.java,
-                                    createTitle(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmelding, brukernavn)
-                                )
-                            )
-                            .withMessageBody(
-                                JAXBElement(
-                                    QName(NAMESPACE, "MessageBody"),
-                                    String::class.java,
-                                    sykmeldingAltinn.sykmeldingPortableHTML
-                                )
-                            )
-                            .withCustomMessageData(null)
-                            .withAttachments(
-                                JAXBElement(
-                                    QName(NAMESPACE, "Attachments"), AttachmentsV2::class.java, AttachmentsV2()
-                                        .withBinaryAttachments(
-                                            JAXBElement(
-                                                QName(NAMESPACE, "BinaryAttachments"),
-                                                BinaryAttachmentExternalBEV2List::class.java,
-                                                BinaryAttachmentExternalBEV2List()
-                                                    .withBinaryAttachmentV2(
-                                                        createBinaryAttachment(
-                                                            BINARY_NAMESPACE,
-                                                            sykmeldingAltinn.sykmeldingPdf,
-                                                            "sykmelding.pdf",
-                                                            "sykmelding",
-                                                            sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId + ".pdf"
-                                                        ),
-                                                        createBinaryAttachment(
-                                                            BINARY_NAMESPACE,
-                                                            sykmeldingAltinn.sykmeldingXml.toByteArray(),
-                                                            "sykmelding.xml",
-                                                            "sykmelding",
-                                                            sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId + ".xml"
-                                                        )
+                    SYKMELDING_TJENESTEVERSJON
 
-                                                    )
+                )
+                .withNotifications(NotificationAltinnGenerator.createNotifications())
+                .withContent(
+                    ExternalContentV2()
+                        .withLanguageCode(
+
+                            NORSK_BOKMAL
+                        )
+                        .withMessageTitle(
+                            createTitle(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmelding, brukernavn)
+                        )
+                        .withMessageBody(
+                            sykmeldingAltinn.sykmeldingPortableHTML
+                        )
+                        .withCustomMessageData(null)
+                        .withAttachments(
+                            AttachmentsV2()
+                                .withBinaryAttachments(
+                                    BinaryAttachmentExternalBEV2List()
+                                        .withBinaryAttachmentV2(
+                                            createBinaryAttachment(
+                                                sykmeldingAltinn.sykmeldingPdf,
+                                                "sykmelding.pdf",
+                                                "sykmelding",
+                                                sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId + ".pdf"
+                                            ),
+                                            createBinaryAttachment(
+                                                sykmeldingAltinn.sykmeldingXml.toByteArray(),
+                                                "sykmelding.xml",
+                                                "sykmelding",
+                                                sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId + ".xml"
                                             )
+
                                         )
                                 )
-                            )
-                    )
+                        )
+
                 ).withArchiveReference(null)
             return insertCorrespondenceV2
         }
 
         private fun createBinaryAttachment(
-            binaryNamespace: String,
             fil: ByteArray,
             filnavn: String,
             navn: String,
@@ -142,30 +102,18 @@ class AltinnSykmeldingMapper private constructor() {
             return BinaryAttachmentV2()
                 .withDestinationType(UserTypeRestriction.SHOW_TO_ALL)
                 .withFileName(
-                    JAXBElement(
-                        QName(binaryNamespace, "FileName"),
-                        String::class.java, filnavn
-                    )
+                    filnavn
                 )
                 .withName(
-                    JAXBElement(
-                        QName(binaryNamespace, "Name"),
-                        String::class.java, navn
-                    )
+                    navn
                 )
                 .withFunctionType(AttachmentFunctionType.UNSPECIFIED)
                 .withEncrypted(false)
                 .withSendersReference(
-                    JAXBElement(
-                        QName(binaryNamespace, "SendersReference"),
-                        String::class.java, sendersRef
-                    )
+                    sendersRef
                 )
                 .withData(
-                    JAXBElement(
-                        QName("http://www.altinn.no/services/ServiceEngine/ReporteeElementList/2010/10", "Data"),
-                        ByteArray::class.java, fil
-                    )
+                    fil
                 )
         }
 
