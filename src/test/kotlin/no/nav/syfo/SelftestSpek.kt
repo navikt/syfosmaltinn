@@ -6,6 +6,7 @@ import io.ktor.routing.routing
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.util.KtorExperimentalAPI
+import no.nav.syfo.altinn.config.createPort
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.api.registerNaisApi
 import org.amshove.kluent.shouldEqual
@@ -14,6 +15,11 @@ import org.spekframework.spek2.style.specification.describe
 
 @KtorExperimentalAPI
 object SelftestSpek : Spek({
+    describe("t") {
+        it("3") {
+            val port = createPort("https://test")
+        }
+    }
     describe("Successfull liveness and readyness tests") {
         with(TestApplicationEngine()) {
             start()
