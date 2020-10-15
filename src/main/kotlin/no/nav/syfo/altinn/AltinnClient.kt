@@ -17,7 +17,7 @@ class AltinnClient(private val iCorrespondenceAgencyExternalBasic: ICorresponden
                 insertCorrespondenceV2
             )
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
-                log.error("Error fra altinn {} for sykmeldingId: {}", receiptExternal.receiptStatusCode, sykmeldingId)
+                log.error("Error fra altinn {} for sykmeldingId: {}, {}", receiptExternal.receiptStatusCode, sykmeldingId, receiptExternal.receiptText)
                 throw RuntimeException("Error from altinn")
             }
         } catch (ex: Exception) {
