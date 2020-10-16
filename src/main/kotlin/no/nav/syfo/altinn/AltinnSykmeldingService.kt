@@ -8,18 +8,16 @@ import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
 
-class AltinnSykmeldingService(private val altinnClient: AltinnClient) {
+class AltinnSykmeldingService(private val altinnClient: AltinnClient, private val environment: Environment) {
     fun handleSendtSykmelding(
         sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage,
         pasient: Person,
-        narmesteLeder: NarmesteLeder?,
-        envrionment: Environment
+        narmesteLeder: NarmesteLeder?
     ) {
-
         val sykmeldingAltinn = SykmeldingAltinn(sendtSykmeldingKafkaMessage, pasient, narmesteLeder)
         val insertCorrespondenceV2 = AltinnSykmeldingMapper.sykmeldingTilCorrespondence(sykmeldingAltinn, sequenceOf(pasient.fornavn, pasient.mellomnavn, pasient.etternavn).filterNotNull().joinToString(" "))
         log.info("Mapped sykmelding to Altinn XML format for sykmeldingId ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}")
-        if(envrionment.cluster == "dev-fss") {
+        if (environment.cluster == "dev-fss") {
             log.info("Sending to altinn")
             altinnClient.sendToAltinn(insertCorrespondenceV2, sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId)
         }

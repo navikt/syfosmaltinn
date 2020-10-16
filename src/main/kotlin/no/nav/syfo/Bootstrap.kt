@@ -63,7 +63,7 @@ fun main() {
         stsClient(env.altinSTSUrl, vaultSecrets.serviceuserUsername to vaultSecrets.serviceuserPassword).configureFor(this)
     }
     val altinnClient = AltinnClient(username = env.altinnUsername, password = env.altinnPassword, iCorrespondenceAgencyExternalBasic = iCorrespondenceAgencyExternalBasic)
-    val altinnSendtSykmeldingService = AltinnSykmeldingService(altinnClient)
+    val altinnSendtSykmeldingService = AltinnSykmeldingService(altinnClient, env)
     val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
         install(JsonFeature) {
             serializer = JacksonSerializer {
