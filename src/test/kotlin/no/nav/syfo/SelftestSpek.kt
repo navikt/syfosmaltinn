@@ -15,9 +15,9 @@ import org.spekframework.spek2.style.specification.describe
 
 @KtorExperimentalAPI
 object SelftestSpek : Spek({
-    describe("t") {
-        it("3") {
-            val port = createPort("https://test")
+    describe("test create port to altinn") {
+        it("create port") {
+            createPort("https://test")
         }
     }
     describe("Successfull liveness and readyness tests") {

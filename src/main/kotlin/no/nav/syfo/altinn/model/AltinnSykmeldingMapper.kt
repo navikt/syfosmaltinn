@@ -35,13 +35,14 @@ class AltinnSykmeldingMapper private constructor() {
 
         fun sykmeldingTilCorrespondence(
             sykmeldingAltinn: SykmeldingAltinn,
-            brukernavn: String
+            brukernavn: String,
+            virksomhetsnr: String
         ): InsertCorrespondenceV2 {
 
             val insertCorrespondenceV2 = InsertCorrespondenceV2()
                 .withAllowForwarding(FALSE)
                 .withReportee(
-                    sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer
+                    virksomhetsnr
                 )
                 .withMessageSender(
                     getFormatetUsername(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmelding.pasient, brukernavn)
