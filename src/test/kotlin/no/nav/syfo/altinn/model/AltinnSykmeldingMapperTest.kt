@@ -1,9 +1,7 @@
-package no.nav.syfo.sykmelding.altinn.model
+package no.nav.syfo.altinn.model
 
 import java.time.LocalDate
 import java.time.OffsetDateTime
-import no.nav.syfo.altinn.model.AltinnSykmeldingMapper
-import no.nav.syfo.altinn.model.SykmeldingAltinn
 import no.nav.syfo.model.sykmelding.kafka.EnkelSykmelding
 import no.nav.syfo.model.sykmelding.model.AdresseDTO
 import no.nav.syfo.model.sykmelding.model.ArbeidsgiverDTO

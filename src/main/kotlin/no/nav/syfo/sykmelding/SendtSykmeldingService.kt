@@ -1,11 +1,11 @@
 package no.nav.syfo.sykmelding
 
+import no.nav.syfo.altinn.AltinnSykmeldingService
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.log
 import no.nav.syfo.narmesteleder.service.NarmesteLederService
 import no.nav.syfo.pdl.client.PdlClient
-import no.nav.syfo.sykmelding.altinn.AltinnSykmeldingService
 import no.nav.syfo.sykmelding.exceptions.ArbeidsgiverNotFoundException
 import no.nav.syfo.sykmelding.kafka.SendtSykmeldingConsumer
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage

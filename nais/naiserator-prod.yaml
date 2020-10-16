@@ -40,6 +40,8 @@ spec:
         mountPath: /secrets/serviceuser
       - kvPath: azuread/data/prod/creds/syfosmaltinn
         mountPath: /secrets/azuread
+      - kvPath: /kv/pprod/fss/syfosmaltinn/teamsykmelding
+        mountPath: /secrets/vault
   ingresses:
     - "https://syfosmaltinn.nais.adeo.no"
   webproxy: true
@@ -52,3 +54,7 @@ spec:
       value: ccf8c36f-27e6-4e76-8250-9a49939df7ef
     - name: KAFKA_BOOTSTRAP_SERVERS_URL
       value: SASL_SSL://a01apvl00145.adeo.no:8443,SASL_SSL://a01apvl00146.adeo.no:8443,SASL_SSL://a01apvl00147.adeo.no:8443,SASL_SSL://a01apvl00149.adeo.no:8443
+    - name: EKSTERN_ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL
+      value: https://pep-gw.oera.no:9443/ekstern/altinn/BehandleAltinnMelding/v1
+    - name: SECURITYTOKENSERVICE_URL
+      value: https://sts.adeo.no/SecurityTokenServiceProvider/

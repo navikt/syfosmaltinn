@@ -1,4 +1,4 @@
-package no.nav.syfo.sykmelding.altinn.model
+package no.nav.syfo.altinn.model
 
 import java.time.LocalTime
 import no.nav.helse.xml.sykmeldingarbeidsgiver.ObjectFactory

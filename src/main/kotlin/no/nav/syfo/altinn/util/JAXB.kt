@@ -1,4 +1,4 @@
-package no.nav.syfo.sykmelding.altinn.util
+package no.nav.syfo.altinn.util
 
 import java.io.StringReader
 import java.io.StringWriter

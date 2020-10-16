@@ -17,7 +17,12 @@ data class Environment(
     val clientSecret: String = getFileAsString("/secrets/azuread/client_secret"),
     val narmestelederClientId: String = getEnvVar("NARMESTELEDER_CLIENT_ID"),
     val stsOidcUrl: String = "http://security-token-service.default/rest/v1/sts/token",
-    val narmesteLederBasePath: String = "http://syfonarmesteleder.default"
+    val narmesteLederBasePath: String = "http://syfonarmesteleder.default",
+    val altinnUsername: String = getFileAsString("/secrets/vault/altinn_username"),
+    val altinnPassword: String = getFileAsString("/secrets/vault/altinn_secret"),
+    val altinnUrl: String = getEnvVar("EKSTERN_ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL"),
+    val altinSTSUrl: String = getEnvVar("SECURITYTOKENSERVICE_URL"),
+    val cluster: String = getEnvVar("NAIS_CLUSTER_NAME")
 ) : KafkaConfig
 
 data class VaultSecrets(

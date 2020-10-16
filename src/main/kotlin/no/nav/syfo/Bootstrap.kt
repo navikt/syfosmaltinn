@@ -14,6 +14,11 @@ import io.prometheus.client.hotspot.DefaultExports
 import java.net.ProxySelector
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import no.nav.altinn.admin.ws.configureFor
+import no.nav.altinn.admin.ws.stsClient
+import no.nav.syfo.altinn.AltinnClient
+import no.nav.syfo.altinn.AltinnSykmeldingService
+import no.nav.syfo.altinn.config.createPort
 import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
@@ -25,7 +30,6 @@ import no.nav.syfo.narmesteleder.client.NarmestelederClient
 import no.nav.syfo.narmesteleder.service.NarmesteLederService
 import no.nav.syfo.pdl.client.PdlClient
 import no.nav.syfo.sykmelding.SendtSykmeldingService
-import no.nav.syfo.sykmelding.altinn.AltinnSykmeldingService
 import no.nav.syfo.sykmelding.kafka.SendtSykmeldingConsumer
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
 import no.nav.syfo.sykmelding.kafka.utils.JacksonKafkaDeserializer
@@ -55,7 +59,11 @@ fun main() {
     properties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "latest"
     val kafkaConsumer = KafkaConsumer<String, SendtSykmeldingKafkaMessage>(properties, StringDeserializer(), JacksonKafkaDeserializer(SendtSykmeldingKafkaMessage::class))
     val sendtSykmeldingConsumer = SendtSykmeldingConsumer(kafkaConsumer, env.sendtSykmeldingKafkaTopic)
-    val altinnSendtSykmeldingService = AltinnSykmeldingService()
+    val iCorrespondenceAgencyExternalBasic = createPort(env.altinnUrl).apply {
+        stsClient(env.altinSTSUrl, vaultSecrets.serviceuserUsername to vaultSecrets.serviceuserPassword).configureFor(this)
+    }
+    val altinnClient = AltinnClient(username = env.altinnUsername, password = env.altinnPassword, iCorrespondenceAgencyExternalBasic = iCorrespondenceAgencyExternalBasic)
+    val altinnSendtSykmeldingService = AltinnSykmeldingService(altinnClient, env)
     val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
         install(JsonFeature) {
             serializer = JacksonSerializer {

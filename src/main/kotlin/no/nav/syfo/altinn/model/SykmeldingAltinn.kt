@@ -1,12 +1,12 @@
-package no.nav.syfo.sykmelding.altinn.model
+package no.nav.syfo.altinn.model
 
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
+import no.nav.syfo.altinn.model.AltinnSykmeldingMapper.Companion.toSykmeldingXml
+import no.nav.syfo.altinn.util.PdfFactory
+import no.nav.syfo.altinn.util.SykmeldingHTMLandPDFMapper
+import no.nav.syfo.altinn.util.SykmeldingHTMLandPDFMapper.Companion.toSykmeldingHtml
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
-import no.nav.syfo.sykmelding.altinn.model.AltinnSykmeldingMapper.Companion.toSykmeldingXml
-import no.nav.syfo.sykmelding.altinn.util.PdfFactory
-import no.nav.syfo.sykmelding.altinn.util.SykmeldingHTMLandPDFMapper
-import no.nav.syfo.sykmelding.altinn.util.SykmeldingHTMLandPDFMapper.Companion.toSykmeldingHtml
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
 
 class SykmeldingAltinn(

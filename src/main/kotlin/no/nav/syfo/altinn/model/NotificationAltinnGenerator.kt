@@ -1,7 +1,5 @@
-package no.nav.syfo.sykmelding.altinn.model
+package no.nav.syfo.altinn.model
 
-import javax.xml.bind.JAXBElement
-import javax.xml.namespace.QName
 import no.altinn.schemas.serviceengine.formsengine._2009._10.TransportType
 import no.altinn.schemas.serviceengine.formsengine._2009._10.TransportType.EMAIL
 import no.altinn.schemas.serviceengine.formsengine._2009._10.TransportType.SMS
@@ -16,16 +14,10 @@ class NotificationAltinnGenerator private constructor() {
     companion object {
         private const val NORSK_BOKMAL = "1044"
         private const val FRA_EPOST_ALTINN = "noreply@altinn.no"
-        private const val NOTIFICATION_NAMESPACE =
-            "http://schemas.altinn.no/services/ServiceEngine/Notification/2009/10"
 
-        fun createNotifications(namespace: String): JAXBElement<NotificationBEList> {
-            return JAXBElement(
-                QName(namespace, "Notifications"),
-                NotificationBEList::class.java,
-                NotificationBEList()
-                    .withNotification(epostNotification(), smsNotification())
-            )
+        fun createNotifications(): NotificationBEList {
+            return NotificationBEList()
+                .withNotification(epostNotification(), smsNotification())
         }
 
         fun createEmailNotification(vararg text: String): Notification {
@@ -72,50 +64,26 @@ class NotificationAltinnGenerator private constructor() {
             }
             return Notification()
                 .withLanguageCode(
-                    JAXBElement(
-                        QName(NOTIFICATION_NAMESPACE, "LanguageCode"),
-                        String::class.java,
-                        NORSK_BOKMAL
-                    )
+                    NORSK_BOKMAL
                 )
                 .withNotificationType(
-                    JAXBElement(
-                        QName(NOTIFICATION_NAMESPACE, "NotificationType"),
-                        String::class.java,
-                        "TokenTextOnly"
-                    )
+                    "TokenTextOnly"
                 )
                 .withFromAddress(fromEmail?.let {
-                    JAXBElement(
-                        QName(NOTIFICATION_NAMESPACE, "FromAddress"),
-                        String::class.java,
-                        it
-                    )
+                    it
                 })
                 .withReceiverEndPoints(
-                    JAXBElement(
-                        QName(NOTIFICATION_NAMESPACE, "ReceiverEndPoints"),
-                        ReceiverEndPointBEList::class.java,
-                        ReceiverEndPointBEList()
-                            .withReceiverEndPoint(
-                                ReceiverEndPoint()
-                                    .withTransportType(
-                                        JAXBElement(
-                                            QName(NOTIFICATION_NAMESPACE, "TransportType"),
-                                            TransportType::class.java,
-                                            type
-                                        )
-                                    )
-                            )
-                    )
+                    ReceiverEndPointBEList()
+                        .withReceiverEndPoint(
+                            ReceiverEndPoint()
+                                .withTransportType(
+                                    type
+                                )
+                        )
                 )
                 .withTextTokens(
-                    JAXBElement(
-                        QName(NOTIFICATION_NAMESPACE, "TextTokens"),
-                        TextTokenSubstitutionBEList::class.java,
-                        TextTokenSubstitutionBEList().withTextToken(
-                            *textTokens
-                        )
+                    TextTokenSubstitutionBEList().withTextToken(
+                        *textTokens
                     )
                 )
         }
@@ -128,13 +96,7 @@ class NotificationAltinnGenerator private constructor() {
             val textTokens = arrayOfNulls<TextToken>(text.size)
             for (i in text.indices) {
                 textTokens[i] = TextToken().withTokenNum(i).withTokenValue(
-                    JAXBElement(
-                        QName(
-                            NOTIFICATION_NAMESPACE,
-                            "TokenValue"
-                        ),
-                        String::class.java, text[i]
-                    )
+                    text[i]
                 )
             }
             return textTokens
