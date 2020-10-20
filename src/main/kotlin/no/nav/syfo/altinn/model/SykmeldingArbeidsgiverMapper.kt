@@ -1,6 +1,5 @@
 package no.nav.syfo.altinn.model
 
-import java.time.LocalTime
 import no.nav.helse.xml.sykmeldingarbeidsgiver.ObjectFactory
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLAktivitet
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLAktivitetIkkeMulig
@@ -22,12 +21,12 @@ import no.nav.syfo.model.sykmelding.model.ArbeidsrelatertArsakTypeDTO
 import no.nav.syfo.model.sykmelding.model.BehandlerDTO
 import no.nav.syfo.model.sykmelding.model.ErIArbeidDTO
 import no.nav.syfo.model.sykmelding.model.GradertDTO
-import no.nav.syfo.model.sykmelding.model.KontaktMedPasientDTO
 import no.nav.syfo.model.sykmelding.model.PrognoseDTO
 import no.nav.syfo.model.sykmelding.model.SykmeldingsperiodeDTO
 import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
+import java.time.OffsetDateTime
 
 class SykmeldingArbeidsgiverMapper private constructor() {
     companion object {
@@ -53,7 +52,7 @@ class SykmeldingArbeidsgiverMapper private constructor() {
             val xmlSykmelding = ObjectFactory().createXMLSykmelding()
             xmlSykmelding.arbeidsgiver = getArbeidsgiver(sendtSykmelding.arbeidsgiver)
             xmlSykmelding.behandler = getBehandler(sendtSykmelding.behandler)
-            xmlSykmelding.kontaktMedPasient = getKontaktMedPasient(sendtSykmelding.kontaktMedPasient)
+            xmlSykmelding.kontaktMedPasient = getKontaktMedPasient(sendtSykmelding.behandletTidspunkt)
             xmlSykmelding.meldingTilArbeidsgiver = getMeldingTilArbeidsgiver(sendtSykmelding.meldingTilArbeidsgiver)
             xmlSykmelding.pasient = getPasient(sendtSykmeldingKafkaMessage.kafkaMetadata, person)
             xmlSykmelding.perioder.addAll(getPerioder(sendtSykmelding.sykmeldingsperioder))
@@ -168,9 +167,9 @@ class SykmeldingArbeidsgiverMapper private constructor() {
             return meldingTilArbeidsgiver
         }
 
-        private fun getKontaktMedPasient(kontaktMedPasient: KontaktMedPasientDTO): XMLKontaktMedPasient? {
+        private fun getKontaktMedPasient(kontaktMedPasient: OffsetDateTime): XMLKontaktMedPasient? {
             val xmlKontaktMedPasient = ObjectFactory().createXMLKontaktMedPasient()
-            xmlKontaktMedPasient.behandlet = kontaktMedPasient.kontaktDato?.atTime(LocalTime.NOON)
+            xmlKontaktMedPasient.behandlet = kontaktMedPasient.toLocalDateTime()
             return xmlKontaktMedPasient
         }
 
