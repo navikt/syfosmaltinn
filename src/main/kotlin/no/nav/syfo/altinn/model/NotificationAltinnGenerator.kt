@@ -9,6 +9,7 @@ import no.altinn.schemas.services.serviceengine.notification._2009._10.ReceiverE
 import no.altinn.schemas.services.serviceengine.notification._2009._10.ReceiverEndPointBEList
 import no.altinn.schemas.services.serviceengine.notification._2009._10.TextToken
 import no.altinn.schemas.services.serviceengine.notification._2009._10.TextTokenSubstitutionBEList
+import no.nav.syfo.getEnvVar
 
 class NotificationAltinnGenerator private constructor() {
     companion object {
@@ -33,8 +34,8 @@ class NotificationAltinnGenerator private constructor() {
         }
 
         fun lenkeAltinnPortal(): String {
-            return System.getProperty(
-                "altinn.portal.baseurl",
+            return getEnvVar(
+                "ALTINN_PORTAL_BASEURL",
                 "https://www.altinn.no"
             ) + "/ui/MessageBox?O=\$reporteeNumber$"
         }
@@ -54,7 +55,7 @@ class NotificationAltinnGenerator private constructor() {
         private fun smsNotification(): Notification? {
             return createSmsNotification(
                 "En ansatt i \$reporteeName$ (\$reporteeNumber$) har sendt inn en ny sykmelding. ",
-                "Gå til " + smsLenkeAltinnPortal().toString() + " for å se sykmeldingen. Vennlig hilsen NAV."
+                "Gå til " + smsLenkeAltinnPortal() + " for å se sykmeldingen. Vennlig hilsen NAV."
             )
         }
 

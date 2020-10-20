@@ -1,5 +1,6 @@
 package no.nav.syfo.altinn.model
 
+import java.time.OffsetDateTime
 import no.nav.helse.xml.sykmeldingarbeidsgiver.ObjectFactory
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLAktivitet
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLAktivitetIkkeMulig
@@ -26,7 +27,6 @@ import no.nav.syfo.model.sykmelding.model.SykmeldingsperiodeDTO
 import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
-import java.time.OffsetDateTime
 
 class SykmeldingArbeidsgiverMapper private constructor() {
     companion object {

@@ -36,13 +36,13 @@ class AltinnSykmeldingMapper private constructor() {
         fun sykmeldingTilCorrespondence(
             sykmeldingAltinn: SykmeldingAltinn,
             brukernavn: String,
-            virksomhetsnr: String
+            reportee: String
         ): InsertCorrespondenceV2 {
 
             val insertCorrespondenceV2 = InsertCorrespondenceV2()
                 .withAllowForwarding(FALSE)
                 .withReportee(
-                    virksomhetsnr
+                    reportee
                 )
                 .withMessageSender(
                     getFormatetUsername(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmelding.pasient, brukernavn)
@@ -58,7 +58,6 @@ class AltinnSykmeldingMapper private constructor() {
                 .withContent(
                     ExternalContentV2()
                         .withLanguageCode(
-
                             NORSK_BOKMAL
                         )
                         .withMessageTitle(
@@ -89,7 +88,6 @@ class AltinnSykmeldingMapper private constructor() {
                                         )
                                 )
                         )
-
                 ).withArchiveReference(null)
             return insertCorrespondenceV2
         }
