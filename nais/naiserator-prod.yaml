@@ -40,7 +40,7 @@ spec:
         mountPath: /secrets/serviceuser
       - kvPath: azuread/data/prod/creds/syfosmaltinn
         mountPath: /secrets/azuread
-      - kvPath: /kv/pprod/fss/syfosmaltinn/teamsykmelding
+      - kvPath: /kv/prod/fss/syfosmaltinn/teamsykmelding
         mountPath: /secrets/vault
   ingresses:
     - "https://syfosmaltinn.nais.adeo.no"
