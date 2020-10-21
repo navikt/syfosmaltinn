@@ -1,8 +1,8 @@
-package no.nav.syfo.altinn.reporteeresolver
+package no.nav.syfo.altinn.reportee
 
 import no.nav.syfo.getFileAsString
 
-class AltinnTestReporteeResolver : AltinnReporteeResolver {
+class AltinnTestReporteeLookup : AltinnReporteeLookup {
     private val overrideReportee: String = getFileAsString("/secrets/vault/altinn_test_overstyr_orgnr")
     private val altinnWhitelistReportee: List<String> = getFileAsString("/secrets/vault/altinn_test_whitelist_orgnr").split(",")
 

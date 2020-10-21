@@ -2,7 +2,7 @@ package no.nav.syfo.altinn.util
 
 import io.mockk.every
 import io.mockk.mockkStatic
-import no.nav.syfo.altinn.reporteeresolver.ReporteeResolverFacotry
+import no.nav.syfo.altinn.reportee.AltinnReporteeLookupFacotry
 import no.nav.syfo.getFileAsString
 import org.amshove.kluent.shouldEqual
 import org.spekframework.spek2.Spek
@@ -19,18 +19,18 @@ class AltinnReporteeResolverTest : Spek({
 
     describe("Test ReporteeResolvers") {
         it("Shuild get testOverride") {
-            testOverride shouldEqual ReporteeResolverFacotry.getReporteeResolver("dev-fss").getReportee("other")
-            testOverride shouldEqual ReporteeResolverFacotry.getReporteeResolver("dev-fss").getReportee("whitelist4")
+            testOverride shouldEqual AltinnReporteeLookupFacotry.getReporteeResolver("dev-fss").getReportee("other")
+            testOverride shouldEqual AltinnReporteeLookupFacotry.getReporteeResolver("dev-fss").getReportee("whitelist4")
         }
         it("should get whitelisted") {
-            "whitelist1" shouldEqual ReporteeResolverFacotry.getReporteeResolver("dev-fss").getReportee("whitelist1")
-            "whitelist2" shouldEqual ReporteeResolverFacotry.getReporteeResolver("dev-fss").getReportee("whitelist2")
-            "whitelist3" shouldEqual ReporteeResolverFacotry.getReporteeResolver("dev-fss").getReportee("whitelist3")
+            "whitelist1" shouldEqual AltinnReporteeLookupFacotry.getReporteeResolver("dev-fss").getReportee("whitelist1")
+            "whitelist2" shouldEqual AltinnReporteeLookupFacotry.getReporteeResolver("dev-fss").getReportee("whitelist2")
+            "whitelist3" shouldEqual AltinnReporteeLookupFacotry.getReporteeResolver("dev-fss").getReportee("whitelist3")
         }
         it("Should get same orgnummer in prod") {
-            "1" shouldEqual ReporteeResolverFacotry.getReporteeResolver("prod-fss").getReportee("1")
-            "2" shouldEqual ReporteeResolverFacotry.getReporteeResolver("prod-fss").getReportee("2")
-            "3" shouldEqual ReporteeResolverFacotry.getReporteeResolver("prod-fss").getReportee("3")
+            "1" shouldEqual AltinnReporteeLookupFacotry.getReporteeResolver("prod-fss").getReportee("1")
+            "2" shouldEqual AltinnReporteeLookupFacotry.getReporteeResolver("prod-fss").getReportee("2")
+            "3" shouldEqual AltinnReporteeLookupFacotry.getReporteeResolver("prod-fss").getReportee("3")
         }
     }
 })

@@ -19,7 +19,7 @@ import no.nav.altinn.admin.ws.stsClient
 import no.nav.syfo.altinn.AltinnClient
 import no.nav.syfo.altinn.AltinnSykmeldingService
 import no.nav.syfo.altinn.config.createPort
-import no.nav.syfo.altinn.reporteeresolver.ReporteeResolverFacotry
+import no.nav.syfo.altinn.reportee.AltinnReporteeLookupFacotry
 import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
@@ -64,7 +64,7 @@ fun main() {
         stsClient(env.altinSTSUrl, vaultSecrets.serviceuserUsername to vaultSecrets.serviceuserPassword).configureFor(this)
     }
     val altinnClient = AltinnClient(username = env.altinnUsername, password = env.altinnPassword, iCorrespondenceAgencyExternalBasic = iCorrespondenceAgencyExternalBasic)
-    val reporteeResolver = ReporteeResolverFacotry.getReporteeResolver(env.cluster)
+    val reporteeResolver = AltinnReporteeLookupFacotry.getReporteeResolver(env.cluster)
     val altinnSendtSykmeldingService = AltinnSykmeldingService(altinnClient, env, reporteeResolver)
     val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
         install(JsonFeature) {
