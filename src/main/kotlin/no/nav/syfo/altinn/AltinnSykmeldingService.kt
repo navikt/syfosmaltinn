@@ -9,7 +9,7 @@ import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
 
-class AltinnSykmeldingService(private val altinnClient: AltinnClient, private val environment: Environment, private val altinnReporteeResolver: AltinnReporteeLookup) {
+class AltinnSykmeldingService(private val altinnClient: AltinnClient, private val environment: Environment, private val altinnReporteeLookup: AltinnReporteeLookup) {
     fun handleSendtSykmelding(
         sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage,
         pasient: Person,
@@ -19,7 +19,7 @@ class AltinnSykmeldingService(private val altinnClient: AltinnClient, private va
         val insertCorrespondenceV2 = AltinnSykmeldingMapper.sykmeldingTilCorrespondence(
             sykmeldingAltinn,
             sequenceOf(pasient.fornavn, pasient.mellomnavn, pasient.etternavn).filterNotNull().joinToString(" "),
-            altinnReporteeResolver.getReportee(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer))
+            altinnReporteeLookup.getReportee(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer))
         log.info("Mapped sykmelding to Altinn XML format for sykmeldingId ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}")
         if (environment.cluster == "dev-fss") {
             log.info("Sending to altinn")
