@@ -1,5 +1,10 @@
 package no.nav.syfo.altinn.model
 
+import java.time.OffsetDateTime
+import java.util.Optional.ofNullable
+import java.util.function.Function
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import no.nav.helse.xml.sykmeldingarbeidsgiver.ObjectFactory
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLAktivitet
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLAktivitetIkkeMulig
@@ -26,7 +31,6 @@ import no.nav.syfo.model.sykmelding.model.SykmeldingsperiodeDTO
 import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
-import java.time.OffsetDateTime
 
 class SykmeldingArbeidsgiverMapper private constructor() {
     companion object {
@@ -114,7 +118,8 @@ class SykmeldingArbeidsgiverMapper private constructor() {
             xmlAktivitet.avventendeSykmelding = it.innspillTilArbeidsgiver
             xmlAktivitet.gradertSykmelding = getGradertAktivitet(it.gradert)
             xmlAktivitet.aktivitetIkkeMulig = getAktivitetIkkeMulig(it.aktivitetIkkeMulig)
-            xmlAktivitet.isHarReisetilskudd = it.reisetilskudd.let { when (it) { true -> true else -> null } }
+            xmlAktivitet.isHarReisetilskudd = it.reisetilskudd.let { when (it) {
+                true -> true else -> null } }
             xmlAktivitet.antallBehandlingsdagerUke = it.behandlingsdager
             return xmlAktivitet
         }
@@ -176,9 +181,33 @@ class SykmeldingArbeidsgiverMapper private constructor() {
         private fun getBehandler(behandler: BehandlerDTO): XMLBehandler? {
             val xmlBehandler = ObjectFactory().createXMLBehandler()
             xmlBehandler.navn = getNavn(behandler)
-            xmlBehandler.telefonnummer = behandler.tlf
+            xmlBehandler.telefonnummer = getTelefonnr(behandler.tlf)
             return xmlBehandler
         }
+
+        private fun getTelefonnr(telefonnr: String?): String? {
+            return ofNullable(telefonnr).map(removePrefix).orElseGet { telefonnr }
+        }
+
+        private val removePrefix =
+            Function<String, String?> { kontaktinfo: String? ->
+                ofNullable(kontaktinfo)
+                    .map { s: String? ->
+                        Pattern.compile(
+                            "(tel|fax):(\\d+)",
+                            Pattern.CASE_INSENSITIVE
+                        ).matcher(s)
+                    }
+                    .filter { obj: Matcher -> obj.matches() }
+                    .filter { matcher: Matcher -> matcher.groupCount() == 2 }
+                    .map { matcher: Matcher ->
+                        matcher.group(
+                            2
+                        )
+                    }
+                    .map { obj: String -> obj.trim { it <= ' ' } }
+                    .orElse(kontaktinfo)
+            }
 
         private fun getNavn(behandler: BehandlerDTO): XMLNavn? {
             val xmlNavn = ObjectFactory().createXMLNavn()

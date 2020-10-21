@@ -105,7 +105,8 @@ class AltinnSykmeldingMapperTest : Spek({
 
             val insertCorrespondanceV2 = AltinnSykmeldingMapper.sykmeldingTilCorrespondence(
                 sykmeldingAltinn,
-                sequenceOf(pasient.fornavn, pasient.mellomnavn, pasient.etternavn).filterNotNull().joinToString(" ")
+                sequenceOf(pasient.fornavn, pasient.mellomnavn, pasient.etternavn).filterNotNull().joinToString(" "),
+                sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer
             )
             insertCorrespondanceV2 shouldNotBe null
         }
