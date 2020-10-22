@@ -22,6 +22,7 @@ data class Environment(
     val altinnPassword: String = getFileAsString("/secrets/vault/altinn_secret"),
     val altinnUrl: String = getEnvVar("EKSTERN_ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL"),
     val altinSTSUrl: String = getEnvVar("SECURITYTOKENSERVICE_URL"),
+    val juridiskLoggUrl: String = getEnvVar("JURIDISKLOGG_REST_URL"),
     val cluster: String = getEnvVar("NAIS_CLUSTER_NAME")
 ) : KafkaConfig
 

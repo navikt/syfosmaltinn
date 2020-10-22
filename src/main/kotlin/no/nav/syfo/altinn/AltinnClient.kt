@@ -7,7 +7,7 @@ import no.nav.syfo.log
 
 class AltinnClient(private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic, private val username: String, private val password: String) {
     val SYSTEM_USER_CODE = "NAV_DIGISYFO"
-    fun sendToAltinn(insertCorrespondenceV2: InsertCorrespondenceV2, sykmeldingId: String) {
+    fun sendToAltinn(insertCorrespondenceV2: InsertCorrespondenceV2, sykmeldingId: String): Int {
         try {
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
                 username,
@@ -20,6 +20,7 @@ class AltinnClient(private val iCorrespondenceAgencyExternalBasic: ICorresponden
                 log.error("Error fra altinn {} for sykmeldingId: {}, {}", receiptExternal.receiptStatusCode, sykmeldingId, receiptExternal.receiptText)
                 throw RuntimeException("Error from altinn")
             }
+            return receiptExternal.receiptId
         } catch (ex: Exception) {
             log.error("Error sending sykmeldign to altinn", ex)
             throw ex

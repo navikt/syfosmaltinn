@@ -4,13 +4,14 @@ import no.nav.syfo.Environment
 import no.nav.syfo.altinn.model.AltinnSykmeldingMapper
 import no.nav.syfo.altinn.model.SykmeldingAltinn
 import no.nav.syfo.altinn.reportee.AltinnReporteeLookup
+import no.nav.syfo.juridisklogg.JuridiskLoggService
 import no.nav.syfo.log
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
 
-class AltinnSykmeldingService(private val altinnClient: AltinnClient, private val environment: Environment, private val altinnReporteeLookup: AltinnReporteeLookup) {
-    fun handleSendtSykmelding(
+class AltinnSykmeldingService(private val altinnClient: AltinnClient, private val environment: Environment, private val altinnReporteeLookup: AltinnReporteeLookup, private val juridiskLoggService: JuridiskLoggService) {
+    suspend fun handleSendtSykmelding(
         sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage,
         pasient: Person,
         narmesteLeder: NarmesteLeder?
@@ -24,6 +25,7 @@ class AltinnSykmeldingService(private val altinnClient: AltinnClient, private va
         if (environment.cluster == "dev-fss") {
             log.info("Sending to altinn")
             altinnClient.sendToAltinn(insertCorrespondenceV2, sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId)
+            juridiskLoggService.sendJuridiskLogg(sykmeldingAltinn, person = pasient)
         }
     }
 }
