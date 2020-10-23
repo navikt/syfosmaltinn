@@ -8,6 +8,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.engine.apache.ApacheEngineConfig
+import io.ktor.client.features.auth.Auth
+import io.ktor.client.features.auth.providers.basic
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.prometheus.client.hotspot.DefaultExports
@@ -87,14 +89,26 @@ fun main() {
             }
         }
     }
+
+    val basichAuthConfig: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
+        config()
+        install(Auth) {
+            basic {
+                username = vaultSecrets.serviceuserUsername
+                password = vaultSecrets.serviceuserPassword
+                sendWithoutRequest = true
+            }
+        }
+    }
     val httpClient = HttpClient(Apache, config)
+    val httpClientWithAuth = HttpClient(Apache, basichAuthConfig)
     val httpClientWithProxy = HttpClient(Apache, proxyConfig)
     val pdlClient = PdlClient(httpClient, env.pdlBasePath, PdlClient::class.java.getResource("/graphql/getPerson.graphql").readText())
     val stsOidcClient = StsOidcClient(username = vaultSecrets.serviceuserUsername, password = vaultSecrets.serviceuserPassword, stsUrl = env.stsOidcUrl)
     val accessTokenClient = AccessTokenClient(aadAccessTokenUrl = env.aadAccessTokenUrl, clientId = env.clientId, clientSecret = env.clientSecret, resource = env.narmestelederClientId, httpClient = httpClientWithProxy)
     val narmestelederClient = NarmestelederClient(httpClient, accessTokenClient, env.narmesteLederBasePath)
     val narmesteLederService = NarmesteLederService(narmestelederClient, pdlClient, stsOidcClient)
-    val juridiskLoggService = JuridiskLoggService(JuridiskLoggClient(httpClient, env.juridiskLoggUrl))
+    val juridiskLoggService = JuridiskLoggService(JuridiskLoggClient(httpClientWithAuth, env.juridiskLoggUrl))
     val altinnSendtSykmeldingService = AltinnSykmeldingService(altinnClient, env, altinnReporteeLookup, juridiskLoggService)
     val sendtSykmeldingService = SendtSykmeldingService(applicationState, sendtSykmeldingConsumer, altinnSendtSykmeldingService, pdlClient, stsOidcClient, narmesteLederService)
 

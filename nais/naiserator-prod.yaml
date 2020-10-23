@@ -60,4 +60,3 @@ spec:
       value: https://sts.adeo.no/SecurityTokenServiceProvider/
     - name: JURIDISKLOGG_REST_URL
       value: https://app.adeo.no/juridisklogg/api/rest/logg
-s
