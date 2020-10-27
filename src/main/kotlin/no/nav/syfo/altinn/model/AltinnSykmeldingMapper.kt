@@ -52,7 +52,6 @@ class AltinnSykmeldingMapper private constructor() {
                 )
                 .withServiceEdition(
                     SYKMELDING_TJENESTEVERSJON
-
                 )
                 .withNotifications(NotificationAltinnGenerator.createNotifications())
                 .withContent(
