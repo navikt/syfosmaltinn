@@ -23,7 +23,9 @@ data class Environment(
     val altinnUrl: String = getEnvVar("EKSTERN_ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL"),
     val altinSTSUrl: String = getEnvVar("SECURITYTOKENSERVICE_URL"),
     val juridiskLoggUrl: String = getEnvVar("JURIDISKLOGG_REST_URL"),
-    val cluster: String = getEnvVar("NAIS_CLUSTER_NAME")
+    override val cluster: String = getEnvVar("NAIS_CLUSTER_NAME"),
+    override val truststore: String? = getEnvVar("NAV_TRUSTSTORE_PATH"),
+    override val truststorePassword: String? = getEnvVar("NAV_TRUSTSTORE_PASSWORD")
 ) : KafkaConfig
 
 data class VaultSecrets(
