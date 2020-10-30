@@ -36,7 +36,7 @@ spec:
   vault:
     enabled: false
   ingresses:
-    - "https://syfosmaltinn.nais.preprod.local"
+    - "https://syfosmaltinn.dev.nav.no"
   webproxy: true
   env:
     - name: PDL_BASE_PATH
