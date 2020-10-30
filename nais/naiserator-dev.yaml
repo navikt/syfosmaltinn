@@ -34,14 +34,7 @@ spec:
       cpu: 400m
       memory: 768Mi
   vault:
-    enabled: true
-    paths:
-      - kvPath: serviceuser/data/dev/srvsyfosmaltinn
-        mountPath: /secrets/serviceuser
-      - kvPath: azuread/data/dev/creds/syfosmaltinn
-        mountPath: /secrets/azuread
-      - kvPath: /kv/preprod/fss/syfosmaltinn/teamsykmelding
-        mountPath: /secrets/vault
+    enabled: false
   ingresses:
     - "https://syfosmaltinn.nais.preprod.local"
   webproxy: true
