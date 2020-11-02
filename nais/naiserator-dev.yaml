@@ -36,9 +36,7 @@ spec:
   vault:
     enabled: false
   filesFrom:
-    - secret: syfosmaltinn.serviceuser
-    - secret: syfosmaltinn.altinn
-    - secret: syfosmaltinn.azured
+    - secret: syfosmaltinn-secrets
   ingresses:
     - "https://syfosmaltinn.dev.nav.no"
   webproxy: true
