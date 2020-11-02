@@ -23,7 +23,7 @@ fun main() {
     applicationServer.start()
     applicationState.ready = true
 
-//    val vaultSecrets = VaultSecrets()
+    val vaultSecrets = VaultSecrets()
 //    val properties = loadBaseConfig(env, vaultSecrets).toConsumerConfig(env.applicationName + "-consumer", JacksonKafkaDeserializer::class)
 //    properties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "latest"
 //    val kafkaConsumer = KafkaConsumer<String, SendtSykmeldingKafkaMessage>(properties, StringDeserializer(), JacksonKafkaDeserializer(SendtSykmeldingKafkaMessage::class))

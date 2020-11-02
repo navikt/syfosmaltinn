@@ -35,6 +35,10 @@ spec:
       memory: 768Mi
   vault:
     enabled: false
+  filesFrom:
+    - secret: syfosmaltinn.serviceuser
+    - secret: syfosmaltinn.altinn
+    - secret: syfosmaltinn.azured
   ingresses:
     - "https://syfosmaltinn.dev.nav.no"
   webproxy: true
