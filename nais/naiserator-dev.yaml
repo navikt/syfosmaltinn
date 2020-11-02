@@ -37,6 +37,10 @@ spec:
     enabled: false
   filesFrom:
     - secret: syfosmaltinn-secrets
+  accessPolicy:
+    outbound:
+      external:
+        - host: api-gw-q1.oera.no
   ingresses:
     - "https://syfosmaltinn.dev.nav.no"
   webproxy: true
