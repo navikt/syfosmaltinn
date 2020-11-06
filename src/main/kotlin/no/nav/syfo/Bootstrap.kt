@@ -61,7 +61,7 @@ fun main() {
 
     val vaultSecrets = VaultSecrets()
     val properties = loadBaseConfig(env, vaultSecrets).toConsumerConfig(env.applicationName + "-consumer", JacksonKafkaDeserializer::class)
-    properties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "latest"
+    properties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none"
     val kafkaConsumer = KafkaConsumer<String, SendtSykmeldingKafkaMessage>(properties, StringDeserializer(), JacksonKafkaDeserializer(SendtSykmeldingKafkaMessage::class))
     val sendtSykmeldingConsumer = SendtSykmeldingConsumer(kafkaConsumer, env.sendtSykmeldingKafkaTopic)
     val iCorrespondenceAgencyExternalBasic = createPort(env.altinnUrl).apply {
