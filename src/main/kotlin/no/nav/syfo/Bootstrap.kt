@@ -68,7 +68,7 @@ fun main() {
     val iCorrespondenceAgencyExternalBasic = createPort(env.altinnUrl)
     val altinnClient = AltinnClient(username = env.altinnUsername, password = env.altinnPassword, iCorrespondenceAgencyExternalBasic = iCorrespondenceAgencyExternalBasic)
     val altinnReporteeLookup = AltinnReporteeLookupFacotry.getReporteeResolver(env.cluster)
-
+    log.info("creating httpConfigs")
     val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
         install(JsonFeature) {
             serializer = JacksonSerializer {
@@ -102,6 +102,7 @@ fun main() {
     val httpClient = HttpClient(Apache, config)
     val httpClientWithAuth = HttpClient(Apache, basichAuthConfig)
     val httpClientWithProxy = HttpClient(Apache, proxyConfig)
+    log.info("creating pdlClient")
     val pdlClient = PdlClient(httpClient, env.pdlBasePath, PdlClient::class.java.getResource("/graphql/getPerson.graphql").readText())
     val stsOidcClient = StsOidcClient(username = vaultSecrets.serviceuserUsername, password = vaultSecrets.serviceuserPassword, stsUrl = env.stsOidcUrl)
     val accessTokenClient = AccessTokenClient(aadAccessTokenUrl = env.aadAccessTokenUrl, clientId = env.clientId, clientSecret = env.clientSecret, resource = env.narmestelederClientId, httpClient = httpClientWithProxy)
