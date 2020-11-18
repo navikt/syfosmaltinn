@@ -17,8 +17,6 @@ import io.prometheus.client.hotspot.DefaultExports
 import java.net.ProxySelector
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import no.nav.altinn.admin.ws.configureFor
-import no.nav.altinn.admin.ws.stsClient
 import no.nav.syfo.altinn.AltinnClient
 import no.nav.syfo.altinn.AltinnSykmeldingService
 import no.nav.syfo.altinn.config.createPort
