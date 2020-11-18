@@ -11,6 +11,7 @@ spec:
     outbound:
       external:
         - host: tt02.altinn.no
+        - host: api-gw-q1.oera.no
   replicas:
     min: 1
     max: 1
@@ -41,16 +42,12 @@ spec:
     enabled: false
   filesFrom:
     - secret: syfosmaltinn-secrets
-  accessPolicy:
-    outbound:
-      external:
-        - host: api-gw-q1.oera.no
   ingresses:
     - "https://syfosmaltinn.dev.nav.no"
   webproxy: true
   env:
     - name: PDL_BASE_PATH
-      value: https://pdl-api.nais.preprod.local/graphql
+      value: https://api-gw-q2.oera.no/pdl-api/graphql
     - name: AAD_ACCESS_TOKEN_URL
       value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
     - name: NARMESTELEDER_CLIENT_ID
@@ -60,7 +57,7 @@ spec:
     - name: EKSTERN_ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL
       value: https://pep-gw-q1.oera-q.local:9443/ekstern/altinn/BehandleAltinnMelding/v1
     - name: SECURITYTOKENSERVICE_URL
-      value: https://sts-q1.preprod.local/SecurityTokenServiceProvider/
+      value: https://api-gw-q1.oera.no/security-token-service/rest/v1/sts/token
     - name: ALTINN_PORTAL_BASEURL
       value: https://tt02.altinn.no
     - name: JURIDISKLOGG_REST_URL
