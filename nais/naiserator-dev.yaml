@@ -56,8 +56,6 @@ spec:
       value: a7e7ad0e-4e17-4f19-8aa6-39d73e62fff8
     - name: KAFKA_BOOTSTRAP_SERVERS_URL
       value: SSL://b27apvl00045.preprod.local:8443,SSL://b27apvl00046.preprod.local:8443,SSL://b27apvl00047.preprod.local:8443
-    - name: EKSTERN_ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL
-      value: https://pep-gw-q1.oera-q.local:9443/ekstern/altinn/BehandleAltinnMelding/v1
     - name: SECURITYTOKENSERVICE_URL
       value: https://api-gw-q1.oera.no/security-token-service/rest/v1/sts/token
     - name: ALTINN_PORTAL_BASEURL

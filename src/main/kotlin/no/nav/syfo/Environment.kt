@@ -20,7 +20,7 @@ data class Environment(
     val narmesteLederBasePath: String = "http://syfonarmesteleder.default",
     val altinnUsername: String = getFileAsString("/var/run/secrets/ALTINN_USERNAME"),
     val altinnPassword: String = getFileAsString("/var/run/secrets/ALTINN_PASSWORD"),
-    val altinnUrl: String = getEnvVar("EKSTERN_ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL"),
+    val altinnUrl: String = getEnvVar("ALTINN_PORTAL_BASEURL"),
     val juridiskLoggUrl: String = getEnvVar("JURIDISKLOGG_REST_URL"),
     override val cluster: String = getEnvVar("NAIS_CLUSTER_NAME"),
     override val truststore: String? = getEnvVar("NAV_TRUSTSTORE_PATH"),

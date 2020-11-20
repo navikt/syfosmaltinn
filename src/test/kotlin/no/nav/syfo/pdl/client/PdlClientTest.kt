@@ -11,11 +11,11 @@ import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
+import java.io.File
+import kotlin.test.assertFailsWith
 import kotlinx.coroutines.runBlocking
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import java.io.File
-import kotlin.test.assertFailsWith
 
 class PdlClientTest : Spek({
 
