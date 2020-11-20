@@ -25,7 +25,7 @@ class AltinnSykmeldingService(private val altinnClient: AltinnClient, private va
         if (environment.cluster == "dev-fss") {
             log.info("Sending to altinn")
             altinnClient.sendToAltinn(insertCorrespondenceV2, sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId)
-            juridiskLoggService.sendJuridiskLogg(sykmeldingAltinn, person = pasient)
+            // juridiskLoggService.sendJuridiskLogg(sykmeldingAltinn, person = pasient)
         }
     }
 }

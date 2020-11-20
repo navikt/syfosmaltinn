@@ -49,7 +49,7 @@ spec:
   webproxy: true
   env:
     - name: PDL_BASE_PATH
-      value: https://api-gw-q2.oera.no/pdl-api/graphql
+      value: https://api-gw-q1.oera.no/pdl-api/graphql
     - name: AAD_ACCESS_TOKEN_URL
       value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
     - name: NARMESTELEDER_CLIENT_ID

@@ -24,7 +24,9 @@ data class Environment(
     val juridiskLoggUrl: String = getEnvVar("JURIDISKLOGG_REST_URL"),
     override val cluster: String = getEnvVar("NAIS_CLUSTER_NAME"),
     override val truststore: String? = getEnvVar("NAV_TRUSTSTORE_PATH"),
-    override val truststorePassword: String? = getEnvVar("NAV_TRUSTSTORE_PASSWORD")
+    override val truststorePassword: String? = getEnvVar("NAV_TRUSTSTORE_PASSWORD"),
+    val pdlApiKey: String? = getEnvVar("PDL_API_KEY"),
+    val stsApiKey: String? = getEnvVar("STS_API_KEY")
 ) : KafkaConfig
 
 data class VaultSecrets(

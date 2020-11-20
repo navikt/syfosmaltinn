@@ -9,26 +9,27 @@ import no.nav.syfo.pdl.client.model.Person
 
 class NarmesteLederService @KtorExperimentalAPI constructor(private val narmestelederClient: NarmestelederClient, private val pdlClient: PdlClient, private val stsOidcClient: StsOidcClient) {
     suspend fun getNarmesteLeder(orgnummer: String, aktorId: String): NarmesteLeder? {
-        return narmestelederClient.getNarmesteleder(
-            orgnummer,
-            aktorId
-        ).narmesteLederRelasjon?.let { narmesteLederRelasjon ->
-
-            val person = pdlClient.getPerson(narmesteLederRelasjon.narmesteLederAktorId, stsOidcClient.oidcToken().access_token)
-
-            NarmesteLeder(
-                aktorId = narmesteLederRelasjon.narmesteLederAktorId,
-                epost = narmesteLederRelasjon.narmesteLederEpost,
-                orgnummer = narmesteLederRelasjon.orgnummer,
-                telefonnummer = narmesteLederRelasjon.narmesteLederTelefonnummer,
-                aktivFom = narmesteLederRelasjon.aktivFom,
-                arbeidsgiverForskutterer = narmesteLederRelasjon.arbeidsgiverForskutterer,
-                skrivetilgang = narmesteLederRelasjon.skrivetilgang,
-                tilganger = narmesteLederRelasjon.tilganger,
-                navn = getName(person),
-                fnr = person.fnr
-            )
-        }
+//        return narmestelederClient.getNarmesteleder(
+//            orgnummer,
+//            aktorId
+//        ).narmesteLederRelasjon?.let { narmesteLederRelasjon ->
+//
+//            val person = pdlClient.getPerson(narmesteLederRelasjon.narmesteLederAktorId, stsOidcClient.oidcToken().access_token)
+//
+//            NarmesteLeder(
+//                aktorId = narmesteLederRelasjon.narmesteLederAktorId,
+//                epost = narmesteLederRelasjon.narmesteLederEpost,
+//                orgnummer = narmesteLederRelasjon.orgnummer,
+//                telefonnummer = narmesteLederRelasjon.narmesteLederTelefonnummer,
+//                aktivFom = narmesteLederRelasjon.aktivFom,
+//                arbeidsgiverForskutterer = narmesteLederRelasjon.arbeidsgiverForskutterer,
+//                skrivetilgang = narmesteLederRelasjon.skrivetilgang,
+//                tilganger = narmesteLederRelasjon.tilganger,
+//                navn = getName(person),
+//                fnr = person.fnr
+//            )
+//        }
+        return null
     }
 
     private fun getName(person: Person): String {
