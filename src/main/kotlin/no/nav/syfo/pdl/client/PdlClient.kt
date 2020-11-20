@@ -14,6 +14,7 @@ import no.nav.syfo.pdl.client.model.toPerson
 class PdlClient(
     private val httpClient: HttpClient,
     private val basePath: String,
+    private val apiKey: String,
     private val graphQlQuery: String
 ) {
 
@@ -25,6 +26,7 @@ class PdlClient(
         val getPersonRequest = GetPersonRequest(query = graphQlQuery, variables = GetPersonVeriables(ident = ident))
         val pdlResponse = httpClient.post<GetPersonResponse>(basePath) {
             body = getPersonRequest
+            header("x-nav-apikey", apiKey)
             header(HttpHeaders.Authorization, "Bearer $stsToken")
             header(temaHeader, tema)
             header(HttpHeaders.ContentType, "application/json")

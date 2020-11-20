@@ -103,7 +103,7 @@ fun main() {
     val httpClientWithAuth = HttpClient(Apache, basichAuthConfig)
     val httpClientWithProxy = HttpClient(Apache, proxyConfig)
     log.info("creating pdlClient")
-    val pdlClient = PdlClient(httpClient, env.pdlBasePath, PdlClient::class.java.getResource("/graphql/getPerson.graphql").readText())
+    val pdlClient = PdlClient(httpClient, env.pdlBasePath, env.pdlApiKey, PdlClient::class.java.getResource("/graphql/getPerson.graphql").readText())
     log.info("creating stsOidcClient")
     val stsOidcClient = StsOidcClient(username = vaultSecrets.serviceuserUsername, password = vaultSecrets.serviceuserPassword, stsUrl = env.stsOidcUrl, apiKey = env.stsApiKey)
     log.info("creating accessTokenClient")
