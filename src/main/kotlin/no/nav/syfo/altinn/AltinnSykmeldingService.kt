@@ -22,7 +22,7 @@ class AltinnSykmeldingService(private val altinnClient: AltinnClient, private va
             sequenceOf(pasient.fornavn, pasient.mellomnavn, pasient.etternavn).filterNotNull().joinToString(" "),
             altinnReporteeLookup.getReportee(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer))
         log.info("Mapped sykmelding to Altinn XML format for sykmeldingId ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}")
-        if (environment.cluster == "dev-fss") {
+        if (environment.cluster == "dev-gcp") {
             log.info("Sending to altinn")
             altinnClient.sendToAltinn(insertCorrespondenceV2, sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId)
             // juridiskLoggService.sendJuridiskLogg(sykmeldingAltinn, person = pasient)
