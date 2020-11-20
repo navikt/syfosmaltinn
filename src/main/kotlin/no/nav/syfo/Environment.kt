@@ -25,7 +25,7 @@ data class Environment(
     override val cluster: String = getEnvVar("NAIS_CLUSTER_NAME"),
     override val truststore: String? = getEnvVar("NAV_TRUSTSTORE_PATH"),
     override val truststorePassword: String? = getEnvVar("NAV_TRUSTSTORE_PASSWORD"),
-    val pdlApiKey: String? = getEnvVar("PDL_API_KEY"),
+    val pdlApiKey: String = getEnvVar("PDL_API_KEY"),
     val stsApiKey: String? = getEnvVar("STS_API_KEY")
 ) : KafkaConfig
 
