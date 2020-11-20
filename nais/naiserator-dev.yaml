@@ -43,7 +43,7 @@ spec:
   filesFrom:
     - secret: syfosmaltinn-secrets
   envFrom:
-    - secret: syfosmaltinn-api-key
+    - secret: syfosmaltinn-api-keys
   ingresses:
     - "https://syfosmaltinn.dev.nav.no"
   webproxy: true
