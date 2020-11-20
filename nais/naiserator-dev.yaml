@@ -61,6 +61,6 @@ spec:
     - name: SECURITYTOKENSERVICE_URL
       value: https://api-gw-q1.oera.no/security-token-service/rest/v1/sts/token
     - name: ALTINN_PORTAL_BASEURL
-      value: https://tt02.altinn.no
+      value: https://tt02.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
     - name: JURIDISKLOGG_REST_URL
       value: https://app-q1.adeo.no/juridisklogg/api/rest/logg
