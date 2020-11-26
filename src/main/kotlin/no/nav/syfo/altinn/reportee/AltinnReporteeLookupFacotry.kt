@@ -3,11 +3,11 @@ package no.nav.syfo.altinn.reportee
 class AltinnReporteeLookupFacotry private constructor () {
     companion object {
 
-        private const val DEV_CLUSTER = "dev-fss"
+        private const val DEV_CLUSTER = listOf("dev-fss", "dev-gcp")
 
         fun getReporteeResolver(cluster: String): AltinnReporteeLookup {
-            return when (cluster) {
-                DEV_CLUSTER -> AltinnTestReporteeLookup()
+            return when (DEV_CLUSTER.contains(cluster)) {
+                true -> AltinnTestReporteeLookup()
                 else -> AltinnProdReporteeLookup()
             }
         }
