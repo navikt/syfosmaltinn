@@ -109,9 +109,9 @@ fun main() {
     log.info("creating accessTokenClient")
     val accessTokenClient = AccessTokenClient(aadAccessTokenUrl = env.aadAccessTokenUrl, clientId = env.clientId, clientSecret = env.clientSecret, resource = env.narmestelederClientId, httpClient = httpClientWithProxy)
     log.info("creating narmestelederClient")
-    val narmestelederClient = NarmestelederClient(httpClient, accessTokenClient, env.narmesteLederBasePath)
+    val narmestelederClient = NarmestelederClient(httpClient, accessTokenClient, env.narmesteLederBasePath, env.sykmeldingProxyApiKey)
     val narmesteLederService = NarmesteLederService(narmestelederClient, pdlClient, stsOidcClient)
-    val juridiskLoggService = JuridiskLoggService(JuridiskLoggClient(httpClientWithAuth, env.juridiskLoggUrl))
+    val juridiskLoggService = JuridiskLoggService(JuridiskLoggClient(httpClientWithAuth, env.juridiskLoggUrl, env.sykmeldingProxyApiKey))
     val altinnSendtSykmeldingService = AltinnSykmeldingService(altinnClient, env, altinnReporteeLookup, juridiskLoggService)
     val sendtSykmeldingService = SendtSykmeldingService(applicationState, sendtSykmeldingConsumer, altinnSendtSykmeldingService, pdlClient, stsOidcClient, narmesteLederService)
 
