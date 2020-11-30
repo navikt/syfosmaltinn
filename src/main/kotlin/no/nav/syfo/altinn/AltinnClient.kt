@@ -5,6 +5,7 @@ import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEn
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
 import no.altinn.schemas.services.serviceengine.correspondence._2016._02.CorrespondenceStatusFilterV3
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
+import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicGetCorrespondenceStatusDetailsBasicV3AltinnFaultFaultFaultMessage
 import no.nav.syfo.altinn.model.AltinnSykmeldingMapper
 import no.nav.syfo.log
 
@@ -12,17 +13,26 @@ class AltinnClient(private val iCorrespondenceAgencyExternalBasic: ICorresponden
     val SYSTEM_USER_CODE = "NAV_DIGISYFO"
     fun sendToAltinn(insertCorrespondenceV2: InsertCorrespondenceV2, sykmeldingId: String): Int {
         try {
-            val altinnResponse = iCorrespondenceAgencyExternalBasic.getCorrespondenceStatusDetailsBasicV3(
-                username,
-                password,
-                CorrespondenceStatusFilterV3()
-                    .withSendersReference("$sykmeldingId.xml")
-                    .withServiceCode(AltinnSykmeldingMapper.SYKMELDING_TJENESTEKODE)
-                    .withReportee(insertCorrespondenceV2.reportee)
-            )
+            try {
+                val altinnResponse = iCorrespondenceAgencyExternalBasic.getCorrespondenceStatusDetailsBasicV3(
+                    username,
+                    password,
+                    CorrespondenceStatusFilterV3()
+                        .withSendersReference("$sykmeldingId.xml")
+                        .withServiceCode(AltinnSykmeldingMapper.SYKMELDING_TJENESTEKODE)
+                        .withReportee(insertCorrespondenceV2.reportee)
+                )
 
-            log.info("Got response from altinn")
-            log.info("got response {}", jacksonObjectMapper().writeValueAsString(altinnResponse))
+                log.info("Got response from altinn")
+                log.info("got response {}", jacksonObjectMapper().writeValueAsString(altinnResponse))
+            } catch (ex: ICorrespondenceAgencyExternalBasicGetCorrespondenceStatusDetailsBasicV3AltinnFaultFaultFaultMessage) {
+                log.error("Got error from altinn ${ex.message} ${ex.faultInfo}")
+                throw ex
+            } catch (ex: Exception) {
+                log.error("Got error from altinn ${ex.message}")
+                throw ex
+            }
+
 
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
                 username,
