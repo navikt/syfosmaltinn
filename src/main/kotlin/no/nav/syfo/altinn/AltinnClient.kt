@@ -47,8 +47,9 @@ class AltinnClient(private val iCorrespondenceAgencyExternalBasic: ICorresponden
                 log.error("Error fra altinn {} for sykmeldingId: {}, {}", receiptExternal.receiptStatusCode, sykmeldingId, receiptExternal.receiptText)
                 throw RuntimeException("Error from altinn")
             }
-            return receiptExternal.receiptId
             throw RuntimeException("try to rerun")
+            return receiptExternal.receiptId
+
         } catch (ex: Exception) {
             log.error("Error sending sykmeldign to altinn", ex)
             throw ex
