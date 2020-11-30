@@ -12,11 +12,12 @@ import io.ktor.client.features.auth.Auth
 import io.ktor.client.features.auth.providers.basic
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
-import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.hotspot.DefaultExports
 import java.net.ProxySelector
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import no.nav.altinn.admin.ws.configureFor
+import no.nav.altinn.admin.ws.stsClient
 import no.nav.syfo.altinn.AltinnClient
 import no.nav.syfo.altinn.AltinnSykmeldingService
 import no.nav.syfo.altinn.config.createPort
@@ -46,7 +47,6 @@ import org.slf4j.LoggerFactory
 
 val log: Logger = LoggerFactory.getLogger("no.nav.syfo.syfosmaltinn")
 
-@KtorExperimentalAPI
 fun main() {
     val env = Environment()
     DefaultExports.initialize()
@@ -61,9 +61,8 @@ fun main() {
 
     val vaultSecrets = VaultSecrets()
     val properties = loadBaseConfig(env, vaultSecrets).toConsumerConfig(env.applicationName + "-consumer", JacksonKafkaDeserializer::class)
-    properties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "latest"
-    val kafkaConsumer = KafkaConsumer<String, SendtSykmeldingKafkaMessage>(properties, StringDeserializer(), JacksonKafkaDeserializer(
-        SendtSykmeldingKafkaMessage::class))
+    properties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none"
+    val kafkaConsumer = KafkaConsumer<String, SendtSykmeldingKafkaMessage>(properties, StringDeserializer(), JacksonKafkaDeserializer(SendtSykmeldingKafkaMessage::class))
     val sendtSykmeldingConsumer = SendtSykmeldingConsumer(kafkaConsumer, env.sendtSykmeldingKafkaTopic)
     val iCorrespondenceAgencyExternalBasic = createPort(env.altinnUrl)
     val altinnClient = AltinnClient(username = env.altinnUsername, password = env.altinnPassword, iCorrespondenceAgencyExternalBasic = iCorrespondenceAgencyExternalBasic)
