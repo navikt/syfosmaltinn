@@ -29,6 +29,7 @@ class NarmesteLederService @KtorExperimentalAPI constructor(private val narmeste
                 fnr = person.fnr
             )
         }
+        return null
     }
 
     private fun getName(person: Person): String {

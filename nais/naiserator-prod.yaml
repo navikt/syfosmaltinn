@@ -7,6 +7,11 @@ metadata:
     team: teamsykmelding
 spec:
   image: {{ image }}
+  accessPolicy:
+    outbound:
+      external:
+        - host: altinn.no
+        - host: api-gw.oera.no
   replicas:
     min: 2
     max: 6
@@ -34,29 +39,28 @@ spec:
       cpu: 400m
       memory: 768Mi
   vault:
-    enabled: true
-    paths:
-      - kvPath: serviceuser/data/prod/srvsyfosmaltinn
-        mountPath: /secrets/serviceuser
-      - kvPath: azuread/data/prod/creds/syfosmaltinn
-        mountPath: /secrets/azuread
-      - kvPath: /kv/prod/fss/syfosmaltinn/teamsykmelding
-        mountPath: /secrets/vault
+    enabled: false
+  filesFrom:
+    - secret: syfosmaltinn-secrets
+  envFrom:
+    - secret: syfosmaltinn-api-keys
   ingresses:
-    - "https://syfosmaltinn.nais.adeo.no"
+    - "https://syfosmaltinn.intern.nav.no"
   webproxy: true
   env:
     - name: PDL_BASE_PATH
-      value: https://pdl-api.nais.adeo.no/graphql
+      value: https://api-gw.oera.no/pdl-api/graphql
     - name: AAD_ACCESS_TOKEN_URL
       value: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/token
     - name: NARMESTELEDER_CLIENT_ID
       value: ccf8c36f-27e6-4e76-8250-9a49939df7ef
     - name: KAFKA_BOOTSTRAP_SERVERS_URL
       value: SASL_SSL://a01apvl00145.adeo.no:8443,SASL_SSL://a01apvl00146.adeo.no:8443,SASL_SSL://a01apvl00147.adeo.no:8443,SASL_SSL://a01apvl00149.adeo.no:8443
-    - name: EKSTERN_ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL
-      value: https://pep-gw.oera.no:9443/ekstern/altinn/BehandleAltinnMelding/v1
     - name: SECURITYTOKENSERVICE_URL
-      value: https://sts.adeo.no/SecurityTokenServiceProvider/
+      value: https://api-gw.oera.no/security-token-service/rest/v1/sts/token
+    - name: ALTINN_PORTAL_BASEURL
+      value: https://altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
     - name: JURIDISKLOGG_REST_URL
-      value: https://app.adeo.no/juridisklogg/api/rest/logg
+      value: https://api-gw.oera.no/sykmelding-fss-proxy/juridisklogg/juridisklogg/api/rest/logg
+    - name: NARMESTELEDER_URL
+      value: https://api-gw.oera.no/sykmelding-fss-proxy/narmesteleder

@@ -36,7 +36,7 @@ class PdlClientTest : Spek({
     }
 
     val graphQlQuery = File("src/main/resources/graphql/getPerson.graphql").readText().replace(Regex("[\n\t]"), "")
-    val pdlClient = PdlClient(httpClient, "graphqlend", graphQlQuery)
+    val pdlClient = PdlClient(httpClient, "graphqlend", "key", graphQlQuery)
 
     describe("getPerson OK") {
         it("Kaster exception hvis person ikke finnes i PDL") {

@@ -19,6 +19,7 @@ class SendtSykmeldingService(
     private val narmesteLederService: NarmesteLederService
 ) {
     suspend fun start() {
+        log.info("Starting consumer")
         sendtSykmeldingConsumer.subscribe()
         while (applicationState.ready) {
             val sykmeldinger = sendtSykmeldingConsumer.poll()

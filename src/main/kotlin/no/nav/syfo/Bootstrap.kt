@@ -13,15 +13,12 @@ import io.ktor.client.features.auth.providers.basic
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.prometheus.client.hotspot.DefaultExports
-import java.net.ProxySelector
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import no.nav.altinn.admin.ws.configureFor
-import no.nav.altinn.admin.ws.stsClient
 import no.nav.syfo.altinn.AltinnClient
 import no.nav.syfo.altinn.AltinnSykmeldingService
 import no.nav.syfo.altinn.config.createPort
-import no.nav.syfo.altinn.reportee.AltinnReporteeLookupFacotry
+import no.nav.syfo.altinn.orgnummer.AltinnOrgnummerLookupFacotry
 import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
@@ -44,6 +41,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.net.ProxySelector
 
 val log: Logger = LoggerFactory.getLogger("no.nav.syfo.syfosmaltinn")
 
@@ -64,12 +62,10 @@ fun main() {
     properties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none"
     val kafkaConsumer = KafkaConsumer<String, SendtSykmeldingKafkaMessage>(properties, StringDeserializer(), JacksonKafkaDeserializer(SendtSykmeldingKafkaMessage::class))
     val sendtSykmeldingConsumer = SendtSykmeldingConsumer(kafkaConsumer, env.sendtSykmeldingKafkaTopic)
-    val iCorrespondenceAgencyExternalBasic = createPort(env.altinnUrl).apply {
-        stsClient(env.altinSTSUrl, vaultSecrets.serviceuserUsername to vaultSecrets.serviceuserPassword).configureFor(this)
-    }
+    val iCorrespondenceAgencyExternalBasic = createPort(env.altinnUrl)
     val altinnClient = AltinnClient(username = env.altinnUsername, password = env.altinnPassword, iCorrespondenceAgencyExternalBasic = iCorrespondenceAgencyExternalBasic)
-    val altinnReporteeLookup = AltinnReporteeLookupFacotry.getReporteeResolver(env.cluster)
-
+    val altinnOrgnummerLookup = AltinnOrgnummerLookupFacotry.getOrgnummerResolver(env.cluster)
+    log.info("creating httpConfigs")
     val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
         install(JsonFeature) {
             serializer = JacksonSerializer {
@@ -103,13 +99,17 @@ fun main() {
     val httpClient = HttpClient(Apache, config)
     val httpClientWithAuth = HttpClient(Apache, basichAuthConfig)
     val httpClientWithProxy = HttpClient(Apache, proxyConfig)
-    val pdlClient = PdlClient(httpClient, env.pdlBasePath, PdlClient::class.java.getResource("/graphql/getPerson.graphql").readText())
-    val stsOidcClient = StsOidcClient(username = vaultSecrets.serviceuserUsername, password = vaultSecrets.serviceuserPassword, stsUrl = env.stsOidcUrl)
+    log.info("creating pdlClient")
+    val pdlClient = PdlClient(httpClient, env.pdlBasePath, env.pdlApiKey, PdlClient::class.java.getResource("/graphql/getPerson.graphql").readText())
+    log.info("creating stsOidcClient")
+    val stsOidcClient = StsOidcClient(username = vaultSecrets.serviceuserUsername, password = vaultSecrets.serviceuserPassword, stsUrl = env.stsOidcUrl, apiKey = env.stsApiKey)
+    log.info("creating accessTokenClient")
     val accessTokenClient = AccessTokenClient(aadAccessTokenUrl = env.aadAccessTokenUrl, clientId = env.clientId, clientSecret = env.clientSecret, resource = env.narmestelederClientId, httpClient = httpClientWithProxy)
-    val narmestelederClient = NarmestelederClient(httpClient, accessTokenClient, env.narmesteLederBasePath)
+    log.info("creating narmestelederClient")
+    val narmestelederClient = NarmestelederClient(httpClient, accessTokenClient, env.narmesteLederBasePath, env.sykmeldingProxyApiKey)
     val narmesteLederService = NarmesteLederService(narmestelederClient, pdlClient, stsOidcClient)
-    val juridiskLoggService = JuridiskLoggService(JuridiskLoggClient(httpClientWithAuth, env.juridiskLoggUrl))
-    val altinnSendtSykmeldingService = AltinnSykmeldingService(altinnClient, env, altinnReporteeLookup, juridiskLoggService)
+    val juridiskLoggService = JuridiskLoggService(JuridiskLoggClient(httpClientWithAuth, env.juridiskLoggUrl, env.sykmeldingProxyApiKey))
+    val altinnSendtSykmeldingService = AltinnSykmeldingService(altinnClient, env, altinnOrgnummerLookup, juridiskLoggService)
     val sendtSykmeldingService = SendtSykmeldingService(applicationState, sendtSykmeldingConsumer, altinnSendtSykmeldingService, pdlClient, stsOidcClient, narmesteLederService)
 
     GlobalScope.launch {

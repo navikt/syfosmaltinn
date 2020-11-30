@@ -13,24 +13,26 @@ data class Environment(
     val sendtSykmeldingKafkaTopic: String = "syfo-sendt-sykmelding",
     override val kafkaBootstrapServers: String = getEnvVar("KAFKA_BOOTSTRAP_SERVERS_URL"),
     val aadAccessTokenUrl: String = getEnvVar("AAD_ACCESS_TOKEN_URL"),
-    val clientId: String = getFileAsString("/secrets/azuread/client_id"),
-    val clientSecret: String = getFileAsString("/secrets/azuread/client_secret"),
+    val clientId: String = getFileAsString("/var/run/secrets/AZURE_CLIENT"),
+    val clientSecret: String = getFileAsString("/var/run/secrets/AZURE_CLIENT_SECRET"),
     val narmestelederClientId: String = getEnvVar("NARMESTELEDER_CLIENT_ID"),
-    val stsOidcUrl: String = "http://security-token-service.default/rest/v1/sts/token",
-    val narmesteLederBasePath: String = "http://syfonarmesteleder.default",
-    val altinnUsername: String = getFileAsString("/secrets/vault/altinn_username"),
-    val altinnPassword: String = getFileAsString("/secrets/vault/altinn_secret"),
-    val altinnUrl: String = getEnvVar("EKSTERN_ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL"),
-    val altinSTSUrl: String = getEnvVar("SECURITYTOKENSERVICE_URL"),
+    val stsOidcUrl: String = getEnvVar("SECURITYTOKENSERVICE_URL"),
+    val narmesteLederBasePath: String = getEnvVar("NARMESTELEDER_URL"),
+    val altinnUsername: String = getFileAsString("/var/run/secrets/ALTINN_USERNAME"),
+    val altinnPassword: String = getFileAsString("/var/run/secrets/ALTINN_PASSWORD"),
+    val altinnUrl: String = getEnvVar("ALTINN_PORTAL_BASEURL"),
     val juridiskLoggUrl: String = getEnvVar("JURIDISKLOGG_REST_URL"),
     override val cluster: String = getEnvVar("NAIS_CLUSTER_NAME"),
     override val truststore: String? = getEnvVar("NAV_TRUSTSTORE_PATH"),
-    override val truststorePassword: String? = getEnvVar("NAV_TRUSTSTORE_PASSWORD")
+    override val truststorePassword: String? = getEnvVar("NAV_TRUSTSTORE_PASSWORD"),
+    val pdlApiKey: String = getEnvVar("PDL_API_KEY"),
+    val stsApiKey: String? = getEnvVar("STS_API_KEY"),
+    val sykmeldingProxyApiKey: String = getEnvVar("SYKMELDING_FSS_PROXY_API_KEY")
 ) : KafkaConfig
 
 data class VaultSecrets(
-    val serviceuserUsername: String = getFileAsString("/secrets/serviceuser/username"),
-    val serviceuserPassword: String = getFileAsString("/secrets/serviceuser/password")
+    val serviceuserUsername: String = getFileAsString("/var/run/secrets/SYFOSMALTINN_USERNAME"),
+    val serviceuserPassword: String = getFileAsString("/var/run/secrets/SYFOSMALTINN_PASSWORD")
 ) : KafkaCredentials {
     override val kafkaUsername: String = serviceuserUsername
     override val kafkaPassword: String = serviceuserPassword
