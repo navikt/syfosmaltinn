@@ -3,14 +3,14 @@ package no.nav.syfo.altinn
 import no.nav.syfo.Environment
 import no.nav.syfo.altinn.model.AltinnSykmeldingMapper
 import no.nav.syfo.altinn.model.SykmeldingAltinn
-import no.nav.syfo.altinn.reportee.AltinnReporteeLookup
+import no.nav.syfo.altinn.orgnummer.AltinnOrgnummerLookup
 import no.nav.syfo.juridisklogg.JuridiskLoggService
 import no.nav.syfo.log
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
 
-class AltinnSykmeldingService(private val altinnClient: AltinnClient, private val environment: Environment, private val altinnReporteeLookup: AltinnReporteeLookup, private val juridiskLoggService: JuridiskLoggService) {
+class AltinnSykmeldingService(private val altinnClient: AltinnClient, private val environment: Environment, private val altinnOrgnummerLookup: AltinnOrgnummerLookup, private val juridiskLoggService: JuridiskLoggService) {
     suspend fun handleSendtSykmelding(
         sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage,
         pasient: Person,
@@ -20,7 +20,7 @@ class AltinnSykmeldingService(private val altinnClient: AltinnClient, private va
         val insertCorrespondenceV2 = AltinnSykmeldingMapper.sykmeldingTilCorrespondence(
             sykmeldingAltinn,
             sequenceOf(pasient.fornavn, pasient.mellomnavn, pasient.etternavn).filterNotNull().joinToString(" "),
-            altinnReporteeLookup.getReportee(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer))
+            altinnOrgnummerLookup.getOrgnummer(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer))
         log.info("Mapped sykmelding to Altinn XML format for sykmeldingId ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}")
         if (environment.cluster == "dev-gcp") {
             log.info("Sending to altinn")

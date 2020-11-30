@@ -13,15 +13,12 @@ import io.ktor.client.features.auth.providers.basic
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.prometheus.client.hotspot.DefaultExports
-import java.net.ProxySelector
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import no.nav.altinn.admin.ws.configureFor
-import no.nav.altinn.admin.ws.stsClient
 import no.nav.syfo.altinn.AltinnClient
 import no.nav.syfo.altinn.AltinnSykmeldingService
 import no.nav.syfo.altinn.config.createPort
-import no.nav.syfo.altinn.reportee.AltinnReporteeLookupFacotry
+import no.nav.syfo.altinn.orgnummer.AltinnOrgnummerLookupFacotry
 import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
@@ -44,6 +41,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.net.ProxySelector
 
 val log: Logger = LoggerFactory.getLogger("no.nav.syfo.syfosmaltinn")
 
@@ -66,7 +64,7 @@ fun main() {
     val sendtSykmeldingConsumer = SendtSykmeldingConsumer(kafkaConsumer, env.sendtSykmeldingKafkaTopic)
     val iCorrespondenceAgencyExternalBasic = createPort(env.altinnUrl)
     val altinnClient = AltinnClient(username = env.altinnUsername, password = env.altinnPassword, iCorrespondenceAgencyExternalBasic = iCorrespondenceAgencyExternalBasic)
-    val altinnReporteeLookup = AltinnReporteeLookupFacotry.getReporteeResolver(env.cluster)
+    val altinnOrgnummerLookup = AltinnOrgnummerLookupFacotry.getOrgnummerResolver(env.cluster)
     log.info("creating httpConfigs")
     val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
         install(JsonFeature) {
@@ -111,7 +109,7 @@ fun main() {
     val narmestelederClient = NarmestelederClient(httpClient, accessTokenClient, env.narmesteLederBasePath, env.sykmeldingProxyApiKey)
     val narmesteLederService = NarmesteLederService(narmestelederClient, pdlClient, stsOidcClient)
     val juridiskLoggService = JuridiskLoggService(JuridiskLoggClient(httpClientWithAuth, env.juridiskLoggUrl, env.sykmeldingProxyApiKey))
-    val altinnSendtSykmeldingService = AltinnSykmeldingService(altinnClient, env, altinnReporteeLookup, juridiskLoggService)
+    val altinnSendtSykmeldingService = AltinnSykmeldingService(altinnClient, env, altinnOrgnummerLookup, juridiskLoggService)
     val sendtSykmeldingService = SendtSykmeldingService(applicationState, sendtSykmeldingConsumer, altinnSendtSykmeldingService, pdlClient, stsOidcClient, narmesteLederService)
 
     GlobalScope.launch {
