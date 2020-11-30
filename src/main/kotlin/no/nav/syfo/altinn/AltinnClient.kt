@@ -14,6 +14,7 @@ class AltinnClient(private val iCorrespondenceAgencyExternalBasic: ICorresponden
     fun sendToAltinn(insertCorrespondenceV2: InsertCorrespondenceV2, sykmeldingId: String): Int {
         try {
             try {
+                log.info("reportee ${insertCorrespondenceV2.reportee}" )
                 val altinnResponse = iCorrespondenceAgencyExternalBasic.getCorrespondenceStatusDetailsBasicV3(
                     username,
                     password,
