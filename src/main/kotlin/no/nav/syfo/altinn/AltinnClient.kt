@@ -26,7 +26,7 @@ class AltinnClient(private val iCorrespondenceAgencyExternalBasic: ICorresponden
                 log.info("Got response from altinn")
                 log.info("got response {}", jacksonObjectMapper().writeValueAsString(altinnResponse))
             } catch (ex: ICorrespondenceAgencyExternalBasicGetCorrespondenceStatusDetailsBasicV3AltinnFaultFaultFaultMessage) {
-                log.error("Got error from altinn ${ex.message} ${ex.faultInfo}")
+                log.error("Got error from altinn ${ex.message} ${jacksonObjectMapper().writeValueAsString(ex.faultInfo)}")
                 throw ex
             } catch (ex: Exception) {
                 log.error("Got error from altinn ${ex.message}")
