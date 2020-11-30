@@ -26,7 +26,7 @@ import javax.xml.transform.stream.StreamResult
 
 class AltinnSykmeldingMapper private constructor() {
     companion object {
-        private const val SYKMELDING_TJENESTEKODE =
+        const val SYKMELDING_TJENESTEKODE =
             "4503" // OBS! VIKTIG! Denne må ikke endres, da kan feil personer få tilgang til sykmelding i Altinn!
         private const val SYKMELDING_TJENESTEVERSJON = "2"
         private const val NORSK_BOKMAL = "1044"
