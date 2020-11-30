@@ -21,6 +21,7 @@ class AltinnClient(private val iCorrespondenceAgencyExternalBasic: ICorresponden
                         .withSendersReference("$sykmeldingId.xml")
                         .withServiceCode(AltinnSykmeldingMapper.SYKMELDING_TJENESTEKODE)
                         .withReportee(insertCorrespondenceV2.reportee)
+                        .withServiceEditionCode(2)
                 )
 
                 log.info("Got response from altinn")
