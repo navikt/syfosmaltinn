@@ -15,7 +15,7 @@ spec:
   gcp:
     sqlInstances:
       - name: syfosmaltinn-db-instance
-        type: POSTGRES_13
+        type: POSTGRES_12
         tier: db-n1-standard-1
         diskType: SSD
         highAvailability: true
