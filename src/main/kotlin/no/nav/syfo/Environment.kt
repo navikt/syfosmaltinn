@@ -28,7 +28,7 @@ data class Environment(
     val pdlApiKey: String = getEnvVar("PDL_API_KEY"),
     val stsApiKey: String? = getEnvVar("STS_API_KEY"),
     val sykmeldingProxyApiKey: String = getEnvVar("SYKMELDING_FSS_PROXY_API_KEY"),
-    val databaseUrl: String = getEnvVar("NAIS_DATABASE_URL"),
+    val databaseUrl: String = "jdbc:${getEnvVar("NAIS_DATABASE_URL")}",
     val databaseUsername: String = getEnvVar("NAIS_DATABASE_USERNAME"),
     val databasePassword: String = getEnvVar("NAIS_DATABASE_PASSWORD")
 ) : KafkaConfig
