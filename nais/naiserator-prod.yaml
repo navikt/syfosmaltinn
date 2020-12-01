@@ -19,7 +19,7 @@ spec:
         tier: db-n1-standard-1
         diskType: SSD
         highAvailability: true
-        diskSize: 5
+        diskSize: 10
         diskAutoresize: true
         databases:
           - name: syfosmaltinn
