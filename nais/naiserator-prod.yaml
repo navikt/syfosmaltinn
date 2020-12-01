@@ -14,7 +14,7 @@ spec:
         - host: api-gw.oera.no
   gcp:
     sqlInstances:
-        type: POSTGRES_12
+      - type: POSTGRES_12
         diskSize: 10
         diskAutoresize: true
         databases:
