@@ -12,6 +12,18 @@ spec:
       external:
         - host: altinn.no
         - host: api-gw.oera.no
+  gcp:
+    sqlInstance:
+      - name: syfosmaltinn-db-instance
+        type: POSTGRES_13
+        tier: db-n1-standard-1
+        diskType: SSD
+        highAvailability: true
+        diskSize: 5
+        diskAutoresize: true
+        databases:
+          - name: syfosmaltinn
+            envVarPrefix: NAIS_DATABASE
   replicas:
     min: 2
     max: 6
