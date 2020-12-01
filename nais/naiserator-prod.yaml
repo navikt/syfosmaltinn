@@ -13,7 +13,7 @@ spec:
         - host: altinn.no
         - host: api-gw.oera.no
   gcp:
-    sqlInstance:
+    sqlInstances:
       - name: syfosmaltinn-db-instance
         type: POSTGRES_13
         tier: db-n1-standard-1
