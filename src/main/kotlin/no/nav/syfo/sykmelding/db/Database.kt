@@ -17,7 +17,7 @@ class Database(private val env: Environment) :
         runFlywayMigrations()
 
         dataSource = HikariDataSource(HikariConfig().apply {
-            jdbcUrl = env.databaseUrl
+            jdbcUrl = env.jdbcUrl()
             username = env.databaseUsername
             password = env.databasePassword
             maximumPoolSize = 3
@@ -32,7 +32,7 @@ class Database(private val env: Environment) :
 
     private fun runFlywayMigrations() = Flyway.configure().run {
         locations("db")
-        dataSource(env.databaseUrl, env.databaseUsername, env.databasePassword)
+        dataSource(env.jdbcUrl(), env.databaseUsername, env.databasePassword)
         load().migrate()
     }
 }

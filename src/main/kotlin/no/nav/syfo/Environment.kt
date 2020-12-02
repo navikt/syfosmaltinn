@@ -1,10 +1,10 @@
 package no.nav.syfo
 
-import no.nav.syfo.kafka.KafkaConfig
-import no.nav.syfo.kafka.KafkaCredentials
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
+import no.nav.syfo.kafka.KafkaConfig
+import no.nav.syfo.kafka.KafkaCredentials
 
 data class Environment(
     val pdlBasePath: String = getEnvVar("PDL_BASE_PATH"),
@@ -28,10 +28,13 @@ data class Environment(
     val pdlApiKey: String = getEnvVar("PDL_API_KEY"),
     val stsApiKey: String? = getEnvVar("STS_API_KEY"),
     val sykmeldingProxyApiKey: String = getEnvVar("SYKMELDING_FSS_PROXY_API_KEY"),
-    val databaseUrl: String = "jdbc:${getEnvVar("NAIS_DATABASE_URL").replace("postgres:","postgresql:")}",
     val databaseUsername: String = getEnvVar("NAIS_DATABASE_USERNAME"),
     val databasePassword: String = getEnvVar("NAIS_DATABASE_PASSWORD")
-) : KafkaConfig
+) : KafkaConfig {
+    fun jdbcUrl(): String {
+        return "jdbc:postgresql://${getEnvVar("NAIS_DATABASE_HOST")}:${getEnvVar("NAIS_DATABASE_PORT")}/${getEnvVar("NAIS_DATABASE_DATABASE")}"
+    }
+}
 
 data class VaultSecrets(
     val serviceuserUsername: String = getFileAsString("/var/run/secrets/SYFOSMALTINN_USERNAME"),
