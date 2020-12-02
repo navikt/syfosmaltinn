@@ -2,9 +2,9 @@ package no.nav.syfo.sykmelding.db
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import java.sql.Connection
 import no.nav.syfo.Environment
 import org.flywaydb.core.Flyway
-import java.sql.Connection
 
 class Database(private val env: Environment) :
     DatabaseInterface {
