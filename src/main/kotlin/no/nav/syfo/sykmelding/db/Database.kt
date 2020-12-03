@@ -3,11 +3,11 @@ package no.nav.syfo.sykmelding.db
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.pool.HikariPool
+import java.net.ConnectException
+import java.sql.Connection
 import no.nav.syfo.Environment
 import no.nav.syfo.log
 import org.flywaydb.core.Flyway
-import org.postgresql.util.PSQLException
-import java.sql.Connection
 
 class Database(private val env: Environment, retries: Long = 30, sleepTime: Long = 1_000) :
     DatabaseInterface {
@@ -36,11 +36,11 @@ class Database(private val env: Environment, retries: Long = 30, sleepTime: Long
                 })
                 connected = true
             } catch (ex: HikariPool.PoolInitializationException) {
-                if (ex.cause is PSQLException) {
+                if (ex.cause?.cause is ConnectException) {
                     log.info("Could not connect to db")
                     Thread.sleep(sleepTime)
                 } else {
-                    break
+                    throw ex
                 }
             }
         }
