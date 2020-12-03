@@ -33,6 +33,8 @@ val javaxActivationVersion = "1.1.1"
 val postgresVersion = "42.2.5"
 val flywayVersion = "5.2.4"
 val hikariVersion = "3.3.0"
+val postgresContainerVersion = "1.15.0"
+
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
 }
@@ -149,6 +151,7 @@ dependencies {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
 
+    testImplementation("org.testcontainers:postgresql:$postgresContainerVersion")
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("org.spekframework.spek2:spek-dsl-jvm:$spekVersion")
