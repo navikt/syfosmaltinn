@@ -16,11 +16,7 @@ spec:
     sqlInstances:
       - name: syfosmaltinn-db-instance
         type: POSTGRES_12
-        tier: db-f1-micro
-        diskType: SSD
-        highAvailability: false
         diskSize: 10
-        diskAutoresize: false
         databases:
           - name: syfosmaltinn
             envVarPrefix: NAIS_DATABASE

@@ -30,6 +30,10 @@ val jaxsWsApiVersion = "2.3.1"
 val jaxwsRiVersion = "2.3.2"
 val jaxwsToolsVersion = "2.3.1"
 val javaxActivationVersion = "1.1.1"
+val postgresVersion = "42.2.5"
+val flywayVersion = "5.2.4"
+val hikariVersion = "3.3.0"
+val postgresContainerVersion = "1.15.0"
 
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
@@ -113,6 +117,10 @@ dependencies {
     implementation("no.nav.helse:syfosm-common-models:$smCommonVersion")
     implementation("no.nav.helse:syfosm-common-rest-sts:$smCommonVersion")
 
+    implementation("org.postgresql:postgresql:$postgresVersion")
+    implementation("com.zaxxer:HikariCP:$hikariVersion")
+    implementation("org.flywaydb:flyway-core:$flywayVersion")
+
     implementation("org.xhtmlrenderer:flying-saucer-pdf:$flyingSaucerVersion")
     implementation("org.xhtmlrenderer:flying-saucer-core:$flyingSaucerVersion")
     implementation("org.apache.xmlgraphics:batik-transcoder:$baticVersion") {
@@ -143,6 +151,7 @@ dependencies {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
 
+    testImplementation("org.testcontainers:postgresql:$postgresContainerVersion")
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("org.spekframework.spek2:spek-dsl-jvm:$spekVersion")

@@ -1,5 +1,12 @@
 package no.nav.syfo.altinn.model
 
+import java.io.StringWriter
+import java.lang.Boolean.FALSE
+import java.time.format.DateTimeFormatter
+import javax.xml.transform.OutputKeys
+import javax.xml.transform.TransformerFactory
+import javax.xml.transform.dom.DOMSource
+import javax.xml.transform.stream.StreamResult
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.AttachmentsV2
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.ExternalContentV2
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
@@ -16,13 +23,6 @@ import no.nav.syfo.altinn.util.JAXB.Companion.parseXml
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import org.w3c.dom.Document
 import org.w3c.dom.Element
-import java.io.StringWriter
-import java.lang.Boolean.FALSE
-import java.time.format.DateTimeFormatter
-import javax.xml.transform.OutputKeys
-import javax.xml.transform.TransformerFactory
-import javax.xml.transform.dom.DOMSource
-import javax.xml.transform.stream.StreamResult
 
 class AltinnSykmeldingMapper private constructor() {
     companion object {
