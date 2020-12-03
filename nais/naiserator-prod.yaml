@@ -20,6 +20,7 @@ spec:
         databases:
           - name: syfosmaltinn
             envVarPrefix: NAIS_DATABASE
+
   replicas:
     min: 2
     max: 6
