@@ -1,5 +1,6 @@
 package no.nav.syfo.altinn
 
+import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
 import no.nav.syfo.Environment
 import no.nav.syfo.altinn.model.AltinnSykmeldingMapper
 import no.nav.syfo.altinn.model.SykmeldingAltinn
@@ -17,13 +18,28 @@ class AltinnSykmeldingService(private val altinnClient: AltinnClient, private va
         narmesteLeder: NarmesteLeder?
     ) {
         val sykmeldingAltinn = SykmeldingAltinn(sendtSykmeldingKafkaMessage, pasient, narmesteLeder)
+        val orgnummer = altinnOrgnummerLookup.getOrgnummer(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer)
         val insertCorrespondenceV2 = AltinnSykmeldingMapper.sykmeldingTilCorrespondence(
             sykmeldingAltinn,
             sequenceOf(pasient.fornavn, pasient.mellomnavn, pasient.etternavn).filterNotNull().joinToString(" "),
-            altinnOrgnummerLookup.getOrgnummer(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer))
-        log.info("Mapped sykmelding to Altinn XML format for sykmeldingId ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}")
+            orgnummer)
+        val sendt = altinnClient.isSendt(sendtSykmeldingKafkaMessage.sykmelding.id, orgnummer)
+        when (sendt) {
+            false -> sendToAltinn(insertCorrespondenceV2, sendtSykmeldingKafkaMessage, sykmeldingAltinn, pasient)
+            true -> {
+                log.info("Sykmelding with id ${sendtSykmeldingKafkaMessage.sykmelding.id} is already sendt to Altinn")
+            }
+        }
+    }
+
+    private suspend fun sendToAltinn(
+        insertCorrespondenceV2: InsertCorrespondenceV2,
+        sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage,
+        sykmeldingAltinn: SykmeldingAltinn,
+        pasient: Person
+    ) {
         if (environment.cluster == "dev-gcp") {
-            log.info("Sending to altinn")
+            log.info("Sending sykmelding with id ${sendtSykmeldingKafkaMessage.sykmelding.id} to Altinn")
             altinnClient.sendToAltinn(insertCorrespondenceV2, sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId)
             juridiskLoggService.sendJuridiskLogg(sykmeldingAltinn, person = pasient)
         }
