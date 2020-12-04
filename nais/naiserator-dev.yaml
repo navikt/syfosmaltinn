@@ -12,6 +12,15 @@ spec:
       external:
         - host: tt02.altinn.no
         - host: api-gw-q1.oera.no
+  gcp:
+    sqlInstances:
+      - name: syfosmaltinn-db-instance
+        type: POSTGRES_12
+        diskSize: 10
+        databases:
+          - name: syfosmaltinn
+            envVarPrefix: NAIS_DATABASE
+
   replicas:
     min: 1
     max: 1
