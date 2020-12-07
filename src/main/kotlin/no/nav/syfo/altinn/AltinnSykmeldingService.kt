@@ -55,8 +55,8 @@ class AltinnSykmeldingService(private val altinnClient: AltinnClient, private va
             }
             status.altinnTimestamp == null -> {
                 when (altinnClient.isSendt(status.sykmeldingId, orgnummer)) {
-                    true -> sendToAltinn(insertCorrespondenceV2, sykmeldingId)
-                    false -> log.info("Sykmelding already sendt to altinn")
+                    false -> sendToAltinn(insertCorrespondenceV2, sykmeldingId)
+                    true -> log.info("Sykmelding already sendt to altinn")
                 }
                 database.updateSendtToAlinn(sendtSykmeldingKafkaMessage.sykmelding.id, OffsetDateTime.now(ZoneOffset.UTC))
             }

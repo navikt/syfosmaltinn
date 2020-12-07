@@ -16,6 +16,9 @@ import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.db.DatabaseInterface
 import no.nav.syfo.sykmelding.db.SykmeldingStatus
 import no.nav.syfo.sykmelding.db.getStatus
+import no.nav.syfo.sykmelding.db.insertStatus
+import no.nav.syfo.sykmelding.db.updateSendtToAlinn
+import no.nav.syfo.sykmelding.db.updateSendtToLogg
 import org.junit.Test
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
@@ -36,30 +39,69 @@ class AltinnSykmeldingServiceTest : Spek({
     }
 
     describe("Send to altinn") {
+        val sendtSykmeldingKafkaMessage = getSykmeldingKafkaMessage("2")
+        val person = Person("fornavn", "mellomnavn", "etternavn", "1", "2")
 
         it("Should send to altinn") {
-
-            val sendtSykmeldingKafkaMessage = getSykmeldingKafkaMessage("2")
-            val person = Person("fornavn", "mellomnavn", "etternavn", "1", "2")
-            every { altinnClient.isSendt(any(), any()) } returns false
+            every { database.getStatus(any()) } returns null
             runBlocking {
                 altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage, person, null)
             }
-
+            verify(exactly = 1) { database.insertStatus(any()) }
             verify(exactly = 1) { altinnClient.sendToAltinn(any(), any()) }
             coVerify(exactly = 1) { juridiskLoggService.sendJuridiskLogg(any(), any()) }
         }
 
         it("Should not send to altinn or logg") {
-            val sendtSykmeldingKafkaMessage = getSykmeldingKafkaMessage("2")
-            val person = Person("fornavn", "mellomnavn", "etternavn", "1", "2")
+
             every { database.getStatus(any()) } returns SykmeldingStatus("123", OffsetDateTime.now(), OffsetDateTime.now())
             runBlocking {
                 altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage, person, null)
             }
-
+            verify(exactly = 0) { database.insertStatus(any()) }
             verify(exactly = 0) { altinnClient.sendToAltinn(any(), any()) }
             coVerify(exactly = 0) { juridiskLoggService.sendJuridiskLogg(any(), any()) }
+        }
+
+        it("Should sendt to altinn when timestamp is null and is not sendt to altinn") {
+            every { database.getStatus(any()) } returns SykmeldingStatus("123", null, null)
+            every { altinnClient.isSendt(any(), any()) } returns false
+            runBlocking {
+                altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage, person, null)
+            }
+            verify(exactly = 1) { altinnClient.isSendt(any(), any()) }
+            verify(exactly = 1) { altinnClient.sendToAltinn(any(), any()) }
+            coVerify(exactly = 1) { juridiskLoggService.sendJuridiskLogg(any(), any()) }
+            verify(exactly = 0) { database.insertStatus(any()) }
+            verify(exactly = 1) { database.updateSendtToAlinn(any(), any()) }
+            verify(exactly = 1) { database.updateSendtToLogg(any(), any()) }
+        }
+
+        it("Should not sendt to altinn when timestamp is null and is sendt to altinn") {
+            every { database.getStatus(any()) } returns SykmeldingStatus("123", null, null)
+            every { altinnClient.isSendt(any(), any()) } returns true
+            runBlocking {
+                altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage, person, null)
+            }
+            verify(exactly = 1) { altinnClient.isSendt(any(), any()) }
+            verify(exactly = 0) { altinnClient.sendToAltinn(any(), any()) }
+            coVerify(exactly = 1) { juridiskLoggService.sendJuridiskLogg(any(), any()) }
+            verify(exactly = 0) { database.insertStatus(any()) }
+            verify(exactly = 1) { database.updateSendtToAlinn(any(), any()) }
+            verify(exactly = 1) { database.updateSendtToLogg(any(), any()) }
+        }
+
+        it("send to juridisk logg when timestamp is null") {
+            every { database.getStatus(any()) } returns SykmeldingStatus("123", OffsetDateTime.now(), null)
+            runBlocking {
+                altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage, person, null)
+            }
+            verify(exactly = 0) { altinnClient.isSendt(any(), any()) }
+            verify(exactly = 0) { altinnClient.sendToAltinn(any(), any()) }
+            coVerify(exactly = 1) { juridiskLoggService.sendJuridiskLogg(any(), any()) }
+            verify(exactly = 0) { database.insertStatus(any()) }
+            verify(exactly = 0) { database.updateSendtToAlinn(any(), any()) }
+            verify(exactly = 1) { database.updateSendtToLogg(any(), any()) }
         }
     }
 })
