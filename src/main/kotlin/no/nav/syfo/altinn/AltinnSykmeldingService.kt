@@ -25,20 +25,10 @@ class AltinnSykmeldingService(private val altinnClient: AltinnClient, private va
         pasient: Person,
         narmesteLeder: NarmesteLeder?
     ) {
+
         val sykmeldingAltinn = SykmeldingAltinn(sendtSykmeldingKafkaMessage, pasient, narmesteLeder)
         val orgnummer = altinnOrgnummerLookup.getOrgnummer(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer)
         val sykmeldingId = sendtSykmeldingKafkaMessage.sykmelding.id
-
-        val sendt = altinnClient.isSendt(sykmeldingId, orgnummer)
-        if (sendt) {
-            log.info("Sykmelding $sykmeldingId is sendt to altin")
-        } else {
-            log.info("Sykmelding is not sendt to altinn")
-        }
-        if (sendtSykmeldingKafkaMessage.kafkaMetadata.source == "syfoservice") {
-            log.info("source is syfoservice, returning")
-            return
-        }
 
         val insertCorrespondenceV2 = AltinnSykmeldingMapper.sykmeldingTilCorrespondence(
             sykmeldingAltinn,

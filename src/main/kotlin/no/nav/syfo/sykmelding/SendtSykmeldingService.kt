@@ -30,14 +30,15 @@ class SendtSykmeldingService(
     }
 
     private suspend fun handleSendtSykmelding(sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage) {
-        log.info("Mottok sendt sykmelding fra Kafka med sykmeldingId: ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}")
-
+        log.info("Mottok sendt sykmelding fra Kafka med sykmeldingId: ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}, source: ${sendtSykmeldingKafkaMessage.kafkaMetadata.source} ${when (sendtSykmeldingKafkaMessage.kafkaMetadata.source) { "syfoservice" -> "ignoring" else -> "sending to altinn"}}")
+        if (sendtSykmeldingKafkaMessage.kafkaMetadata.source == "syfoservice") {
+            return
+        }
         val person = pdlClient.getPerson(
                 ident = sendtSykmeldingKafkaMessage.kafkaMetadata.fnr,
                 stsToken = stsTokenClient.oidcToken().access_token
         )
         log.info("Mottok svar fra PDL for sykmeldingId: ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}")
-
         val arbeidsgiver = sendtSykmeldingKafkaMessage.event.arbeidsgiver
             ?: throw ArbeidsgiverNotFoundException(sendtSykmeldingKafkaMessage.event)
 

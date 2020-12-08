@@ -68,7 +68,7 @@ class AltinnSykmeldingServiceTest : Spek({
             runBlocking {
                 altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage, person, null)
             }
-            verify(exactly = 2) { altinnClient.isSendt(any(), any()) }
+            verify(exactly = 1) { altinnClient.isSendt(any(), any()) }
             verify(exactly = 1) { altinnClient.sendToAltinn(any(), any()) }
             coVerify(exactly = 1) { juridiskLoggService.sendJuridiskLogg(any(), any()) }
             verify(exactly = 0) { database.insertStatus(any()) }
@@ -82,7 +82,7 @@ class AltinnSykmeldingServiceTest : Spek({
             runBlocking {
                 altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage, person, null)
             }
-            verify(exactly = 2) { altinnClient.isSendt(any(), any()) }
+            verify(exactly = 1) { altinnClient.isSendt(any(), any()) }
             verify(exactly = 0) { altinnClient.sendToAltinn(any(), any()) }
             coVerify(exactly = 1) { juridiskLoggService.sendJuridiskLogg(any(), any()) }
             verify(exactly = 0) { database.insertStatus(any()) }
@@ -95,26 +95,12 @@ class AltinnSykmeldingServiceTest : Spek({
             runBlocking {
                 altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage, person, null)
             }
-            verify(exactly = 1) { altinnClient.isSendt(any(), any()) }
+            verify(exactly = 0) { altinnClient.isSendt(any(), any()) }
             verify(exactly = 0) { altinnClient.sendToAltinn(any(), any()) }
             coVerify(exactly = 1) { juridiskLoggService.sendJuridiskLogg(any(), any()) }
             verify(exactly = 0) { database.insertStatus(any()) }
             verify(exactly = 0) { database.updateSendtToAlinn(any(), any()) }
             verify(exactly = 1) { database.updateSendtToLogg(any(), any()) }
-        }
-
-        it("Should not do anything when source is syfoservice") {
-
-            every { database.getStatus(any()) } returns null
-            runBlocking {
-                altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage.copy(kafkaMetadata = sendtSykmeldingKafkaMessage.kafkaMetadata.copy(source = "syfoservice")), person, null)
-            }
-            verify(exactly = 1) { altinnClient.isSendt(any(), any()) }
-            verify(exactly = 0) { altinnClient.sendToAltinn(any(), any()) }
-            coVerify(exactly = 0) { juridiskLoggService.sendJuridiskLogg(any(), any()) }
-            verify(exactly = 0) { database.insertStatus(any()) }
-            verify(exactly = 0) { database.updateSendtToAlinn(any(), any()) }
-            verify(exactly = 0) { database.updateSendtToLogg(any(), any()) }
         }
     }
 })
