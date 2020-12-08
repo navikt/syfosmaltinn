@@ -3,6 +3,7 @@ package no.nav.syfo.narmesteleder
 import io.ktor.client.features.ClientRequestException
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
+import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlin.test.assertFailsWith
@@ -23,7 +24,13 @@ class NarmestelederClientTest : Spek({
     coEvery { accessTokenClient.getAccessToken() } returns "token"
     val narmesteLederClient = NarmestelederClient(httpClientTest.httpClient, accessTokenClient, "url", "")
 
+    beforeEachTest {
+        clearAllMocks()
+        coEvery { accessTokenClient.getAccessToken() } returns "token"
+    }
+
     describe("Get response from NarmesteLeder") {
+
         it("get null response") {
             runBlocking {
                 httpClientTest.responseData = ResponseData(HttpStatusCode.OK, "{ \"narmesteLederRelasjon\": null}")

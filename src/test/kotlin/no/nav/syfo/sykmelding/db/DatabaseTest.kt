@@ -18,6 +18,11 @@ class DatabaseTest : Spek({
     val psqlContainer = PsqlContainer().withExposedPorts(5432).withUsername("username").withPassword("password").withDatabaseName("databasename1")
     psqlContainer.start()
 
+    beforeEachTest {
+        every { mockEnv.databaseUsername } returns "username"
+        every { mockEnv.databasePassword } returns "password"
+    }
+
     describe("Test database") {
         it("Should fail 20 times then connect") {
             every { mockEnv.jdbcUrl() } returnsMany (0 until 20).map { "jdbc:postgresql://127.0.0.1:5433/databasename1" } andThen psqlContainer.jdbcUrl

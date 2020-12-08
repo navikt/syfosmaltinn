@@ -111,7 +111,7 @@ fun main() {
     val narmestelederClient = NarmestelederClient(httpClient, accessTokenClient, env.narmesteLederBasePath, env.sykmeldingProxyApiKey)
     val narmesteLederService = NarmesteLederService(narmestelederClient, pdlClient, stsOidcClient)
     val juridiskLoggService = JuridiskLoggService(JuridiskLoggClient(httpClientWithAuth, env.juridiskLoggUrl, env.sykmeldingProxyApiKey))
-    val altinnSendtSykmeldingService = AltinnSykmeldingService(altinnClient, env, altinnOrgnummerLookup, juridiskLoggService)
+    val altinnSendtSykmeldingService = AltinnSykmeldingService(altinnClient, env, altinnOrgnummerLookup, juridiskLoggService, database)
     val sendtSykmeldingService = SendtSykmeldingService(applicationState, sendtSykmeldingConsumer, altinnSendtSykmeldingService, pdlClient, stsOidcClient, narmesteLederService)
 
     GlobalScope.launch {
