@@ -19,7 +19,6 @@ import no.nav.syfo.sykmelding.db.getStatus
 import no.nav.syfo.sykmelding.db.insertStatus
 import no.nav.syfo.sykmelding.db.updateSendtToAlinn
 import no.nav.syfo.sykmelding.db.updateSendtToLogg
-import org.junit.Test
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
@@ -103,11 +102,19 @@ class AltinnSykmeldingServiceTest : Spek({
             verify(exactly = 0) { database.updateSendtToAlinn(any(), any()) }
             verify(exactly = 1) { database.updateSendtToLogg(any(), any()) }
         }
+
+        it("Should not do anything when source is syfoservice") {
+
+            every { database.getStatus(any()) } returns null
+            runBlocking {
+                altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage.copy(kafkaMetadata = sendtSykmeldingKafkaMessage.kafkaMetadata.copy(source = "syfoservice")), person, null)
+            }
+            verify(exactly = 0) { altinnClient.isSendt(any(), any()) }
+            verify(exactly = 0) { altinnClient.sendToAltinn(any(), any()) }
+            coVerify(exactly = 0) { juridiskLoggService.sendJuridiskLogg(any(), any()) }
+            verify(exactly = 0) { database.insertStatus(any()) }
+            verify(exactly = 0) { database.updateSendtToAlinn(any(), any()) }
+            verify(exactly = 0) { database.updateSendtToLogg(any(), any()) }
+        }
     }
 })
-
-class Runner() {
-    @Test
-    fun runner() {
-    }
-}

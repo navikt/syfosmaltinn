@@ -25,6 +25,10 @@ class AltinnSykmeldingService(private val altinnClient: AltinnClient, private va
         pasient: Person,
         narmesteLeder: NarmesteLeder?
     ) {
+        if (sendtSykmeldingKafkaMessage.kafkaMetadata.source == "syfoservice") {
+            return
+        }
+
         val sykmeldingAltinn = SykmeldingAltinn(sendtSykmeldingKafkaMessage, pasient, narmesteLeder)
         val orgnummer = altinnOrgnummerLookup.getOrgnummer(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer)
         val insertCorrespondenceV2 = AltinnSykmeldingMapper.sykmeldingTilCorrespondence(
@@ -55,7 +59,10 @@ class AltinnSykmeldingService(private val altinnClient: AltinnClient, private va
             }
             status.altinnTimestamp == null -> {
                 when (altinnClient.isSendt(status.sykmeldingId, orgnummer)) {
-                    false -> sendToAltinn(insertCorrespondenceV2, sykmeldingId)
+                    false -> sendToAltinn(
+                        insertCorrespondenceV2,
+                        sykmeldingId
+                    )
                     true -> log.info("Sykmelding already sendt to altinn")
                 }
                 database.updateSendtToAlinn(sendtSykmeldingKafkaMessage.sykmelding.id, OffsetDateTime.now(ZoneOffset.UTC))
@@ -70,10 +77,8 @@ class AltinnSykmeldingService(private val altinnClient: AltinnClient, private va
         insertCorrespondenceV2: InsertCorrespondenceV2,
         sykmeldingId: String
     ) {
-        if (environment.cluster == "dev-gcp") {
-            log.info("Sending sykmelding with id $sykmeldingId to Altinn")
-            altinnClient.sendToAltinn(insertCorrespondenceV2, sykmeldingId)
-        }
+        log.info("Sending sykmelding with id $sykmeldingId to Altinn")
+        altinnClient.sendToAltinn(insertCorrespondenceV2, sykmeldingId)
     }
 
     private suspend fun sendtToLogg(sykmeldingAltinn: SykmeldingAltinn, pasient: Person, status: SykmeldingStatus?) {

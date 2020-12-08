@@ -78,7 +78,7 @@ fun getSykmeldingKafkaMessage(sykmeldingId: String): SendtSykmeldingKafkaMessage
             statusEvent = "SENDT",
             timestamp = OffsetDateTime.now()
         ),
-        kafkaMetadata = KafkaMetadataDTO(sykmeldingId, OffsetDateTime.now(), "fnr", "syfoservice")
+        kafkaMetadata = KafkaMetadataDTO(sykmeldingId, OffsetDateTime.now(), "fnr", "user")
     )
     return sendtSykmeldingKafkaMessage
 }
