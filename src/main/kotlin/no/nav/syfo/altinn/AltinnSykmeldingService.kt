@@ -26,6 +26,7 @@ class AltinnSykmeldingService(private val altinnClient: AltinnClient, private va
         narmesteLeder: NarmesteLeder?
     ) {
         if (sendtSykmeldingKafkaMessage.kafkaMetadata.source == "syfoservice") {
+            log.info("source is syfoservice, returning")
             return
         }
 
