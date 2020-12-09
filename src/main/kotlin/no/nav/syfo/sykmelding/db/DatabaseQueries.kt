@@ -31,7 +31,7 @@ fun DatabaseInterface.insertStatus(id: String) {
 fun DatabaseInterface.updateSendtToAlinn(id: String, now: OffsetDateTime) {
     connection.use { connection ->
         connection.prepareStatement("""
-           UPDATE status set altinn_timestamp = ? where id = ?
+           UPDATE status set altinn_timestamp = ? where sykmelding_id = ?
         """).use { ps ->
             ps.setTimestamp(1, Timestamp.from(now.toInstant()))
             ps.setString(2, id)
@@ -44,7 +44,7 @@ fun DatabaseInterface.updateSendtToAlinn(id: String, now: OffsetDateTime) {
 fun DatabaseInterface.updateSendtToLogg(id: String, now: OffsetDateTime) {
     connection.use { connection ->
         connection.prepareStatement("""
-           UPDATE status set logg_timestamp = ? where id = ?
+           UPDATE status set logg_timestamp = ? where sykmelding_id = ?
         """).use { ps ->
             ps.setTimestamp(1, Timestamp.from(now.toInstant()))
             ps.setString(2, id)
