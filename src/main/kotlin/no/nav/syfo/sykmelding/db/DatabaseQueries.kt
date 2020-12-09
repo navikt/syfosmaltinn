@@ -56,7 +56,9 @@ fun DatabaseInterface.updateSendtToLogg(id: String, now: OffsetDateTime) {
 
 private fun ResultSet.toSykmeldingStatus(): SykmeldingStatus? {
     return when (next()) {
-        true -> SykmeldingStatus(getString("sykmelding_id"), getTimestamp("altinn_timestamp").toInstant().atOffset(ZoneOffset.UTC), getTimestamp("logg_timestamp").toInstant().atOffset(ZoneOffset.UTC))
+        true -> SykmeldingStatus(getString("sykmelding_id"),
+            getTimestamp("altinn_timestamp")?.toInstant()?.atOffset(ZoneOffset.UTC),
+            getTimestamp("logg_timestamp")?.toInstant()?.atOffset(ZoneOffset.UTC))
         false -> null
     }
 }
