@@ -20,7 +20,7 @@ data class Environment(
     val narmesteLederBasePath: String = getEnvVar("NARMESTELEDER_URL"),
     val altinnUsername: String = getFileAsString("/var/run/secrets/ALTINN_USERNAME"),
     val altinnPassword: String = getFileAsString("/var/run/secrets/ALTINN_PASSWORD"),
-    val altinnUrl: String = getEnvVar("ALTINN_PORTAL_BASEURL"),
+    val altinnUrl: String = getEnvVar("ALTINN_URL"),
     val juridiskLoggUrl: String = getEnvVar("JURIDISKLOGG_REST_URL"),
     override val cluster: String = getEnvVar("NAIS_CLUSTER_NAME"),
     override val truststore: String? = getEnvVar("NAV_TRUSTSTORE_PATH"),

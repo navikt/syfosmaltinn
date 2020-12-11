@@ -67,7 +67,7 @@ spec:
       value: SASL_SSL://a01apvl00145.adeo.no:8443,SASL_SSL://a01apvl00146.adeo.no:8443,SASL_SSL://a01apvl00147.adeo.no:8443,SASL_SSL://a01apvl00149.adeo.no:8443
     - name: SECURITYTOKENSERVICE_URL
       value: https://api-gw.oera.no/security-token-service/rest/v1/sts/token
-    - name: ALTINN_PORTAL_BASEURL
+    - name: ALTINN_URL
       value: https://www.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
     - name: JURIDISKLOGG_REST_URL
       value: https://api-gw.oera.no/sykmelding-fss-proxy/juridisklogg/juridisklogg/api/rest/logg

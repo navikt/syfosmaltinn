@@ -10,6 +10,7 @@ import no.altinn.schemas.services.serviceengine.notification._2009._10.ReceiverE
 import no.altinn.schemas.services.serviceengine.notification._2009._10.TextToken
 import no.altinn.schemas.services.serviceengine.notification._2009._10.TextTokenSubstitutionBEList
 import no.nav.syfo.getEnvVar
+import no.nav.syfo.log
 
 class NotificationAltinnGenerator private constructor() {
     companion object {
@@ -34,10 +35,12 @@ class NotificationAltinnGenerator private constructor() {
         }
 
         fun lenkeAltinnPortal(): String {
-            return getEnvVar(
+            val altinnlenke = getEnvVar(
                 "ALTINN_PORTAL_BASEURL",
                 "https://www.altinn.no"
             ) + "/ui/MessageBox?O=\$reporteeNumber$"
+            log.info("Creating notification with link $altinnlenke")
+            return altinnlenke
         }
 
         private fun epostNotification(): Notification? {

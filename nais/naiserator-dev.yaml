@@ -67,8 +67,10 @@ spec:
       value: SSL://b27apvl00045.preprod.local:8443,SSL://b27apvl00046.preprod.local:8443,SSL://b27apvl00047.preprod.local:8443
     - name: SECURITYTOKENSERVICE_URL
       value: https://api-gw-q1.oera.no/security-token-service/rest/v1/sts/token
-    - name: ALTINN_PORTAL_BASEURL
+    - name: ALTINN_URL
       value: https://tt02.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
+    - name: ALTINN_PORTAL_BASEURL
+      value: https://tt02.altinn.no
     - name: JURIDISKLOGG_REST_URL
       value: https://api-gw-q1.oera.no/sykmelding-fss-proxy/juridisklogg/juridisklogg/api/rest/logg
     - name: NARMESTELEDER_URL
