@@ -1,9 +1,10 @@
 package no.nav.syfo.juridisklogg
 
+import no.nav.syfo.altinn.model.SykmeldingAltinn
+import no.nav.syfo.application.metrics.JURIDISK_LOGG_COUNTER
+import no.nav.syfo.pdl.client.model.Person
 import java.security.MessageDigest
 import java.util.Base64
-import no.nav.syfo.altinn.model.SykmeldingAltinn
-import no.nav.syfo.pdl.client.model.Person
 
 class JuridiskLoggService(private val juridiskLoggClient: JuridiskLoggClient) {
 
@@ -19,6 +20,7 @@ class JuridiskLoggService(private val juridiskLoggClient: JuridiskLoggClient) {
             mottaker = sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer
         )
         juridiskLoggClient.logg(log)
+        JURIDISK_LOGG_COUNTER.inc()
     }
 
     private fun sha512AsBase64String(source: String): String {
