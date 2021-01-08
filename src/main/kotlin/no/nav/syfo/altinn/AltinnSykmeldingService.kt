@@ -1,5 +1,7 @@
 package no.nav.syfo.altinn
 
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
 import no.nav.syfo.Environment
 import no.nav.syfo.altinn.model.AltinnSykmeldingMapper
@@ -17,8 +19,6 @@ import no.nav.syfo.sykmelding.db.insertStatus
 import no.nav.syfo.sykmelding.db.updateSendtToAlinn
 import no.nav.syfo.sykmelding.db.updateSendtToLogg
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
 
 class AltinnSykmeldingService(private val altinnClient: AltinnClient, private val environment: Environment, private val altinnOrgnummerLookup: AltinnOrgnummerLookup, private val juridiskLoggService: JuridiskLoggService, private val database: DatabaseInterface) {
     suspend fun handleSendtSykmelding(
