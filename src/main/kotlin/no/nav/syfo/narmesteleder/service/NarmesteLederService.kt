@@ -7,7 +7,12 @@ import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.PdlClient
 import no.nav.syfo.pdl.client.model.Person
 
-class NarmesteLederService @KtorExperimentalAPI constructor(private val narmestelederClient: NarmestelederClient, private val pdlClient: PdlClient, private val stsOidcClient: StsOidcClient) {
+@KtorExperimentalAPI
+class NarmesteLederService(
+    private val narmestelederClient: NarmestelederClient,
+    private val pdlClient: PdlClient,
+    private val stsOidcClient: StsOidcClient
+) {
     suspend fun getNarmesteLeder(orgnummer: String, aktorId: String): NarmesteLeder? {
         return narmestelederClient.getNarmesteleder(
             orgnummer,
@@ -29,10 +34,13 @@ class NarmesteLederService @KtorExperimentalAPI constructor(private val narmeste
                 fnr = person.fnr
             )
         }
-        return null
     }
 
-    private fun getName(person: Person): String {
-        return "${person.fornavn} ${person.mellomnavn?.let { "$it " }}${person.etternavn}"
+    fun getName(person: Person): String {
+        return if (person.mellomnavn == null) {
+            "${person.fornavn} ${person.etternavn}"
+        } else {
+            "${person.fornavn} ${person.mellomnavn} ${person.etternavn}"
+        }
     }
 }
