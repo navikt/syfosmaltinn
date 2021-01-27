@@ -31,7 +31,7 @@ class SendtSykmeldingService(
 
     private suspend fun handleSendtSykmelding(sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage) {
         log.info("Mottok sendt sykmelding fra Kafka med sykmeldingId: ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}, source: ${sendtSykmeldingKafkaMessage.kafkaMetadata.source} ${when (sendtSykmeldingKafkaMessage.kafkaMetadata.source) { "syfoservice" -> "ignoring" else -> "sending to altinn"}}")
-        if (sendtSykmeldingKafkaMessage.kafkaMetadata.source == "syfoservice") {
+        if (sendtSykmeldingKafkaMessage.kafkaMetadata.source == "syfoservice" || sendtSykmeldingKafkaMessage.kafkaMetadata.source == "macgyver") {
             return
         }
         val person = pdlClient.getPerson(
