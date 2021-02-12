@@ -3,12 +3,12 @@ package no.nav.syfo.sykmelding.db
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.pool.HikariPool
-import no.nav.syfo.Environment
-import no.nav.syfo.log
-import org.flywaydb.core.Flyway
 import java.net.ConnectException
 import java.net.SocketException
 import java.sql.Connection
+import no.nav.syfo.Environment
+import no.nav.syfo.log
+import org.flywaydb.core.Flyway
 
 class Database(private val env: Environment, retries: Long = 30, sleepTime: Long = 1_000) :
     DatabaseInterface {
