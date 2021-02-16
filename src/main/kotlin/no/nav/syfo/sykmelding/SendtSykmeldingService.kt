@@ -43,8 +43,7 @@ class SendtSykmeldingService(
             ?: throw ArbeidsgiverNotFoundException(sendtSykmeldingKafkaMessage.event)
 
         val narmesteLeder = narmesteLederService.getNarmesteLeder(arbeidsgiver.orgnummer, person.aktorId)
-
-        log.info("Mottok narmesteleder: ${narmesteLeder == null} for sykmeldingId: ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}")
+        log.info("Mottok narmesteleder: ${narmesteLeder != null} for sykmeldingId: ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}")
         altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage, person, narmesteLeder)
     }
 }
