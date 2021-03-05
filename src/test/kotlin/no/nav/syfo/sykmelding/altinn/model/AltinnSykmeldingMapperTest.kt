@@ -4,6 +4,7 @@ import getSykmeldingKafkaMessage
 import java.time.LocalDate
 import no.nav.syfo.altinn.model.AltinnSykmeldingMapper
 import no.nav.syfo.altinn.model.SykmeldingAltinn
+import no.nav.syfo.altinn.util.JAXB.Companion.unmarshalSykmeldingArbeidsgiver
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
 import org.amshove.kluent.shouldNotBe
@@ -35,6 +36,8 @@ class AltinnSykmeldingMapperTest : Spek({
             val sykmeldingAltinn = SykmeldingAltinn(
                 sendtSykmeldingKafkaMessage, pasient, narmesteLEder
             )
+
+            val sykmelgingUnmashaller = unmarshalSykmeldingArbeidsgiver(sykmeldingAltinn.sykmeldingXml).value
 
             val insertCorrespondanceV2 = AltinnSykmeldingMapper.sykmeldingTilCorrespondence(
                 sykmeldingAltinn,

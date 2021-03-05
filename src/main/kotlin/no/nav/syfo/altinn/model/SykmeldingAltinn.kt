@@ -2,6 +2,7 @@ package no.nav.syfo.altinn.model
 
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.syfo.altinn.model.AltinnSykmeldingMapper.Companion.toSykmeldingXml
+import no.nav.syfo.altinn.util.JAXB
 import no.nav.syfo.altinn.util.PdfFactory
 import no.nav.syfo.altinn.util.SykmeldingHTMLandPDFMapper
 import no.nav.syfo.altinn.util.SykmeldingHTMLandPDFMapper.Companion.toSykmeldingHtml
@@ -26,17 +27,21 @@ class SykmeldingAltinn(
             sendtSykmeldingKafkaMessage,
             pasient
         )
+
+        sykmeldingXml = JAXB.marshallSykmeldingArbeidsgiver(xmlSykmeldingArbeidsgiver)
+
         val stilingsprosent = sendtSykmeldingKafkaMessage.sykmelding.arbeidsgiver.stillingsprosent
-        sykmeldingXml = toSykmeldingXml(
+
+        val sykmeldingXmlForHtml = toSykmeldingXml(
             narmesteLeder = naemresteLeder,
             stillingsprosent = stilingsprosent,
             xmlSykmeldingArbeidsgiver = xmlSykmeldingArbeidsgiver
         )
-        sykmeldingHTML = toSykmeldingHtml(sykmeldingXml = sykmeldingXml)
+
+        sykmeldingHTML = toSykmeldingHtml(sykmeldingXml = sykmeldingXmlForHtml)
         sykmeldingPortableHTML = SykmeldingHTMLandPDFMapper.toPortableHTML(
             sykmeldingHTML,
             sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId
-
         )
 
         sykmeldingPdf = PdfFactory.getSykmeldingPDF(
