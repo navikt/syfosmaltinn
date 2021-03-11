@@ -34,7 +34,7 @@ import no.nav.syfo.kafka.toConsumerConfig
 import no.nav.syfo.kafka.toProducerConfig
 import no.nav.syfo.narmesteleder.client.NarmestelederClient
 import no.nav.syfo.narmesteleder.kafka.NLRequestProducer
-import no.nav.syfo.narmesteleder.kafka.model.NlRequest
+import no.nav.syfo.narmesteleder.kafka.model.NlRequestKafkaMessage
 import no.nav.syfo.narmesteleder.kafka.utils.JacksonKafkaSerializer
 import no.nav.syfo.narmesteleder.service.BeOmNyNLService
 import no.nav.syfo.narmesteleder.service.NarmesteLederService
@@ -70,7 +70,7 @@ fun main() {
     val database = Database(env)
     val vaultSecrets = VaultSecrets()
 
-    val kafkaProducer = KafkaProducer<String, NlRequest>(
+    val kafkaProducer = KafkaProducer<String, NlRequestKafkaMessage>(
         KafkaUtils
             .getAivenKafkaConfig()
             .toProducerConfig("${env.applicationName}-producer", JacksonKafkaSerializer::class, StringSerializer::class)

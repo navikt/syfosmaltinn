@@ -1,10 +1,14 @@
 package no.nav.syfo.narmesteleder.service
 
+import java.time.OffsetDateTime
+import java.util.UUID
 import no.nav.syfo.log
 import no.nav.syfo.model.sykmeldingstatus.ShortNameDTO
 import no.nav.syfo.model.sykmeldingstatus.SykmeldingStatusKafkaEventDTO
 import no.nav.syfo.narmesteleder.kafka.NLRequestProducer
+import no.nav.syfo.narmesteleder.kafka.model.NlKafkaMetadata
 import no.nav.syfo.narmesteleder.kafka.model.NlRequest
+import no.nav.syfo.narmesteleder.kafka.model.NlRequestKafkaMessage
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.pdl.client.model.fulltNavn
@@ -15,11 +19,18 @@ class BeOmNyNLService(private val nlRequestProducer: NLRequestProducer) {
         if (sendtSykmeldingKafkaMessage.kafkaMetadata.source == "user") {
             log.info("Ber om ny nærmeste leder for sykmeldingid {}", sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId)
             nlRequestProducer.send(
-                NlRequest(
-                    sykmeldingId = sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId,
-                    fnr = sendtSykmeldingKafkaMessage.kafkaMetadata.fnr,
-                    orgnr = sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.orgnummer,
-                    name = person.fulltNavn()
+                NlRequestKafkaMessage(
+                    nlRequest = NlRequest(
+                        requestId = UUID.randomUUID(),
+                        sykmeldingId = sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId,
+                        fnr = sendtSykmeldingKafkaMessage.kafkaMetadata.fnr,
+                        orgnr = sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.orgnummer,
+                        name = person.fulltNavn()
+                    ),
+                    nlKafkaMetadata = NlKafkaMetadata(
+                        timestamp = OffsetDateTime.now(),
+                        source = sendtSykmeldingKafkaMessage.kafkaMetadata.source
+                    )
                 )
             )
         }
