@@ -71,7 +71,8 @@ class AltinnSykmeldingMapperTest : Spek({
                             false
                         )
                     ),
-                    tiltakArbeidsplassen = "TiltakArbeidsplassen"
+                    tiltakArbeidsplassen = "TiltakArbeidsplassen",
+                    merknader = emptyList()
                 ),
                 event = SykmeldingStatusKafkaEventDTO(
                     sykmeldingId = sykmeldingId,

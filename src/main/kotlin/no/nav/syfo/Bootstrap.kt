@@ -28,7 +28,7 @@ import no.nav.syfo.azuread.AccessTokenClient
 import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.juridisklogg.JuridiskLoggClient
 import no.nav.syfo.juridisklogg.JuridiskLoggService
-import no.nav.syfo.kafka.envOverrides
+import no.nav.syfo.kafka.aiven.KafkaUtils
 import no.nav.syfo.kafka.loadBaseConfig
 import no.nav.syfo.kafka.toConsumerConfig
 import no.nav.syfo.kafka.toProducerConfig
@@ -48,8 +48,8 @@ import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
-import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
+import org.apache.kafka.common.serialization.StringSerializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -69,14 +69,15 @@ fun main() {
     applicationState.ready = true
     val database = Database(env)
     val vaultSecrets = VaultSecrets()
-    val kafkaBaseConfig = loadBaseConfig(env, vaultSecrets).envOverrides()
-    val kafkaProducerConfig = kafkaBaseConfig.toProducerConfig("${env.applicationName}-producer", JacksonKafkaSerializer::class)
-    kafkaProducerConfig[ProducerConfig.RETRIES_CONFIG] = 2
-    val kafkaProducer = KafkaProducer<String, NlRequest>(kafkaProducerConfig)
+
+    val kafkaProducer = KafkaProducer<String, NlRequest>(
+        KafkaUtils
+            .getAivenKafkaConfig()
+            .toProducerConfig("${env.applicationName}-producer", JacksonKafkaSerializer::class, StringSerializer::class)
+    )
     val nlRequestProducer = NLRequestProducer(kafkaProducer, env.beOmNLKafkaTopic)
     val beOmNyNLService = BeOmNyNLService(nlRequestProducer)
-
-    val consumerProperties = kafkaBaseConfig.toConsumerConfig(env.applicationName + "-consumer", JacksonKafkaDeserializer::class)
+    val consumerProperties = loadBaseConfig(env, vaultSecrets).toConsumerConfig(env.applicationName + "-consumer", JacksonKafkaDeserializer::class)
     consumerProperties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none"
     val kafkaConsumer = KafkaConsumer<String, SendtSykmeldingKafkaMessage>(consumerProperties, StringDeserializer(), JacksonKafkaDeserializer(SendtSykmeldingKafkaMessage::class))
     val sendtSykmeldingConsumer = SendtSykmeldingConsumer(kafkaConsumer, env.sendtSykmeldingKafkaTopic)

@@ -47,6 +47,8 @@ spec:
     requests:
       cpu: 400m
       memory: 768Mi
+  kafka:
+    pool: nav-dev
   vault:
     enabled: false
   filesFrom:
