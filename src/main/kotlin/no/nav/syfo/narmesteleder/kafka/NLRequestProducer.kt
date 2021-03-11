@@ -1,7 +1,7 @@
-package no.nav.syfo.nynarmesteleder.kafka
+package no.nav.syfo.narmesteleder.kafka
 
 import no.nav.syfo.log
-import no.nav.syfo.nynarmesteleder.kafka.model.NlRequest
+import no.nav.syfo.narmesteleder.kafka.model.NlRequest
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 

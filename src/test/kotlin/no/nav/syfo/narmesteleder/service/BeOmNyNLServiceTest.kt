@@ -1,4 +1,4 @@
-package no.nav.syfo.nynarmesteleder
+package no.nav.syfo.narmesteleder.service
 
 import io.mockk.mockk
 import java.time.LocalDate
@@ -8,8 +8,8 @@ import no.nav.syfo.model.sykmeldingstatus.ShortNameDTO
 import no.nav.syfo.model.sykmeldingstatus.SporsmalOgSvarDTO
 import no.nav.syfo.model.sykmeldingstatus.SvartypeDTO
 import no.nav.syfo.model.sykmeldingstatus.SykmeldingStatusKafkaEventDTO
+import no.nav.syfo.narmesteleder.kafka.NLRequestProducer
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
-import no.nav.syfo.nynarmesteleder.kafka.NLRequestProducer
 import org.amshove.kluent.shouldEqual
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe

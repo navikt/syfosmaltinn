@@ -1,4 +1,4 @@
-package no.nav.syfo.nynarmesteleder.kafka.model
+package no.nav.syfo.narmesteleder.kafka.model
 
 data class NlRequest(
     val sykmeldingId: String,

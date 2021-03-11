@@ -33,11 +33,11 @@ import no.nav.syfo.kafka.loadBaseConfig
 import no.nav.syfo.kafka.toConsumerConfig
 import no.nav.syfo.kafka.toProducerConfig
 import no.nav.syfo.narmesteleder.client.NarmestelederClient
+import no.nav.syfo.narmesteleder.kafka.NLRequestProducer
+import no.nav.syfo.narmesteleder.kafka.model.NlRequest
+import no.nav.syfo.narmesteleder.kafka.utils.JacksonKafkaSerializer
+import no.nav.syfo.narmesteleder.service.BeOmNyNLService
 import no.nav.syfo.narmesteleder.service.NarmesteLederService
-import no.nav.syfo.nynarmesteleder.BeOmNyNLService
-import no.nav.syfo.nynarmesteleder.kafka.NLRequestProducer
-import no.nav.syfo.nynarmesteleder.kafka.model.NlRequest
-import no.nav.syfo.nynarmesteleder.kafka.utils.JacksonKafkaSerializer
 import no.nav.syfo.pdl.client.PdlClient
 import no.nav.syfo.sykmelding.SendtSykmeldingService
 import no.nav.syfo.sykmelding.db.Database

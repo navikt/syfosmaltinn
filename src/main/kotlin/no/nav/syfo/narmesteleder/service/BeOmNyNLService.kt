@@ -1,11 +1,11 @@
-package no.nav.syfo.nynarmesteleder
+package no.nav.syfo.narmesteleder.service
 
 import no.nav.syfo.log
 import no.nav.syfo.model.sykmeldingstatus.ShortNameDTO
 import no.nav.syfo.model.sykmeldingstatus.SykmeldingStatusKafkaEventDTO
+import no.nav.syfo.narmesteleder.kafka.NLRequestProducer
+import no.nav.syfo.narmesteleder.kafka.model.NlRequest
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
-import no.nav.syfo.nynarmesteleder.kafka.NLRequestProducer
-import no.nav.syfo.nynarmesteleder.kafka.model.NlRequest
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.pdl.client.model.fulltNavn
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
