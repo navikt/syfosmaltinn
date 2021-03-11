@@ -12,6 +12,7 @@ import io.ktor.client.features.auth.Auth
 import io.ktor.client.features.auth.providers.basic
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
+import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.hotspot.DefaultExports
 import java.net.ProxySelector
 import kotlinx.coroutines.GlobalScope
@@ -27,10 +28,16 @@ import no.nav.syfo.azuread.AccessTokenClient
 import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.juridisklogg.JuridiskLoggClient
 import no.nav.syfo.juridisklogg.JuridiskLoggService
+import no.nav.syfo.kafka.envOverrides
 import no.nav.syfo.kafka.loadBaseConfig
 import no.nav.syfo.kafka.toConsumerConfig
+import no.nav.syfo.kafka.toProducerConfig
 import no.nav.syfo.narmesteleder.client.NarmestelederClient
 import no.nav.syfo.narmesteleder.service.NarmesteLederService
+import no.nav.syfo.nynarmesteleder.BeOmNyNLService
+import no.nav.syfo.nynarmesteleder.kafka.NLRequestProducer
+import no.nav.syfo.nynarmesteleder.kafka.model.NlRequest
+import no.nav.syfo.nynarmesteleder.kafka.utils.JacksonKafkaSerializer
 import no.nav.syfo.pdl.client.PdlClient
 import no.nav.syfo.sykmelding.SendtSykmeldingService
 import no.nav.syfo.sykmelding.db.Database
@@ -40,12 +47,15 @@ import no.nav.syfo.sykmelding.kafka.utils.JacksonKafkaDeserializer
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
+import org.apache.kafka.clients.producer.KafkaProducer
+import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 val log: Logger = LoggerFactory.getLogger("no.nav.syfo.syfosmaltinn")
 
+@KtorExperimentalAPI
 fun main() {
     val env = Environment()
     DefaultExports.initialize()
@@ -59,9 +69,16 @@ fun main() {
     applicationState.ready = true
     val database = Database(env)
     val vaultSecrets = VaultSecrets()
-    val properties = loadBaseConfig(env, vaultSecrets).toConsumerConfig(env.applicationName + "-consumer", JacksonKafkaDeserializer::class)
-    properties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none"
-    val kafkaConsumer = KafkaConsumer<String, SendtSykmeldingKafkaMessage>(properties, StringDeserializer(), JacksonKafkaDeserializer(SendtSykmeldingKafkaMessage::class))
+    val kafkaBaseConfig = loadBaseConfig(env, vaultSecrets).envOverrides()
+    val kafkaProducerConfig = kafkaBaseConfig.toProducerConfig("${env.applicationName}-producer", JacksonKafkaSerializer::class)
+    kafkaProducerConfig[ProducerConfig.RETRIES_CONFIG] = 2
+    val kafkaProducer = KafkaProducer<String, NlRequest>(kafkaProducerConfig)
+    val nlRequestProducer = NLRequestProducer(kafkaProducer, env.beOmNLKafkaTopic)
+    val beOmNyNLService = BeOmNyNLService(nlRequestProducer)
+
+    val consumerProperties = kafkaBaseConfig.toConsumerConfig(env.applicationName + "-consumer", JacksonKafkaDeserializer::class)
+    consumerProperties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none"
+    val kafkaConsumer = KafkaConsumer<String, SendtSykmeldingKafkaMessage>(consumerProperties, StringDeserializer(), JacksonKafkaDeserializer(SendtSykmeldingKafkaMessage::class))
     val sendtSykmeldingConsumer = SendtSykmeldingConsumer(kafkaConsumer, env.sendtSykmeldingKafkaTopic)
     val iCorrespondenceAgencyExternalBasic = createPort(env.altinnUrl)
     val altinnClient = AltinnClient(username = env.altinnUsername, password = env.altinnPassword, iCorrespondenceAgencyExternalBasic = iCorrespondenceAgencyExternalBasic)
@@ -112,7 +129,7 @@ fun main() {
     val narmesteLederService = NarmesteLederService(narmestelederClient, pdlClient, stsOidcClient)
     val juridiskLoggService = JuridiskLoggService(JuridiskLoggClient(httpClientWithAuth, env.juridiskLoggUrl, env.sykmeldingProxyApiKey))
     val altinnSendtSykmeldingService = AltinnSykmeldingService(altinnClient, env, altinnOrgnummerLookup, juridiskLoggService, database)
-    val sendtSykmeldingService = SendtSykmeldingService(applicationState, sendtSykmeldingConsumer, altinnSendtSykmeldingService, pdlClient, stsOidcClient, narmesteLederService)
+    val sendtSykmeldingService = SendtSykmeldingService(applicationState, sendtSykmeldingConsumer, altinnSendtSykmeldingService, pdlClient, stsOidcClient, narmesteLederService, beOmNyNLService)
 
     GlobalScope.launch {
         try {

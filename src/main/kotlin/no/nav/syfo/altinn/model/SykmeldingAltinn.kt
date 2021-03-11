@@ -8,6 +8,7 @@ import no.nav.syfo.altinn.util.SykmeldingHTMLandPDFMapper
 import no.nav.syfo.altinn.util.SykmeldingHTMLandPDFMapper.Companion.toSykmeldingHtml
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
+import no.nav.syfo.pdl.client.model.fulltNavn
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
 
 class SykmeldingAltinn(
@@ -15,7 +16,6 @@ class SykmeldingAltinn(
     pasient: Person,
     naemresteLeder: NarmesteLeder?
 ) {
-
     val xmlSykmeldingArbeidsgiver: XMLSykmeldingArbeidsgiver
     val sykmeldingXml: String
     val sykmeldingHTML: String
@@ -46,7 +46,7 @@ class SykmeldingAltinn(
 
         sykmeldingPdf = PdfFactory.getSykmeldingPDF(
             sykmeldingHTML,
-            sequenceOf(pasient.fornavn, pasient.mellomnavn, pasient.etternavn).filterNotNull().joinToString(" ")
+            pasient.fulltNavn()
         )
     }
 }
