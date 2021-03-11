@@ -12,6 +12,7 @@ import no.nav.syfo.juridisklogg.JuridiskLoggService
 import no.nav.syfo.log
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
+import no.nav.syfo.pdl.client.model.fulltNavn
 import no.nav.syfo.sykmelding.db.DatabaseInterface
 import no.nav.syfo.sykmelding.db.SykmeldingStatus
 import no.nav.syfo.sykmelding.db.getStatus
@@ -33,7 +34,7 @@ class AltinnSykmeldingService(private val altinnClient: AltinnClient, private va
 
         val insertCorrespondenceV2 = AltinnSykmeldingMapper.sykmeldingTilCorrespondence(
             sykmeldingAltinn,
-            sequenceOf(pasient.fornavn, pasient.mellomnavn, pasient.etternavn).filterNotNull().joinToString(" "),
+            pasient.fulltNavn(),
             orgnummer)
 
         val status = database.getStatus(sykmeldingId)

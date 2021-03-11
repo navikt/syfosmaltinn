@@ -47,6 +47,8 @@ spec:
     requests:
       cpu: 400m
       memory: 768Mi
+  kafka:
+    pool: nav-dev
   vault:
     enabled: false
   filesFrom:
@@ -75,3 +77,5 @@ spec:
       value: https://api-gw-q1.oera.no/sykmelding-fss-proxy/juridisklogg/juridisklogg/api/rest/logg
     - name: NARMESTELEDER_URL
       value: https://api-gw-q1.oera.no/sykmelding-fss-proxy/narmesteleder
+    - name: KAFKA_CLIENT_ID
+      value: syfosmaltinn

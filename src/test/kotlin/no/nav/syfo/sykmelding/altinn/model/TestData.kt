@@ -69,7 +69,8 @@ fun getSykmeldingKafkaMessage(sykmeldingId: String): SendtSykmeldingKafkaMessage
                     false
                 )
             ),
-            tiltakArbeidsplassen = "TiltakArbeidsplassen"
+            tiltakArbeidsplassen = "TiltakArbeidsplassen",
+            merknader = emptyList()
         ),
         event = SykmeldingStatusKafkaEventDTO(
             sykmeldingId = sykmeldingId,
