@@ -27,7 +27,7 @@ class BeOmNyNLService(private val nlRequestProducer: NLRequestProducer) {
                         orgnr = sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.orgnummer,
                         name = person.fulltNavn()
                     ),
-                    nlKafkaMetadata = NlKafkaMetadata(
+                    metadata = NlKafkaMetadata(
                         timestamp = OffsetDateTime.now(),
                         source = sendtSykmeldingKafkaMessage.kafkaMetadata.source
                     )

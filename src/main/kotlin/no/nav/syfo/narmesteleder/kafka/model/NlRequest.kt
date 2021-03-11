@@ -5,7 +5,7 @@ import java.util.UUID
 
 data class NlRequestKafkaMessage(
     val nlRequest: NlRequest,
-    val nlKafkaMetadata: NlKafkaMetadata
+    val metadata: NlKafkaMetadata
 )
 
 data class NlRequest(
