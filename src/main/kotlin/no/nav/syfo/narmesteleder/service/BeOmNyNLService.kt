@@ -21,7 +21,7 @@ class BeOmNyNLService(private val nlRequestProducer: NLRequestProducer) {
             nlRequestProducer.send(
                 NlRequestKafkaMessage(
                     nlRequest = NlRequest(
-                        requestId = UUID.randomUUID(),
+                        requestId = UUID.fromString(sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId),
                         sykmeldingId = sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId,
                         fnr = sendtSykmeldingKafkaMessage.kafkaMetadata.fnr,
                         orgnr = sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.orgnummer,
