@@ -12,6 +12,7 @@ data class Environment(
     val applicationName: String = getEnvVar("NAIS_APP_NAME", "syfosmaltinn"),
     val sendtSykmeldingKafkaTopic: String = "syfo-sendt-sykmelding",
     val beOmNLKafkaTopic: String = "teamsykmelding.syfo-nl-request",
+    val brytNLKafkaTopic: String = "teamsykmelding.syfo-nl-response",
     override val kafkaBootstrapServers: String = getEnvVar("KAFKA_BOOTSTRAP_SERVERS_URL"),
     val aadAccessTokenUrl: String = getEnvVar("AAD_ACCESS_TOKEN_URL"),
     val clientId: String = getFileAsString("/var/run/secrets/AZURE_CLIENT"),

@@ -34,7 +34,9 @@ import no.nav.syfo.kafka.toConsumerConfig
 import no.nav.syfo.kafka.toProducerConfig
 import no.nav.syfo.narmesteleder.client.NarmestelederClient
 import no.nav.syfo.narmesteleder.kafka.NLRequestProducer
+import no.nav.syfo.narmesteleder.kafka.NLResponseProducer
 import no.nav.syfo.narmesteleder.kafka.model.NlRequestKafkaMessage
+import no.nav.syfo.narmesteleder.kafka.model.NlResponseKafkaMessage
 import no.nav.syfo.narmesteleder.kafka.utils.JacksonKafkaSerializer
 import no.nav.syfo.narmesteleder.service.BeOmNyNLService
 import no.nav.syfo.narmesteleder.service.NarmesteLederService
@@ -75,8 +77,14 @@ fun main() {
             .getAivenKafkaConfig()
             .toProducerConfig("${env.applicationName}-producer", JacksonKafkaSerializer::class, StringSerializer::class)
     )
+    val kafkaProducerNlResponse = KafkaProducer<String, NlResponseKafkaMessage>(
+        KafkaUtils
+            .getAivenKafkaConfig()
+            .toProducerConfig("${env.applicationName}-producer", JacksonKafkaSerializer::class, StringSerializer::class)
+    )
     val nlRequestProducer = NLRequestProducer(kafkaProducer, env.beOmNLKafkaTopic)
-    val beOmNyNLService = BeOmNyNLService(nlRequestProducer)
+    val nlResponseProducer = NLResponseProducer(kafkaProducerNlResponse, env.brytNLKafkaTopic)
+    val beOmNyNLService = BeOmNyNLService(nlRequestProducer, nlResponseProducer)
     val consumerProperties = loadBaseConfig(env, vaultSecrets).toConsumerConfig(env.applicationName + "-consumer", JacksonKafkaDeserializer::class)
     consumerProperties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none"
     val kafkaConsumer = KafkaConsumer<String, SendtSykmeldingKafkaMessage>(consumerProperties, StringDeserializer(), JacksonKafkaDeserializer(SendtSykmeldingKafkaMessage::class))
