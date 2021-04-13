@@ -55,7 +55,11 @@ class BeOmNyNLService(private val nlRequestProducer: NLRequestProducer, private 
     }
 
     fun skalBeOmNyNL(sykmeldingStatusKafkaEventDTO: SykmeldingStatusKafkaEventDTO, narmesteLeder: NarmesteLeder?): Boolean {
+        val nlSporsmal = sykmeldingStatusKafkaEventDTO.sporsmals?.find { it.shortName == ShortNameDTO.NY_NARMESTE_LEDER }
         return when {
+            nlSporsmal?.svar == "NEI" -> {
+                false
+            }
             narmesteLeder == null -> {
                 true
             }
@@ -63,7 +67,6 @@ class BeOmNyNLService(private val nlRequestProducer: NLRequestProducer, private 
                 true
             }
             else -> {
-                val nlSporsmal = sykmeldingStatusKafkaEventDTO.sporsmals?.find { it.shortName == ShortNameDTO.NY_NARMESTE_LEDER }
                 nlSporsmal?.svar == "JA"
             }
         }
