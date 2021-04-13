@@ -9,6 +9,7 @@ import no.nav.syfo.model.sykmeldingstatus.SporsmalOgSvarDTO
 import no.nav.syfo.model.sykmeldingstatus.SvartypeDTO
 import no.nav.syfo.model.sykmeldingstatus.SykmeldingStatusKafkaEventDTO
 import no.nav.syfo.narmesteleder.kafka.NLRequestProducer
+import no.nav.syfo.narmesteleder.kafka.NLResponseProducer
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import org.amshove.kluent.shouldEqual
 import org.spekframework.spek2.Spek
@@ -16,7 +17,8 @@ import org.spekframework.spek2.style.specification.describe
 
 class BeOmNyNLServiceTest : Spek({
     val nlRequestProducer = mockk<NLRequestProducer>(relaxed = true)
-    val beOmNyNLService = BeOmNyNLService(nlRequestProducer)
+    val nlResponseProducer = mockk<NLResponseProducer>(relaxed = true)
+    val beOmNyNLService = BeOmNyNLService(nlRequestProducer, nlResponseProducer)
 
     describe("BeOmNyNLService") {
         it("Skal be om ny NL hvis det er svart ja på spørsmål om NL") {
