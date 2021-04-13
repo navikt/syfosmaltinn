@@ -45,6 +45,13 @@ class BeOmNyNLServiceTest : Spek({
 
             beOmNyNLService.skalBeOmNyNL(sykmeldingStatusKafkaEvent, getNarmesteleder(forskutterer = false)) shouldEqual false
         }
+        it("Skal ikke be om ny NL hvis det er svart nei på spørsmål om NL") {
+            val sykmeldingStatusKafkaEvent = getSykmeldingStatusKafkaEvent(listOf(
+                SporsmalOgSvarDTO("Be om ny nærmeste leder?", ShortNameDTO.NY_NARMESTE_LEDER, SvartypeDTO.JA_NEI, "NEI")
+            ))
+
+            beOmNyNLService.skalBeOmNyNL(sykmeldingStatusKafkaEvent, null) shouldEqual false
+        }
     }
 })
 
