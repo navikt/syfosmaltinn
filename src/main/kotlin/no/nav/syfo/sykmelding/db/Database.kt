@@ -10,7 +10,7 @@ import no.nav.syfo.Environment
 import no.nav.syfo.log
 import org.flywaydb.core.Flyway
 
-class Database(private val env: Environment, retries: Long = 30, sleepTime: Long = 1_000) :
+class Database(private val env: Environment, retries: Long = 30, sleepTime: Long = 5_000) :
     DatabaseInterface {
     private val dataSource: HikariDataSource
     override val connection: Connection
