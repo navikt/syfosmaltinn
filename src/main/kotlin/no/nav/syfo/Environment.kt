@@ -1,10 +1,10 @@
 package no.nav.syfo
 
+import no.nav.syfo.kafka.KafkaConfig
+import no.nav.syfo.kafka.KafkaCredentials
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
-import no.nav.syfo.kafka.KafkaConfig
-import no.nav.syfo.kafka.KafkaCredentials
 
 data class Environment(
     val pdlBasePath: String = getEnvVar("PDL_BASE_PATH"),
@@ -12,7 +12,7 @@ data class Environment(
     val applicationName: String = getEnvVar("NAIS_APP_NAME", "syfosmaltinn"),
     val sendtSykmeldingKafkaTopic: String = "syfo-sendt-sykmelding",
     val beOmNLKafkaTopic: String = "teamsykmelding.syfo-nl-request",
-    val brytNLKafkaTopic: String = "teamsykmelding.syfo-nl-response",
+    val brytNLKafkaTopic: String = "teamsykmelding.syfo-narmesteleder",
     override val kafkaBootstrapServers: String = getEnvVar("KAFKA_BOOTSTRAP_SERVERS_URL"),
     val aadAccessTokenUrl: String = getEnvVar("AAD_ACCESS_TOKEN_URL"),
     val clientId: String = getFileAsString("/var/run/secrets/AZURE_CLIENT"),
