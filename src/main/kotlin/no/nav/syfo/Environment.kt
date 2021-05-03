@@ -1,10 +1,10 @@
 package no.nav.syfo
 
-import no.nav.syfo.kafka.KafkaConfig
-import no.nav.syfo.kafka.KafkaCredentials
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
+import no.nav.syfo.kafka.KafkaConfig
+import no.nav.syfo.kafka.KafkaCredentials
 
 data class Environment(
     val pdlBasePath: String = getEnvVar("PDL_BASE_PATH"),
@@ -19,7 +19,7 @@ data class Environment(
     val clientSecret: String = getFileAsString("/var/run/secrets/AZURE_CLIENT_SECRET"),
     val narmestelederClientId: String = getEnvVar("NARMESTELEDER_CLIENT_ID"),
     val stsOidcUrl: String = getEnvVar("SECURITYTOKENSERVICE_URL"),
-    val narmesteLederBasePath: String = getEnvVar("NARMESTELEDER_URL"),
+    val narmesteLederBasePath: String = getEnvVar("NARMESTELEDER_URL", "http://narmesteleder"),
     val altinnUsername: String = getFileAsString("/var/run/secrets/ALTINN_USERNAME"),
     val altinnPassword: String = getFileAsString("/var/run/secrets/ALTINN_PASSWORD"),
     val altinnUrl: String = getEnvVar("ALTINN_URL"),

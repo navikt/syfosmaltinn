@@ -67,14 +67,11 @@ fun getSykmeldingStatusKafkaEvent(sporsmalOgSvarListe: List<SporsmalOgSvarDTO>):
 
 fun getNarmesteleder(forskutterer: Boolean?): NarmesteLeder {
     return NarmesteLeder(
-        aktorId = "aktorId",
         epost = "epost@nav.no",
         orgnummer = "orgnummer",
         telefonnummer = "99999999",
         aktivFom = LocalDate.now().minusYears(2),
         arbeidsgiverForskutterer = forskutterer,
-        skrivetilgang = true,
-        tilganger = emptyList(),
         navn = "Leder Ledersen",
         fnr = "fnr"
     )

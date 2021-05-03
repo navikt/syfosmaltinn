@@ -73,7 +73,5 @@ spec:
       value: https://www.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
     - name: JURIDISKLOGG_REST_URL
       value: https://api-gw.oera.no/sykmelding-fss-proxy/juridisklogg/juridisklogg/api/rest/logg
-    - name: NARMESTELEDER_URL
-      value: https://api-gw.oera.no/sykmelding-fss-proxy/narmesteleder
     - name: KAFKA_CLIENT_ID
       value: syfosmaltinn

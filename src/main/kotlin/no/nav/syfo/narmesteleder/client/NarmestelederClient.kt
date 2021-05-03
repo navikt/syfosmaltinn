@@ -11,23 +11,19 @@ import io.ktor.http.HttpHeaders
 import no.nav.syfo.azuread.AccessTokenClient
 import no.nav.syfo.log
 
-class NarmestelederClient(private val httpClient: HttpClient, private val accessTokenClient: AccessTokenClient, private val baseUrl: String, private val apiKey: String) {
+class NarmestelederClient(private val httpClient: HttpClient, private val accessTokenClient: AccessTokenClient, private val baseUrl: String) {
 
-    suspend fun getNarmesteleder(orgnummer: String, aktorId: String): NarmestelederResponse {
+    suspend fun getNarmesteleder(orgnummer: String, fnr: String): NarmestelederResponse {
         val token = accessTokenClient.getAccessToken()
-        val statement = httpClient.get<HttpStatement>("$baseUrl$NARMESTE_LEDER_URL/$aktorId?orgnummer=$orgnummer") {
+        val statement = httpClient.get<HttpStatement>("$baseUrl/sykmeldt/narmesteleder?orgnummer=$orgnummer") {
             headers {
                 append(HttpHeaders.Authorization, "Bearer $token")
-                append("x-nav-apikey", apiKey)
+                append("Sykmeldt-Fnr", fnr)
             }
             accept(ContentType.Application.Json)
         }.execute()
         val status = statement.status
         log.info("Got status $status from NarmesteLeder")
         return statement.receive()
-    }
-
-    companion object {
-        private const val NARMESTE_LEDER_URL = "/syfonarmesteleder/sykmeldt/"
     }
 }

@@ -13,25 +13,22 @@ class NarmesteLederService(
     private val pdlClient: PdlClient,
     private val stsOidcClient: StsOidcClient
 ) {
-    suspend fun getNarmesteLeder(orgnummer: String, aktorId: String): NarmesteLeder? {
+    suspend fun getNarmesteLeder(orgnummer: String, fnr: String): NarmesteLeder? {
         return narmestelederClient.getNarmesteleder(
             orgnummer,
-            aktorId
+            fnr
         ).narmesteLederRelasjon?.let { narmesteLederRelasjon ->
 
-            val person = pdlClient.getPerson(narmesteLederRelasjon.narmesteLederAktorId, stsOidcClient.oidcToken().access_token)
+            val lederPerson = pdlClient.getPerson(narmesteLederRelasjon.narmesteLederFnr, stsOidcClient.oidcToken().access_token)
 
             NarmesteLeder(
-                aktorId = narmesteLederRelasjon.narmesteLederAktorId,
                 epost = narmesteLederRelasjon.narmesteLederEpost,
                 orgnummer = narmesteLederRelasjon.orgnummer,
                 telefonnummer = narmesteLederRelasjon.narmesteLederTelefonnummer,
                 aktivFom = narmesteLederRelasjon.aktivFom,
                 arbeidsgiverForskutterer = narmesteLederRelasjon.arbeidsgiverForskutterer,
-                skrivetilgang = narmesteLederRelasjon.skrivetilgang,
-                tilganger = narmesteLederRelasjon.tilganger,
-                navn = getName(person),
-                fnr = person.fnr
+                navn = getName(lederPerson),
+                fnr = lederPerson.fnr
             )
         }
     }
