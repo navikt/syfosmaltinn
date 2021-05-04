@@ -8,7 +8,6 @@ import io.ktor.client.request.post
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.Parameters
-import java.time.Instant
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -24,8 +23,8 @@ class AccessTokenClient(
     private var token: AadAccessToken? = null
 
     suspend fun getAccessToken(): String {
-        val omToMinutter = Instant.now().plusSeconds(120L)
-        return (token?.takeUnless { it.expires_on.isBefore(omToMinutter) }
+        val toMinutter = 120
+        return (token?.takeUnless { it.expires_in < toMinutter }
                 ?: run {
                     log.info("Henter nytt token fra Azure AD")
                     val response: AadAccessToken = httpClient.post(aadAccessTokenUrl) {
@@ -48,5 +47,5 @@ class AccessTokenClient(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AadAccessToken(
     val access_token: String,
-    val expires_on: Instant
+    val expires_in: Int
 )
