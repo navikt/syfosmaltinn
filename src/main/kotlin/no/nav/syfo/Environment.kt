@@ -19,7 +19,7 @@ data class Environment(
     val clientSecret: String = getFileAsString("/var/run/secrets/AZURE_CLIENT_SECRET"),
     val narmestelederClientId: String = getEnvVar("NARMESTELEDER_CLIENT_ID"),
     val stsOidcUrl: String = getEnvVar("SECURITYTOKENSERVICE_URL"),
-    val narmesteLederBasePath: String = getEnvVar("NARMESTELEDER_URL", "http://narmesteleder"),
+    val narmesteLederBasePath: String = getEnvVar("NARMESTELEDER_URL"),
     val altinnUsername: String = getFileAsString("/var/run/secrets/ALTINN_USERNAME"),
     val altinnPassword: String = getFileAsString("/var/run/secrets/ALTINN_PASSWORD"),
     val altinnUrl: String = getEnvVar("ALTINN_URL"),

@@ -77,3 +77,5 @@ spec:
       value: https://api-gw-q1.oera.no/sykmelding-fss-proxy/juridisklogg/juridisklogg/api/rest/logg
     - name: KAFKA_CLIENT_ID
       value: syfosmaltinn
+    - name: NARMESTELEDER_URL
+      value: https://narmesteleder.dev.nav.no
