@@ -46,7 +46,7 @@ class SendtSykmeldingService(
         val arbeidsgiver = sendtSykmeldingKafkaMessage.event.arbeidsgiver
             ?: throw ArbeidsgiverNotFoundException(sendtSykmeldingKafkaMessage.event)
 
-        val narmesteLeder = narmesteLederService.getNarmesteLeder(arbeidsgiver.orgnummer, person.aktorId)
+        val narmesteLeder = narmesteLederService.getNarmesteLeder(arbeidsgiver.orgnummer, sendtSykmeldingKafkaMessage.kafkaMetadata.fnr)
         log.info("Mottok narmesteleder: ${narmesteLeder != null} for sykmeldingId: ${sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId}")
         if (beOmNyNLService.skalBeOmNyNL(sendtSykmeldingKafkaMessage.event, narmesteLeder)) {
             beOmNyNLService.beOmNyNL(sendtSykmeldingKafkaMessage, person)

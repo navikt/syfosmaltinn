@@ -25,13 +25,12 @@ class AltinnSykmeldingMapperTest : Spek({
                 "fnr"
             )
             val narmesteLEder = NarmesteLeder(
-                "aktoerIdLeder",
                 "nl-epost",
                 "orgnummer",
                 "Telefonnummer",
                 LocalDate.now(),
                 null,
-                null, null, "NL Navn", "fnrLeder"
+                "NL Navn", "fnrLeder"
             )
             val sykmeldingAltinn = SykmeldingAltinn(
                 sendtSykmeldingKafkaMessage, pasient, narmesteLEder

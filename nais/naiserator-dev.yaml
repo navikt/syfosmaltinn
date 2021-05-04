@@ -49,6 +49,10 @@ spec:
       memory: 768Mi
   kafka:
     pool: nav-dev
+  azure:
+    application:
+      enabled: true
+      tenant: trygdeetaten.no
   vault:
     enabled: false
   filesFrom:
@@ -61,10 +65,8 @@ spec:
   env:
     - name: PDL_BASE_PATH
       value: https://api-gw-q1.oera.no/pdl-api/graphql
-    - name: AAD_ACCESS_TOKEN_URL
-      value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
-    - name: NARMESTELEDER_CLIENT_ID
-      value: a7e7ad0e-4e17-4f19-8aa6-39d73e62fff8
+    - name: NARMESTELEDER_SCOPE
+      value: api://dev-gcp.teamsykmelding.narmesteleder/.default
     - name: KAFKA_BOOTSTRAP_SERVERS_URL
       value: SSL://b27apvl00045.preprod.local:8443,SSL://b27apvl00046.preprod.local:8443,SSL://b27apvl00047.preprod.local:8443
     - name: SECURITYTOKENSERVICE_URL
@@ -75,7 +77,7 @@ spec:
       value: https://tt02.altinn.no
     - name: JURIDISKLOGG_REST_URL
       value: https://api-gw-q1.oera.no/sykmelding-fss-proxy/juridisklogg/juridisklogg/api/rest/logg
-    - name: NARMESTELEDER_URL
-      value: https://api-gw-q1.oera.no/sykmelding-fss-proxy/narmesteleder
     - name: KAFKA_CLIENT_ID
       value: syfosmaltinn
+    - name: NARMESTELEDER_URL
+      value: https://narmesteleder.dev.nav.no

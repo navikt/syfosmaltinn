@@ -22,7 +22,7 @@ class NarmestelederClientTest : Spek({
     val httpClientTest = HttpClientTest()
     val accessTokenClient = mockk<AccessTokenClient>()
     coEvery { accessTokenClient.getAccessToken() } returns "token"
-    val narmesteLederClient = NarmestelederClient(httpClientTest.httpClient, accessTokenClient, "url", "")
+    val narmesteLederClient = NarmestelederClient(httpClientTest.httpClient, accessTokenClient, "url")
 
     beforeEachTest {
         clearAllMocks()
@@ -34,7 +34,7 @@ class NarmestelederClientTest : Spek({
         it("get null response") {
             runBlocking {
                 httpClientTest.responseData = ResponseData(HttpStatusCode.OK, "{ \"narmesteLederRelasjon\": null}")
-                val response = narmesteLederClient.getNarmesteleder("org", "aktor")
+                val response = narmesteLederClient.getNarmesteleder("org", "fnr")
                 response shouldNotBe null
                 response.narmesteLederRelasjon shouldBe null
             }
@@ -43,7 +43,7 @@ class NarmestelederClientTest : Spek({
         it("get unauthorized response") {
             runBlocking {
                 httpClientTest.responseData = ResponseData(HttpStatusCode.Unauthorized, "Unauthorized", headersOf("Content-Type", listOf("Text")))
-                val exception = assertFailsWith<ClientRequestException> { narmesteLederClient.getNarmesteleder("org", "aktor") }
+                val exception = assertFailsWith<ClientRequestException> { narmesteLederClient.getNarmesteleder("org", "fnr") }
                 exception.response.status shouldEqual HttpStatusCode.Unauthorized
             }
         }
@@ -51,7 +51,7 @@ class NarmestelederClientTest : Spek({
         it("get not found response") {
             runBlocking {
                 httpClientTest.responseData = ResponseData(HttpStatusCode.NotFound, "Not found", headersOf("Content-Type", listOf("Text")))
-                val exception = assertFailsWith<ClientRequestException> { narmesteLederClient.getNarmesteleder("org", "aktor") }
+                val exception = assertFailsWith<ClientRequestException> { narmesteLederClient.getNarmesteleder("org", "fnr") }
                 exception.response.status shouldEqual HttpStatusCode.NotFound
             }
         }
