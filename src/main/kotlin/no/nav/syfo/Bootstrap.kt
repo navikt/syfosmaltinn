@@ -128,7 +128,7 @@ fun main() {
     val httpClientWithProxy = HttpClient(Apache, proxyConfig)
     val pdlClient = PdlClient(httpClient, env.pdlBasePath, env.pdlApiKey, PdlClient::class.java.getResource("/graphql/getPerson.graphql").readText())
     val stsOidcClient = StsOidcClient(username = vaultSecrets.serviceuserUsername, password = vaultSecrets.serviceuserPassword, stsUrl = env.stsOidcUrl, apiKey = env.stsApiKey)
-    val accessTokenClient = AccessTokenClient(aadAccessTokenUrl = env.aadAccessTokenUrl, clientId = env.clientId, clientSecret = env.clientSecret, resource = env.narmestelederClientId, httpClient = httpClientWithProxy)
+    val accessTokenClient = AccessTokenClient(aadAccessTokenUrl = env.aadAccessTokenUrl, clientId = env.clientId, clientSecret = env.clientSecret, resource = env.narmestelederScope, httpClient = httpClientWithProxy)
     val narmestelederClient = NarmestelederClient(httpClient, accessTokenClient, env.narmesteLederBasePath)
     val narmesteLederService = NarmesteLederService(narmestelederClient, pdlClient, stsOidcClient)
     val juridiskLoggService = JuridiskLoggService(JuridiskLoggClient(httpClientWithAuth, env.juridiskLoggUrl, env.sykmeldingProxyApiKey))

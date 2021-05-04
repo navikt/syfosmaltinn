@@ -49,6 +49,10 @@ spec:
       memory: 768Mi
   kafka:
     pool: nav-prod
+  azure:
+    application:
+      enabled: true
+      tenant: nav.no
   vault:
     enabled: false
   filesFrom:
@@ -63,8 +67,8 @@ spec:
       value: https://api-gw.oera.no/pdl-api/graphql
     - name: AAD_ACCESS_TOKEN_URL
       value: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/token
-    - name: NARMESTELEDER_CLIENT_ID
-      value: ccf8c36f-27e6-4e76-8250-9a49939df7ef
+    - name: NARMESTELEDER_SCOPE
+      value: api://prod-gcp.teamsykmelding.narmesteleder/.default
     - name: KAFKA_BOOTSTRAP_SERVERS_URL
       value: SASL_SSL://a01apvl00145.adeo.no:8443,SASL_SSL://a01apvl00146.adeo.no:8443,SASL_SSL://a01apvl00147.adeo.no:8443,SASL_SSL://a01apvl00149.adeo.no:8443
     - name: SECURITYTOKENSERVICE_URL
