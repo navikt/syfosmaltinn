@@ -1,15 +1,9 @@
 package no.nav.syfo.altinn.model
 
-import java.time.OffsetDateTime
-import java.util.Optional.ofNullable
-import java.util.function.Function
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 import no.nav.helse.xml.sykmeldingarbeidsgiver.ObjectFactory
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLAktivitet
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLAktivitetIkkeMulig
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLArbeidsgiver
-import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLArbeidsutsikter
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLBehandler
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLGradertSykmelding
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLKontaktMedPasient
@@ -24,13 +18,17 @@ import no.nav.syfo.model.sykmelding.model.AktivitetIkkeMuligDTO
 import no.nav.syfo.model.sykmelding.model.ArbeidsgiverDTO
 import no.nav.syfo.model.sykmelding.model.ArbeidsrelatertArsakTypeDTO
 import no.nav.syfo.model.sykmelding.model.BehandlerDTO
-import no.nav.syfo.model.sykmelding.model.ErIArbeidDTO
 import no.nav.syfo.model.sykmelding.model.GradertDTO
 import no.nav.syfo.model.sykmelding.model.PrognoseDTO
 import no.nav.syfo.model.sykmelding.model.SykmeldingsperiodeDTO
 import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
+import java.time.OffsetDateTime
+import java.util.Optional.ofNullable
+import java.util.function.Function
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 class SykmeldingArbeidsgiverMapper private constructor() {
     companion object {
@@ -84,21 +82,7 @@ class SykmeldingArbeidsgiverMapper private constructor() {
                     val xmlPrognose = ObjectFactory().createXMLPrognose()
                     xmlPrognose.isErArbeidsfoerEtterEndtPeriode = prognose.arbeidsforEtterPeriode
                     xmlPrognose.beskrivHensynArbeidsplassen = prognose.hensynArbeidsplassen
-                    xmlPrognose.arbeidsutsikter = getArbeidsUtsikter(prognose.erIArbeid)
                     xmlPrognose
-                }
-            }
-        }
-
-        private fun getArbeidsUtsikter(erIArbeid: ErIArbeidDTO?): XMLArbeidsutsikter? {
-            return when (erIArbeid) {
-                null -> null
-                else -> {
-                    val xmlArbeidsutsikter = ObjectFactory().createXMLArbeidsutsikter()
-                    xmlArbeidsutsikter.arbeidFom = erIArbeid.arbeidFOM
-                    xmlArbeidsutsikter.isHarEgetArbeidPaaSikt = erIArbeid.egetArbeidPaSikt
-                    xmlArbeidsutsikter.isHarAnnetArbeidPaaSikt = erIArbeid.annetArbeidPaSikt
-                    xmlArbeidsutsikter
                 }
             }
         }
