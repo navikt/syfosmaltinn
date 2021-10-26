@@ -4,6 +4,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
 import no.nav.syfo.log
+import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
 import no.nav.syfo.model.sykmeldingstatus.ShortNameDTO
 import no.nav.syfo.model.sykmeldingstatus.SykmeldingStatusKafkaEventDTO
 import no.nav.syfo.narmesteleder.kafka.NLRequestProducer
@@ -17,24 +18,23 @@ import no.nav.syfo.narmesteleder.kafka.model.NlResponseKafkaMessage
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.pdl.client.model.fulltNavn
-import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
 
 class BeOmNyNLService(private val nlRequestProducer: NLRequestProducer, private val nlResponseProducer: NLResponseProducer) {
-    fun beOmNyNL(sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage, person: Person) {
-        if (sendtSykmeldingKafkaMessage.kafkaMetadata.source == "user") {
-            log.info("Ber om ny nærmeste leder og bryter eksisterende kobling for sykmeldingid {}", sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId)
+    fun beOmNyNL(kafkaMetadata: KafkaMetadataDTO, event: SykmeldingStatusKafkaEventDTO, person: Person) {
+        if (kafkaMetadata.source == "user") {
+            log.info("Ber om ny nærmeste leder og bryter eksisterende kobling for sykmeldingid {}", kafkaMetadata.sykmeldingId)
             nlRequestProducer.send(
                 NlRequestKafkaMessage(
                     nlRequest = NlRequest(
-                        requestId = UUID.fromString(sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId),
-                        sykmeldingId = sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId,
-                        fnr = sendtSykmeldingKafkaMessage.kafkaMetadata.fnr,
-                        orgnr = sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.orgnummer,
+                        requestId = UUID.fromString(kafkaMetadata.sykmeldingId),
+                        sykmeldingId = kafkaMetadata.sykmeldingId,
+                        fnr = kafkaMetadata.fnr,
+                        orgnr = event.arbeidsgiver!!.orgnummer,
                         name = person.fulltNavn()
                     ),
                     metadata = NlKafkaMetadata(
                         timestamp = OffsetDateTime.now(ZoneOffset.UTC),
-                        source = sendtSykmeldingKafkaMessage.kafkaMetadata.source
+                        source = kafkaMetadata.source
                     )
                 )
             )
@@ -45,8 +45,8 @@ class BeOmNyNLService(private val nlRequestProducer: NLRequestProducer, private 
                         source = "syfosmaltinn"
                     ),
                     nlAvbrutt = NlAvbrutt(
-                        orgnummer = sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.orgnummer,
-                        sykmeldtFnr = sendtSykmeldingKafkaMessage.kafkaMetadata.fnr,
+                        orgnummer = event.arbeidsgiver!!.orgnummer,
+                        sykmeldtFnr = kafkaMetadata.fnr,
                         aktivTom = OffsetDateTime.now(ZoneOffset.UTC)
                     )
                 )

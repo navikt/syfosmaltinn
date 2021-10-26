@@ -9,39 +9,28 @@ import no.nav.syfo.altinn.util.SykmeldingHTMLandPDFMapper.Companion.toSykmelding
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.pdl.client.model.fulltNavn
-import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
 
 class SykmeldingAltinn(
-    sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage,
+    val xmlSykmeldingArbeidsgiver: XMLSykmeldingArbeidsgiver,
     pasient: Person,
     naemresteLeder: NarmesteLeder?
 ) {
-    val xmlSykmeldingArbeidsgiver: XMLSykmeldingArbeidsgiver
-    val sykmeldingXml: String
+    val sykmeldingXml: String = JAXB.marshallSykmeldingArbeidsgiver(xmlSykmeldingArbeidsgiver)
     val sykmeldingHTML: String
     val sykmeldingPortableHTML: String
     val sykmeldingPdf: ByteArray
 
     init {
-        xmlSykmeldingArbeidsgiver = SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(
-            sendtSykmeldingKafkaMessage,
-            pasient
-        )
-
-        sykmeldingXml = JAXB.marshallSykmeldingArbeidsgiver(xmlSykmeldingArbeidsgiver)
-
-        val stilingsprosent = sendtSykmeldingKafkaMessage.sykmelding.arbeidsgiver.stillingsprosent
 
         val sykmeldingXmlForHtml = toSykmeldingXml(
             narmesteLeder = naemresteLeder,
-            stillingsprosent = stilingsprosent,
             xmlSykmeldingArbeidsgiver = xmlSykmeldingArbeidsgiver
         )
 
         sykmeldingHTML = toSykmeldingHtml(sykmeldingXml = sykmeldingXmlForHtml)
         sykmeldingPortableHTML = SykmeldingHTMLandPDFMapper.toPortableHTML(
             sykmeldingHTML,
-            sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId
+            xmlSykmeldingArbeidsgiver.sykmeldingId
         )
 
         sykmeldingPdf = PdfFactory.getSykmeldingPDF(
