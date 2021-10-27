@@ -69,6 +69,7 @@ class BeOmNyNLService(
     ): Boolean {
         val narmestelederCheck = database.hasCheckedNl(sykmeldingId = sykmeldingStatusKafkaEventDTO.sykmeldingId)
         if (narmestelederCheck) {
+            log.info("Har allerede bedt om ny NL for ${sykmeldingStatusKafkaEventDTO.sykmeldingId}")
             return false
         }
         val nlSporsmal =
