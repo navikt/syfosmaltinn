@@ -31,6 +31,7 @@ class SendtSykmeldingService(
     suspend fun start() {
         log.info("Starting consumer")
         sendtSykmeldingConsumer.subscribe()
+        sendtSykmeldingAivenConsumer.subscribe()
         while (applicationState.ready) {
             consumeNewTopic()
             consumeOldTopic()
