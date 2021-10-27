@@ -1,32 +1,29 @@
+
 import java.time.LocalDate
 import java.time.OffsetDateTime
-import no.nav.syfo.model.sykmelding.kafka.EnkelSykmelding
+import no.nav.syfo.model.sykmelding.arbeidsgiver.ArbeidsgiverAGDTO
+import no.nav.syfo.model.sykmelding.arbeidsgiver.ArbeidsgiverSykmelding
+import no.nav.syfo.model.sykmelding.arbeidsgiver.BehandlerAGDTO
+import no.nav.syfo.model.sykmelding.arbeidsgiver.KontaktMedPasientAGDTO
+import no.nav.syfo.model.sykmelding.arbeidsgiver.PrognoseAGDTO
+import no.nav.syfo.model.sykmelding.arbeidsgiver.SykmeldingsperiodeAGDTO
 import no.nav.syfo.model.sykmelding.model.AdresseDTO
-import no.nav.syfo.model.sykmelding.model.ArbeidsgiverDTO
-import no.nav.syfo.model.sykmelding.model.BehandlerDTO
-import no.nav.syfo.model.sykmelding.model.ErIArbeidDTO
-import no.nav.syfo.model.sykmelding.model.KontaktMedPasientDTO
 import no.nav.syfo.model.sykmelding.model.PeriodetypeDTO
-import no.nav.syfo.model.sykmelding.model.PrognoseDTO
-import no.nav.syfo.model.sykmelding.model.SykmeldingsperiodeDTO
 import no.nav.syfo.model.sykmeldingstatus.ArbeidsgiverStatusDTO
 import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
 import no.nav.syfo.model.sykmeldingstatus.SykmeldingStatusKafkaEventDTO
-import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
+import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
 
-fun getSykmeldingKafkaMessage(sykmeldingId: String): SendtSykmeldingKafkaMessage {
-    val sendtSykmeldingKafkaMessage = SendtSykmeldingKafkaMessage(
-        sykmelding = EnkelSykmelding(
+fun getSykmeldingKafkaMessage(sykmeldingId: String): SendSykmeldingAivenKafkaMessage {
+    val sendtSykmeldingKafkaMessage = SendSykmeldingAivenKafkaMessage(
+        sykmelding = ArbeidsgiverSykmelding(
             id = sykmeldingId,
-            arbeidsgiver = ArbeidsgiverDTO("ArbeidsgiverNavn", 100),
-            behandler = BehandlerDTO(
+            arbeidsgiver = ArbeidsgiverAGDTO("ArbeidsgiverNavn", "yrke"),
+            behandler = BehandlerAGDTO(
                 "BehandlerFornavn",
                 "BehandlerMellomnavn",
                 "BehandlerEtternavn",
                 "aktorid",
-                "12345678901",
-                "7898789",
-                null,
                 AdresseDTO(
                     null,
                     null,
@@ -34,31 +31,22 @@ fun getSykmeldingKafkaMessage(sykmeldingId: String): SendtSykmeldingKafkaMessage
                     null,
                     null
                 ),
-                "Kontaktinformasjon"
+                "telefon"
             ),
             behandletTidspunkt = OffsetDateTime.now(),
             egenmeldt = false,
             harRedusertArbeidsgiverperiode = false,
-            kontaktMedPasient = KontaktMedPasientDTO(LocalDate.of(2016, 12, 7), null),
-            legekontorOrgnummer = null,
+            kontaktMedPasient = KontaktMedPasientAGDTO(LocalDate.of(2016, 12, 7)),
             meldingTilArbeidsgiver = "MeldingTilArbeidsgiver",
             mottattTidspunkt = OffsetDateTime.now(),
-            navnFastlege = null,
             papirsykmelding = false,
-            prognose = PrognoseDTO(
+            prognose = PrognoseAGDTO(
                 arbeidsforEtterPeriode = false,
-                hensynArbeidsplassen = "BeskrivHensynArbeidsplassen",
-                erIArbeid = ErIArbeidDTO(
-                    egetArbeidPaSikt = true,
-                    annetArbeidPaSikt = false,
-                    arbeidFOM = null,
-                    vurderingsdato = null
-                ),
-                erIkkeIArbeid = null
+                hensynArbeidsplassen = "BeskrivHensynArbeidsplassen"
             ),
             syketilfelleStartDato = LocalDate.of(2016, 12, 7),
             sykmeldingsperioder = listOf(
-                SykmeldingsperiodeDTO(
+                SykmeldingsperiodeAGDTO(
                     LocalDate.of(2016, 12, 7),
                     LocalDate.of(2016, 12, 7),
                     null,
