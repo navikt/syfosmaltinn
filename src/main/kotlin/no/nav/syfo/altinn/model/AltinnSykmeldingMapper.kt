@@ -155,32 +155,21 @@ class AltinnSykmeldingMapper private constructor() {
 
         fun toSykmeldingXml(
             narmesteLeder: NarmesteLeder?,
-            stillingsprosent: Int?,
             xmlSykmeldingArbeidsgiver: XMLSykmeldingArbeidsgiver
         ): String {
             val sykmeldingXml = JAXB.marshallSykmeldingArbeidsgiver(xmlSykmeldingArbeidsgiver)
-            if (narmesteLeder != null || stillingsprosent != null) {
-                return appendToXml(narmesteLeder, stillingsprosent, sykmeldingXml)
+            if (narmesteLeder != null) {
+                return appendToXml(narmesteLeder, sykmeldingXml)
             }
             return sykmeldingXml
         }
 
-        fun appendToXml(narmesteLeder: NarmesteLeder?, stillingsprosent: Int?, sykmeldingXML: String): String {
+        fun appendToXml(narmesteLeder: NarmesteLeder?, sykmeldingXML: String): String {
             val document: Document = parseXml(sykmeldingXML)
             if (narmesteLeder != null) {
                 appendNaermesteLeder(document, narmesteLeder)
             }
-            if (stillingsprosent != null) {
-                appendStillingsprosentToXml(stillingsprosent, document)
-            }
             return xmlToString(document)
-        }
-
-        fun appendStillingsprosentToXml(stillingsprosent: Int, document: Document) {
-            val element = document.getElementsByTagName("arbeidsgiver").item(0) as Element?
-            if (element != null) {
-                appendElement(document, element, "$stillingsprosent % stilling", "stillingsprosent")
-            }
         }
 
         fun xmlToString(doc: Document?): String {

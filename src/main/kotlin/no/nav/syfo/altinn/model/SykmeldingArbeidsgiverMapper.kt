@@ -1,5 +1,10 @@
 package no.nav.syfo.altinn.model
 
+import java.time.OffsetDateTime
+import java.util.Optional.ofNullable
+import java.util.function.Function
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import no.nav.helse.xml.sykmeldingarbeidsgiver.ObjectFactory
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLAktivitet
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLAktivitetIkkeMulig
@@ -14,6 +19,11 @@ import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLPrognose
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmelding
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLTiltak
+import no.nav.syfo.model.sykmelding.arbeidsgiver.AktivitetIkkeMuligAGDTO
+import no.nav.syfo.model.sykmelding.arbeidsgiver.ArbeidsgiverAGDTO
+import no.nav.syfo.model.sykmelding.arbeidsgiver.BehandlerAGDTO
+import no.nav.syfo.model.sykmelding.arbeidsgiver.PrognoseAGDTO
+import no.nav.syfo.model.sykmelding.arbeidsgiver.SykmeldingsperiodeAGDTO
 import no.nav.syfo.model.sykmelding.model.AktivitetIkkeMuligDTO
 import no.nav.syfo.model.sykmelding.model.ArbeidsgiverDTO
 import no.nav.syfo.model.sykmelding.model.ArbeidsrelatertArsakTypeDTO
@@ -23,15 +33,44 @@ import no.nav.syfo.model.sykmelding.model.PrognoseDTO
 import no.nav.syfo.model.sykmelding.model.SykmeldingsperiodeDTO
 import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
 import no.nav.syfo.pdl.client.model.Person
+import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
-import java.time.OffsetDateTime
-import java.util.Optional.ofNullable
-import java.util.function.Function
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 class SykmeldingArbeidsgiverMapper private constructor() {
     companion object {
+
+        fun toAltinnXMLSykmelding(
+            sendtSykmeldingKafkaMessage: SendSykmeldingAivenKafkaMessage,
+            person: Person
+        ): XMLSykmeldingArbeidsgiver {
+            val xmlSykmeldingArbeidsgiver = ObjectFactory().createXMLSykmeldingArbeidsgiver()
+            xmlSykmeldingArbeidsgiver.juridiskOrganisasjonsnummer =
+                sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.juridiskOrgnummer
+            xmlSykmeldingArbeidsgiver.mottattidspunkt = sendtSykmeldingKafkaMessage.sykmelding.mottattTidspunkt.toLocalDateTime()
+            xmlSykmeldingArbeidsgiver.sykmeldingId = sendtSykmeldingKafkaMessage.sykmelding.id
+            xmlSykmeldingArbeidsgiver.virksomhetsnummer = sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.orgnummer
+            xmlSykmeldingArbeidsgiver.sykmelding = toXMLSykmelding(sendtSykmeldingKafkaMessage, person)
+            return xmlSykmeldingArbeidsgiver
+        }
+
+        private fun toXMLSykmelding(
+            sendtSykmeldingKafkaMessage: SendSykmeldingAivenKafkaMessage,
+            person: Person
+        ): XMLSykmelding {
+            val sendtSykmelding = sendtSykmeldingKafkaMessage.sykmelding
+            val xmlSykmelding = ObjectFactory().createXMLSykmelding()
+            xmlSykmelding.arbeidsgiver = getArbeidsgiver(sendtSykmelding.arbeidsgiver)
+            xmlSykmelding.behandler = getBehandler(sendtSykmelding.behandler)
+            xmlSykmelding.kontaktMedPasient = getKontaktMedPasient(sendtSykmelding.behandletTidspunkt)
+            xmlSykmelding.meldingTilArbeidsgiver = getMeldingTilArbeidsgiver(sendtSykmelding.meldingTilArbeidsgiver)
+            xmlSykmelding.pasient = getPasient(sendtSykmeldingKafkaMessage.kafkaMetadata, person)
+            xmlSykmelding.perioder.addAll(getPerioderAG(sendtSykmelding.sykmeldingsperioder))
+            xmlSykmelding.prognose = getPrognose(sendtSykmelding.prognose)
+            xmlSykmelding.syketilfelleFom = sendtSykmelding.syketilfelleStartDato
+            xmlSykmelding.tiltak = getTiltak(sendtSykmelding.tiltakArbeidsplassen)
+            return xmlSykmelding
+        }
+
         fun toAltinnXMLSykmelding(
             sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage,
             person: Person
@@ -75,6 +114,18 @@ class SykmeldingArbeidsgiverMapper private constructor() {
             }
         }
 
+        private fun getPrognose(prognose: PrognoseAGDTO?): XMLPrognose? {
+            return when (prognose) {
+                null -> null
+                else -> {
+                    val xmlPrognose = ObjectFactory().createXMLPrognose()
+                    xmlPrognose.isErArbeidsfoerEtterEndtPeriode = prognose.arbeidsforEtterPeriode
+                    xmlPrognose.beskrivHensynArbeidsplassen = prognose.hensynArbeidsplassen
+                    xmlPrognose
+                }
+            }
+        }
+
         private fun getPrognose(prognose: PrognoseDTO?): XMLPrognose? {
             return when (prognose) {
                 null -> null
@@ -87,6 +138,16 @@ class SykmeldingArbeidsgiverMapper private constructor() {
             }
         }
 
+        private fun getPerioderAG(sykmeldingsperioder: List<SykmeldingsperiodeAGDTO>): List<XMLPeriode> {
+            return sykmeldingsperioder.map {
+                val periode = XMLPeriode()
+                periode.fom = it.fom
+                periode.tom = it.tom
+                periode.aktivitet = getAktivitet(it)
+                periode
+            }
+        }
+
         private fun getPerioder(sykmeldingsperioder: List<SykmeldingsperiodeDTO>): List<XMLPeriode> {
             return sykmeldingsperioder.map {
                 val periode = XMLPeriode()
@@ -95,6 +156,17 @@ class SykmeldingArbeidsgiverMapper private constructor() {
                 periode.aktivitet = getAktivitet(it)
                 periode
             }
+        }
+
+        private fun getAktivitet(it: SykmeldingsperiodeAGDTO): XMLAktivitet {
+            val xmlAktivitet = ObjectFactory().createXMLAktivitet()
+            xmlAktivitet.avventendeSykmelding = it.innspillTilArbeidsgiver
+            xmlAktivitet.gradertSykmelding = getGradertAktivitet(it.gradert)
+            xmlAktivitet.aktivitetIkkeMulig = getAktivitetIkkeMulig(it.aktivitetIkkeMulig)
+            xmlAktivitet.isHarReisetilskudd = it.reisetilskudd.let { when (it) {
+                true -> true else -> null } }
+            xmlAktivitet.antallBehandlingsdagerUke = it.behandlingsdager
+            return xmlAktivitet
         }
 
         private fun getAktivitet(it: SykmeldingsperiodeDTO): XMLAktivitet {
@@ -121,7 +193,25 @@ class SykmeldingArbeidsgiverMapper private constructor() {
             }
         }
 
+        private fun getAktivitetIkkeMulig(aktivitetIkkeMulig: AktivitetIkkeMuligAGDTO?): XMLAktivitetIkkeMulig? {
+            return when (aktivitetIkkeMulig) {
+                null -> null
+                else -> {
+                    val xmlAktivitetIkkeMulig = ObjectFactory().createXMLAktivitetIkkeMulig()
+                    xmlAktivitetIkkeMulig.isManglendeTilretteleggingPaaArbeidsplassen =
+                        isMangledneTilrettelegging(aktivitetIkkeMulig)
+                    xmlAktivitetIkkeMulig.beskrivelse = aktivitetIkkeMulig.arbeidsrelatertArsak?.beskrivelse
+                    xmlAktivitetIkkeMulig
+                }
+            }
+        }
+
         private fun isMangledneTilrettelegging(aktivitetIkkeMulig: AktivitetIkkeMuligDTO): Boolean? {
+            return aktivitetIkkeMulig.arbeidsrelatertArsak?.arsak?.stream()
+                ?.anyMatch { it == ArbeidsrelatertArsakTypeDTO.MANGLENDE_TILRETTELEGGING }
+        }
+
+        private fun isMangledneTilrettelegging(aktivitetIkkeMulig: AktivitetIkkeMuligAGDTO): Boolean? {
             return aktivitetIkkeMulig.arbeidsrelatertArsak?.arsak?.stream()
                 ?.anyMatch { it == ArbeidsrelatertArsakTypeDTO.MANGLENDE_TILRETTELEGGING }
         }
@@ -162,6 +252,13 @@ class SykmeldingArbeidsgiverMapper private constructor() {
             return xmlKontaktMedPasient
         }
 
+        private fun getBehandler(behandler: BehandlerAGDTO): XMLBehandler? {
+            val xmlBehandler = ObjectFactory().createXMLBehandler()
+            xmlBehandler.navn = getNavn(behandler)
+            xmlBehandler.telefonnummer = getTelefonnr(behandler.tlf)
+            return xmlBehandler
+        }
+
         private fun getBehandler(behandler: BehandlerDTO): XMLBehandler? {
             val xmlBehandler = ObjectFactory().createXMLBehandler()
             xmlBehandler.navn = getNavn(behandler)
@@ -193,12 +290,26 @@ class SykmeldingArbeidsgiverMapper private constructor() {
                     .orElse(kontaktinfo)
             }
 
+        private fun getNavn(behandler: BehandlerAGDTO): XMLNavn? {
+            val xmlNavn = ObjectFactory().createXMLNavn()
+            xmlNavn.fornavn = behandler.fornavn
+            xmlNavn.etternavn = behandler.etternavn
+            xmlNavn.mellomnavn = behandler.mellomnavn
+            return xmlNavn
+        }
+
         private fun getNavn(behandler: BehandlerDTO): XMLNavn? {
             val xmlNavn = ObjectFactory().createXMLNavn()
             xmlNavn.fornavn = behandler.fornavn
             xmlNavn.etternavn = behandler.etternavn
             xmlNavn.mellomnavn = behandler.mellomnavn
             return xmlNavn
+        }
+
+        private fun getArbeidsgiver(arbeidsgiver: ArbeidsgiverAGDTO): XMLArbeidsgiver? {
+            val xmlArbeidsgiver = ObjectFactory().createXMLArbeidsgiver()
+            xmlArbeidsgiver.navn = arbeidsgiver.navn
+            return xmlArbeidsgiver
         }
 
         private fun getArbeidsgiver(arbeidsgiver: ArbeidsgiverDTO): XMLArbeidsgiver? {

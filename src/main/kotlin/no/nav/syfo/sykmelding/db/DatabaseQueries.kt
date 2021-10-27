@@ -5,6 +5,29 @@ import java.sql.Timestamp
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
+fun DatabaseInterface.insertNarmestelederCheck(sykmeldingId: String, now: OffsetDateTime) {
+    connection.use { connection ->
+        connection.prepareStatement("""
+       INSERT INTO narmesteleder_check(sykmelding_id, timestamp) values (?, ?)
+    """).use { ps ->
+            ps.setString(1, sykmeldingId)
+            ps.setTimestamp(2, Timestamp.from(now.toInstant()))
+            ps.executeUpdate()
+        }
+        connection.commit()
+    }
+}
+
+fun DatabaseInterface.hasCheckedNl(sykmeldingId: String): Boolean {
+    return connection.use { connection ->
+        connection.prepareStatement("""select * from narmesteleder_check where sykmelding_id = ?""")
+            .use { ps ->
+                ps.setString(1, sykmeldingId)
+                ps.executeQuery().next()
+            }
+    }
+}
+
 fun DatabaseInterface.getStatus(id: String): SykmeldingStatus? {
     return connection.use { connection ->
         connection.prepareStatement("""

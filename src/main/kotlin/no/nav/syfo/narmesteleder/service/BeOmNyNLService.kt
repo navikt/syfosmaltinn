@@ -1,9 +1,7 @@
 package no.nav.syfo.narmesteleder.service
 
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
-import java.util.UUID
 import no.nav.syfo.log
+import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
 import no.nav.syfo.model.sykmeldingstatus.ShortNameDTO
 import no.nav.syfo.model.sykmeldingstatus.SykmeldingStatusKafkaEventDTO
 import no.nav.syfo.narmesteleder.kafka.NLRequestProducer
@@ -17,45 +15,65 @@ import no.nav.syfo.narmesteleder.kafka.model.NlResponseKafkaMessage
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.pdl.client.model.fulltNavn
-import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
+import no.nav.syfo.sykmelding.db.DatabaseInterface
+import no.nav.syfo.sykmelding.db.hasCheckedNl
+import no.nav.syfo.sykmelding.db.insertNarmestelederCheck
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import java.util.UUID
 
-class BeOmNyNLService(private val nlRequestProducer: NLRequestProducer, private val nlResponseProducer: NLResponseProducer) {
-    fun beOmNyNL(sendtSykmeldingKafkaMessage: SendtSykmeldingKafkaMessage, person: Person) {
-        if (sendtSykmeldingKafkaMessage.kafkaMetadata.source == "user") {
-            log.info("Ber om ny nærmeste leder og bryter eksisterende kobling for sykmeldingid {}", sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId)
-            nlRequestProducer.send(
-                NlRequestKafkaMessage(
-                    nlRequest = NlRequest(
-                        requestId = UUID.fromString(sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId),
-                        sykmeldingId = sendtSykmeldingKafkaMessage.kafkaMetadata.sykmeldingId,
-                        fnr = sendtSykmeldingKafkaMessage.kafkaMetadata.fnr,
-                        orgnr = sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.orgnummer,
-                        name = person.fulltNavn()
-                    ),
-                    metadata = NlKafkaMetadata(
-                        timestamp = OffsetDateTime.now(ZoneOffset.UTC),
-                        source = sendtSykmeldingKafkaMessage.kafkaMetadata.source
-                    )
+class BeOmNyNLService(
+    private val nlRequestProducer: NLRequestProducer,
+    private val nlResponseProducer: NLResponseProducer,
+    private val database: DatabaseInterface
+) {
+    fun beOmNyNL(kafkaMetadata: KafkaMetadataDTO, event: SykmeldingStatusKafkaEventDTO, person: Person) {
+        log.info(
+            "Ber om ny nærmeste leder og bryter eksisterende kobling for sykmeldingid {}",
+            kafkaMetadata.sykmeldingId
+        )
+        nlRequestProducer.send(
+            NlRequestKafkaMessage(
+                nlRequest = NlRequest(
+                    requestId = UUID.fromString(kafkaMetadata.sykmeldingId),
+                    sykmeldingId = kafkaMetadata.sykmeldingId,
+                    fnr = kafkaMetadata.fnr,
+                    orgnr = event.arbeidsgiver!!.orgnummer,
+                    name = person.fulltNavn()
+                ),
+                metadata = NlKafkaMetadata(
+                    timestamp = OffsetDateTime.now(ZoneOffset.UTC),
+                    source = kafkaMetadata.source
                 )
             )
-            nlResponseProducer.send(
-                NlResponseKafkaMessage(
-                    kafkaMetadata = KafkaMetadata(
-                        timestamp = OffsetDateTime.now(ZoneOffset.UTC),
-                        source = "syfosmaltinn"
-                    ),
-                    nlAvbrutt = NlAvbrutt(
-                        orgnummer = sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.orgnummer,
-                        sykmeldtFnr = sendtSykmeldingKafkaMessage.kafkaMetadata.fnr,
-                        aktivTom = OffsetDateTime.now(ZoneOffset.UTC)
-                    )
+        )
+        nlResponseProducer.send(
+            NlResponseKafkaMessage(
+                kafkaMetadata = KafkaMetadata(
+                    timestamp = OffsetDateTime.now(ZoneOffset.UTC),
+                    source = "syfosmaltinn"
+                ),
+                nlAvbrutt = NlAvbrutt(
+                    orgnummer = event.arbeidsgiver!!.orgnummer,
+                    sykmeldtFnr = kafkaMetadata.fnr,
+                    aktivTom = OffsetDateTime.now(ZoneOffset.UTC)
                 )
             )
-        }
+        )
+        database.insertNarmestelederCheck(kafkaMetadata.sykmeldingId, OffsetDateTime.now(ZoneOffset.UTC))
     }
 
-    fun skalBeOmNyNL(sykmeldingStatusKafkaEventDTO: SykmeldingStatusKafkaEventDTO, narmesteLeder: NarmesteLeder?): Boolean {
-        val nlSporsmal = sykmeldingStatusKafkaEventDTO.sporsmals?.find { it.shortName == ShortNameDTO.NY_NARMESTE_LEDER }
+    fun skalBeOmNyNL(
+        sykmeldingStatusKafkaEventDTO: SykmeldingStatusKafkaEventDTO,
+        narmesteLeder: NarmesteLeder?
+    ): Boolean {
+        val narmestelederCheck = database.hasCheckedNl(sykmeldingId = sykmeldingStatusKafkaEventDTO.sykmeldingId)
+        if (narmestelederCheck) {
+            log.info("Har allerede bedt om ny NL for ${sykmeldingStatusKafkaEventDTO.sykmeldingId}")
+            return false
+        }
+        val nlSporsmal =
+            sykmeldingStatusKafkaEventDTO.sporsmals?.find { it.shortName == ShortNameDTO.NY_NARMESTE_LEDER }
         return when {
             nlSporsmal?.svar == "NEI" -> {
                 false

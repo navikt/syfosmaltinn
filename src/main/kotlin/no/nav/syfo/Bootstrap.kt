@@ -44,6 +44,8 @@ import no.nav.syfo.pdl.client.PdlClient
 import no.nav.syfo.sykmelding.SendtSykmeldingService
 import no.nav.syfo.sykmelding.db.Database
 import no.nav.syfo.sykmelding.kafka.SendtSykmeldingConsumer
+import no.nav.syfo.sykmelding.kafka.aiven.SendtSykmeldingAivenConsumer
+import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
 import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
 import no.nav.syfo.sykmelding.kafka.utils.JacksonKafkaDeserializer
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner
@@ -83,13 +85,24 @@ fun main() {
     )
     val nlRequestProducer = NLRequestProducer(kafkaProducer, env.beOmNLKafkaTopic)
     val nlResponseProducer = NLResponseProducer(kafkaProducerNlResponse, env.brytNLKafkaTopic)
-    val beOmNyNLService = BeOmNyNLService(nlRequestProducer, nlResponseProducer)
-    val consumerProperties = loadBaseConfig(env, vaultSecrets).toConsumerConfig(env.applicationName + "-consumer", JacksonKafkaDeserializer::class)
+    val beOmNyNLService = BeOmNyNLService(nlRequestProducer, nlResponseProducer, database)
+    val consumerProperties = loadBaseConfig(env, vaultSecrets).toConsumerConfig(
+        env.applicationName + "-consumer",
+        JacksonKafkaDeserializer::class
+    )
     consumerProperties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none"
-    val kafkaConsumer = KafkaConsumer<String, SendtSykmeldingKafkaMessage>(consumerProperties, StringDeserializer(), JacksonKafkaDeserializer(SendtSykmeldingKafkaMessage::class))
+    val kafkaConsumer = KafkaConsumer<String, SendtSykmeldingKafkaMessage>(
+        consumerProperties,
+        StringDeserializer(),
+        JacksonKafkaDeserializer(SendtSykmeldingKafkaMessage::class)
+    )
     val sendtSykmeldingConsumer = SendtSykmeldingConsumer(kafkaConsumer, env.sendtSykmeldingKafkaTopic)
     val iCorrespondenceAgencyExternalBasic = createPort(env.altinnUrl)
-    val altinnClient = AltinnClient(username = env.altinnUsername, password = env.altinnPassword, iCorrespondenceAgencyExternalBasic = iCorrespondenceAgencyExternalBasic)
+    val altinnClient = AltinnClient(
+        username = env.altinnUsername,
+        password = env.altinnPassword,
+        iCorrespondenceAgencyExternalBasic = iCorrespondenceAgencyExternalBasic
+    )
     val altinnOrgnummerLookup = AltinnOrgnummerLookupFacotry.getOrgnummerResolver(env.cluster)
     log.info("creating httpConfigs")
     val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
@@ -126,14 +139,57 @@ fun main() {
     val httpClient = HttpClient(Apache, config)
     val httpClientWithAuth = HttpClient(Apache, basichAuthConfig)
     val httpClientWithProxy = HttpClient(Apache, proxyConfig)
-    val pdlClient = PdlClient(httpClient, env.pdlBasePath, env.pdlApiKey, PdlClient::class.java.getResource("/graphql/getPerson.graphql").readText())
-    val stsOidcClient = StsOidcClient(username = vaultSecrets.serviceuserUsername, password = vaultSecrets.serviceuserPassword, stsUrl = env.stsOidcUrl, apiKey = env.stsApiKey)
-    val accessTokenClient = AccessTokenClient(aadAccessTokenUrl = env.aadAccessTokenUrl, clientId = env.clientId, clientSecret = env.clientSecret, resource = env.narmestelederScope, httpClient = httpClientWithProxy)
+    val pdlClient = PdlClient(
+        httpClient,
+        env.pdlBasePath,
+        env.pdlApiKey,
+        PdlClient::class.java.getResource("/graphql/getPerson.graphql").readText()
+    )
+    val stsOidcClient = StsOidcClient(
+        username = vaultSecrets.serviceuserUsername,
+        password = vaultSecrets.serviceuserPassword,
+        stsUrl = env.stsOidcUrl,
+        apiKey = env.stsApiKey
+    )
+    val accessTokenClient = AccessTokenClient(
+        aadAccessTokenUrl = env.aadAccessTokenUrl,
+        clientId = env.clientId,
+        clientSecret = env.clientSecret,
+        resource = env.narmestelederScope,
+        httpClient = httpClientWithProxy
+    )
     val narmestelederClient = NarmestelederClient(httpClient, accessTokenClient, env.narmesteLederBasePath)
     val narmesteLederService = NarmesteLederService(narmestelederClient, pdlClient, stsOidcClient)
-    val juridiskLoggService = JuridiskLoggService(JuridiskLoggClient(httpClientWithAuth, env.juridiskLoggUrl, env.sykmeldingProxyApiKey))
-    val altinnSendtSykmeldingService = AltinnSykmeldingService(altinnClient, env, altinnOrgnummerLookup, juridiskLoggService, database)
-    val sendtSykmeldingService = SendtSykmeldingService(applicationState, sendtSykmeldingConsumer, altinnSendtSykmeldingService, pdlClient, stsOidcClient, narmesteLederService, beOmNyNLService)
+    val juridiskLoggService =
+        JuridiskLoggService(JuridiskLoggClient(httpClientWithAuth, env.juridiskLoggUrl, env.sykmeldingProxyApiKey))
+    val altinnSendtSykmeldingService = AltinnSykmeldingService(
+        altinnClient,
+        altinnOrgnummerLookup,
+        juridiskLoggService,
+        database
+    )
+
+    val aivenKafkaSykmeldingConsumer = KafkaConsumer(
+        KafkaUtils.getAivenKafkaConfig().also {
+            it[ConsumerConfig.MAX_POLL_RECORDS_CONFIG] = "100"
+            it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "latest"
+        }.toConsumerConfig(env.applicationName + "-consumer", JacksonKafkaDeserializer::class),
+        StringDeserializer(),
+        JacksonKafkaDeserializer(SendSykmeldingAivenKafkaMessage::class)
+    )
+
+    val sendtSykmeldingAivenConsumer = SendtSykmeldingAivenConsumer(aivenKafkaSykmeldingConsumer, env.sendtSykmeldingAivenKafkaTopic)
+
+    val sendtSykmeldingService = SendtSykmeldingService(
+        applicationState,
+        sendtSykmeldingConsumer,
+        altinnSendtSykmeldingService,
+        pdlClient,
+        stsOidcClient,
+        narmesteLederService,
+        beOmNyNLService,
+        sendtSykmeldingAivenConsumer
+    )
 
     applicationState.ready = true
 
