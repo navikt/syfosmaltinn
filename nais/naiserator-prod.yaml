@@ -67,8 +67,6 @@ spec:
       value: https://api-gw.oera.no/pdl-api/graphql
     - name: NARMESTELEDER_SCOPE
       value: api://prod-gcp.teamsykmelding.narmesteleder/.default
-    - name: KAFKA_BOOTSTRAP_SERVERS_URL
-      value: SASL_SSL://a01apvl00145.adeo.no:8443,SASL_SSL://a01apvl00146.adeo.no:8443,SASL_SSL://a01apvl00147.adeo.no:8443,SASL_SSL://a01apvl00149.adeo.no:8443
     - name: SECURITYTOKENSERVICE_URL
       value: https://api-gw.oera.no/security-token-service/rest/v1/sts/token
     - name: ALTINN_URL

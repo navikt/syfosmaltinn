@@ -29,7 +29,6 @@ import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.juridisklogg.JuridiskLoggClient
 import no.nav.syfo.juridisklogg.JuridiskLoggService
 import no.nav.syfo.kafka.aiven.KafkaUtils
-import no.nav.syfo.kafka.loadBaseConfig
 import no.nav.syfo.kafka.toConsumerConfig
 import no.nav.syfo.kafka.toProducerConfig
 import no.nav.syfo.narmesteleder.client.NarmestelederClient
@@ -43,10 +42,8 @@ import no.nav.syfo.narmesteleder.service.NarmesteLederService
 import no.nav.syfo.pdl.client.PdlClient
 import no.nav.syfo.sykmelding.SendtSykmeldingService
 import no.nav.syfo.sykmelding.db.Database
-import no.nav.syfo.sykmelding.kafka.SendtSykmeldingConsumer
 import no.nav.syfo.sykmelding.kafka.aiven.SendtSykmeldingAivenConsumer
 import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
-import no.nav.syfo.sykmelding.kafka.model.SendtSykmeldingKafkaMessage
 import no.nav.syfo.sykmelding.kafka.utils.JacksonKafkaDeserializer
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import org.apache.kafka.clients.consumer.ConsumerConfig
@@ -86,17 +83,7 @@ fun main() {
     val nlRequestProducer = NLRequestProducer(kafkaProducer, env.beOmNLKafkaTopic)
     val nlResponseProducer = NLResponseProducer(kafkaProducerNlResponse, env.brytNLKafkaTopic)
     val beOmNyNLService = BeOmNyNLService(nlRequestProducer, nlResponseProducer, database)
-    val consumerProperties = loadBaseConfig(env, vaultSecrets).toConsumerConfig(
-        env.applicationName + "-consumer",
-        JacksonKafkaDeserializer::class
-    )
-    consumerProperties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none"
-    val kafkaConsumer = KafkaConsumer<String, SendtSykmeldingKafkaMessage>(
-        consumerProperties,
-        StringDeserializer(),
-        JacksonKafkaDeserializer(SendtSykmeldingKafkaMessage::class)
-    )
-    val sendtSykmeldingConsumer = SendtSykmeldingConsumer(kafkaConsumer, env.sendtSykmeldingKafkaTopic)
+
     val iCorrespondenceAgencyExternalBasic = createPort(env.altinnUrl)
     val altinnClient = AltinnClient(
         username = env.altinnUsername,
@@ -104,7 +91,7 @@ fun main() {
         iCorrespondenceAgencyExternalBasic = iCorrespondenceAgencyExternalBasic
     )
     val altinnOrgnummerLookup = AltinnOrgnummerLookupFacotry.getOrgnummerResolver(env.cluster)
-    log.info("creating httpConfigs")
+
     val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
         install(JsonFeature) {
             serializer = JacksonSerializer {
@@ -172,7 +159,7 @@ fun main() {
     val aivenKafkaSykmeldingConsumer = KafkaConsumer(
         KafkaUtils.getAivenKafkaConfig().also {
             it[ConsumerConfig.MAX_POLL_RECORDS_CONFIG] = "100"
-            it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "latest"
+            it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none"
         }.toConsumerConfig(env.applicationName + "-consumer", JacksonKafkaDeserializer::class),
         StringDeserializer(),
         JacksonKafkaDeserializer(SendSykmeldingAivenKafkaMessage::class)
@@ -182,7 +169,6 @@ fun main() {
 
     val sendtSykmeldingService = SendtSykmeldingService(
         applicationState,
-        sendtSykmeldingConsumer,
         altinnSendtSykmeldingService,
         pdlClient,
         stsOidcClient,
