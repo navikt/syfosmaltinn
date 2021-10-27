@@ -2,14 +2,19 @@ package no.nav.syfo.sykmelding.db
 
 import io.mockk.every
 import io.mockk.mockk
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
-import kotlin.test.assertFailsWith
 import no.nav.syfo.Environment
+import no.nav.syfo.narmesteleder.db.NarmestelederDB
+import no.nav.syfo.narmesteleder.db.NarmestelederDbModel
+import no.nav.syfo.narmesteleder.kafka.model.NarmestelederLeesah
 import org.amshove.kluent.shouldEqual
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import org.testcontainers.containers.PostgreSQLContainer
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import java.util.UUID
+import kotlin.test.assertFailsWith
 
 class PsqlContainer : PostgreSQLContainer<PsqlContainer>("postgres:12")
 
@@ -30,6 +35,37 @@ class DatabaseTest : Spek({
     beforeEachTest {
         every { mockEnv.databaseUsername } returns "username"
         every { mockEnv.databasePassword } returns "password"
+    }
+
+    describe("Test NL database") {
+        it("test save, update and delete") {
+            every { mockEnv.jdbcUrl() } returns psqlContainer.jdbcUrl
+            val database = Database(mockEnv)
+            val nlDatabase = NarmestelederDB(database)
+
+            val narmesteleder = NarmestelederLeesah(UUID.randomUUID(), "1", "orgnummer", "2", "telefon", "epost", LocalDate.of(2021, 1, 1), null, true, OffsetDateTime.now())
+            nlDatabase.insertOrUpdate(narmesteleder)
+            nlDatabase.getNarmesteleder("1", "orgnummer") shouldEqual NarmestelederDbModel(
+                sykmeldtFnr = "1",
+                orgnummer = "orgnummer",
+                lederFnr = "2",
+                narmesteLederEpost = "epost",
+                narmesteLederTelefonnummer = "telefon",
+                aktivFom = LocalDate.of(2021, 1, 1)
+            )
+
+            nlDatabase.insertOrUpdate(narmesteleder.copy(narmesteLederEpost = "ny-epost", narmesteLederTelefonnummer = "ny-telefon", aktivFom = LocalDate.of(2021, 2, 1)))
+            nlDatabase.getNarmesteleder("1", "orgnummer") shouldEqual NarmestelederDbModel(
+                sykmeldtFnr = "1",
+                orgnummer = "orgnummer",
+                lederFnr = "2",
+                narmesteLederEpost = "ny-epost",
+                narmesteLederTelefonnummer = "ny-telefon",
+                aktivFom = LocalDate.of(2021, 2, 1)
+            )
+            nlDatabase.deleteNarmesteleder(narmesteleder)
+            nlDatabase.getNarmesteleder("1", "orgnummer") shouldEqual null
+        }
     }
 
     describe("Test database") {

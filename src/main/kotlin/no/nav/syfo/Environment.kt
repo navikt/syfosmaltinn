@@ -29,7 +29,8 @@ data class Environment(
     val dbPort: String = getEnvVar("NAIS_DATABASE_PORT"),
     val dbName: String = getEnvVar("NAIS_DATABASE_DATABASE"),
     val sendtSykmeldingAivenKafkaTopic: String = "teamsykmelding.syfo-sendt-sykmelding",
-    val cluster: String = getEnvVar("NAIS_CLUSTER_NAME")
+    val cluster: String = getEnvVar("NAIS_CLUSTER_NAME"),
+    val narmestelederLeesahTopic: String = "teamsykmelding.syfo-narmesteleder-leesah"
 ) {
     fun jdbcUrl(): String {
         return "jdbc:postgresql://$dbHost:$dbPort/$dbName"
