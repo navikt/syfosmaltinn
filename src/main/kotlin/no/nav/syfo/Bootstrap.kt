@@ -85,7 +85,7 @@ fun main() {
     )
     val nlRequestProducer = NLRequestProducer(kafkaProducer, env.beOmNLKafkaTopic)
     val nlResponseProducer = NLResponseProducer(kafkaProducerNlResponse, env.brytNLKafkaTopic)
-    val beOmNyNLService = BeOmNyNLService(nlRequestProducer, nlResponseProducer)
+    val beOmNyNLService = BeOmNyNLService(nlRequestProducer, nlResponseProducer, database)
     val consumerProperties = loadBaseConfig(env, vaultSecrets).toConsumerConfig(
         env.applicationName + "-consumer",
         JacksonKafkaDeserializer::class

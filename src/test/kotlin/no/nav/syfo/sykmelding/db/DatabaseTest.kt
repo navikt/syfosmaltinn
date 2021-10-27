@@ -2,14 +2,14 @@ package no.nav.syfo.sykmelding.db
 
 import io.mockk.every
 import io.mockk.mockk
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
-import kotlin.test.assertFailsWith
 import no.nav.syfo.Environment
 import org.amshove.kluent.shouldEqual
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import org.testcontainers.containers.PostgreSQLContainer
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import kotlin.test.assertFailsWith
 
 class PsqlContainer : PostgreSQLContainer<PsqlContainer>("postgres:12")
 
@@ -46,6 +46,13 @@ class DatabaseTest : Spek({
     describe("Test db queries") {
         every { mockEnv.jdbcUrl() } returns psqlContainer.jdbcUrl
         val database = Database(mockEnv)
+
+        it("Lagre narmesteleder check") {
+            database.hasCheckedNl("1") shouldEqual false
+            database.insertNarmestelederCheck("1", OffsetDateTime.now())
+            database.hasCheckedNl("1") shouldEqual true
+        }
+
         it("Insert new sykmeldingStatus") {
             database.insertStatus("1")
             val status = database.getStatus("1")

@@ -18,11 +18,21 @@ import no.nav.syfo.narmesteleder.kafka.model.NlResponseKafkaMessage
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.pdl.client.model.fulltNavn
+import no.nav.syfo.sykmelding.db.DatabaseInterface
+import no.nav.syfo.sykmelding.db.hasCheckedNl
+import no.nav.syfo.sykmelding.db.insertNarmestelederCheck
 
-class BeOmNyNLService(private val nlRequestProducer: NLRequestProducer, private val nlResponseProducer: NLResponseProducer) {
+class BeOmNyNLService(
+    private val nlRequestProducer: NLRequestProducer,
+    private val nlResponseProducer: NLResponseProducer,
+    private val database: DatabaseInterface
+) {
     fun beOmNyNL(kafkaMetadata: KafkaMetadataDTO, event: SykmeldingStatusKafkaEventDTO, person: Person) {
         if (kafkaMetadata.source == "user") {
-            log.info("Ber om ny nærmeste leder og bryter eksisterende kobling for sykmeldingid {}", kafkaMetadata.sykmeldingId)
+            log.info(
+                "Ber om ny nærmeste leder og bryter eksisterende kobling for sykmeldingid {}",
+                kafkaMetadata.sykmeldingId
+            )
             nlRequestProducer.send(
                 NlRequestKafkaMessage(
                     nlRequest = NlRequest(
@@ -51,11 +61,20 @@ class BeOmNyNLService(private val nlRequestProducer: NLRequestProducer, private 
                     )
                 )
             )
+            database.insertNarmestelederCheck(kafkaMetadata.sykmeldingId, OffsetDateTime.now(ZoneOffset.UTC))
         }
     }
 
-    fun skalBeOmNyNL(sykmeldingStatusKafkaEventDTO: SykmeldingStatusKafkaEventDTO, narmesteLeder: NarmesteLeder?): Boolean {
-        val nlSporsmal = sykmeldingStatusKafkaEventDTO.sporsmals?.find { it.shortName == ShortNameDTO.NY_NARMESTE_LEDER }
+    fun skalBeOmNyNL(
+        sykmeldingStatusKafkaEventDTO: SykmeldingStatusKafkaEventDTO,
+        narmesteLeder: NarmesteLeder?
+    ): Boolean {
+        val narmestelederCheck = database.hasCheckedNl(sykmeldingId = sykmeldingStatusKafkaEventDTO.sykmeldingId)
+        if (narmestelederCheck) {
+            return false
+        }
+        val nlSporsmal =
+            sykmeldingStatusKafkaEventDTO.sporsmals?.find { it.shortName == ShortNameDTO.NY_NARMESTE_LEDER }
         return when {
             nlSporsmal?.svar == "NEI" -> {
                 false
