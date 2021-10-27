@@ -3,7 +3,6 @@ package no.nav.syfo
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
-import no.nav.syfo.kafka.KafkaCredentials
 
 data class Environment(
     val pdlBasePath: String = getEnvVar("PDL_BASE_PATH"),
@@ -40,10 +39,7 @@ data class Environment(
 data class VaultSecrets(
     val serviceuserUsername: String = getFileAsString("/var/run/secrets/SYFOSMALTINN_USERNAME"),
     val serviceuserPassword: String = getFileAsString("/var/run/secrets/SYFOSMALTINN_PASSWORD")
-) : KafkaCredentials {
-    override val kafkaUsername: String = serviceuserUsername
-    override val kafkaPassword: String = serviceuserPassword
-}
+)
 
 fun getEnvVar(varName: String, defaultValue: String? = null) =
         System.getenv(varName) ?: defaultValue ?: throw RuntimeException("Missing required variable \"$varName\"")
