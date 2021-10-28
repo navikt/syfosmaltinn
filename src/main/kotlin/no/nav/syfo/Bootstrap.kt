@@ -15,6 +15,7 @@ import io.ktor.client.features.json.JsonFeature
 import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.hotspot.DefaultExports
 import java.net.ProxySelector
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import no.nav.syfo.altinn.AltinnClient
@@ -32,8 +33,11 @@ import no.nav.syfo.kafka.aiven.KafkaUtils
 import no.nav.syfo.kafka.toConsumerConfig
 import no.nav.syfo.kafka.toProducerConfig
 import no.nav.syfo.narmesteleder.client.NarmestelederClient
+import no.nav.syfo.narmesteleder.db.NarmestelederDB
 import no.nav.syfo.narmesteleder.kafka.NLRequestProducer
 import no.nav.syfo.narmesteleder.kafka.NLResponseProducer
+import no.nav.syfo.narmesteleder.kafka.NarmestelederConsumer
+import no.nav.syfo.narmesteleder.kafka.model.NarmestelederLeesah
 import no.nav.syfo.narmesteleder.kafka.model.NlRequestKafkaMessage
 import no.nav.syfo.narmesteleder.kafka.model.NlResponseKafkaMessage
 import no.nav.syfo.narmesteleder.kafka.utils.JacksonKafkaSerializer
@@ -156,17 +160,13 @@ fun main() {
         database
     )
 
-    val aivenKafkaSykmeldingConsumer = KafkaConsumer(
-        KafkaUtils.getAivenKafkaConfig().also {
-            it[ConsumerConfig.MAX_POLL_RECORDS_CONFIG] = "100"
-            it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none"
-        }.toConsumerConfig(env.applicationName + "-consumer", JacksonKafkaDeserializer::class),
-        StringDeserializer(),
-        JacksonKafkaDeserializer(SendSykmeldingAivenKafkaMessage::class)
-    )
+    val aivenKafkaSykmeldingConsumer: KafkaConsumer<String, SendSykmeldingAivenKafkaMessage> = getKafkaConsumer(env = env, resetConfig = "none")
+    val aivenKafkaNarmestelederConsumer: KafkaConsumer<String, NarmestelederLeesah> = getKafkaConsumer(env = env, resetConfig = "earliest")
+
+    val narmestelederConsumer = NarmestelederConsumer(NarmestelederDB(database), aivenKafkaNarmestelederConsumer, env.narmestelederLeesahTopic, applicationState)
+    narmestelederConsumer.startConsumer()
 
     val sendtSykmeldingAivenConsumer = SendtSykmeldingAivenConsumer(aivenKafkaSykmeldingConsumer, env.sendtSykmeldingAivenKafkaTopic)
-
     val sendtSykmeldingService = SendtSykmeldingService(
         applicationState,
         altinnSendtSykmeldingService,
@@ -179,7 +179,7 @@ fun main() {
 
     applicationState.ready = true
 
-    GlobalScope.launch {
+    GlobalScope.launch(Dispatchers.IO) {
         try {
             sendtSykmeldingService.start()
         } catch (e: Exception) {
@@ -190,3 +190,12 @@ fun main() {
         }
     }
 }
+
+private inline fun <reified T : Any> getKafkaConsumer(env: Environment, resetConfig: String = "none") = KafkaConsumer(
+    KafkaUtils.getAivenKafkaConfig().also {
+        it[ConsumerConfig.MAX_POLL_RECORDS_CONFIG] = "100"
+        it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none"
+    }.toConsumerConfig(env.applicationName + "-consumer", JacksonKafkaDeserializer::class),
+    StringDeserializer(),
+    JacksonKafkaDeserializer(T::class)
+)
