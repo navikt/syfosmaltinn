@@ -14,7 +14,6 @@ import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.hotspot.DefaultExports
-import java.net.ProxySelector
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -57,6 +56,7 @@ import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.net.ProxySelector
 
 val log: Logger = LoggerFactory.getLogger("no.nav.syfo.syfosmaltinn")
 
@@ -160,10 +160,14 @@ fun main() {
         database
     )
 
+
     val aivenKafkaSykmeldingConsumer: KafkaConsumer<String, SendSykmeldingAivenKafkaMessage> = getKafkaConsumer(env = env, resetConfig = "none")
     val aivenKafkaNarmestelederConsumer: KafkaConsumer<String, NarmestelederLeesah> = getKafkaConsumer(env = env, resetConfig = "earliest")
 
     val narmestelederConsumer = NarmestelederConsumer(NarmestelederDB(database), aivenKafkaNarmestelederConsumer, env.narmestelederLeesahTopic, applicationState)
+
+    applicationState.ready = true
+
     narmestelederConsumer.startConsumer()
 
     val sendtSykmeldingAivenConsumer = SendtSykmeldingAivenConsumer(aivenKafkaSykmeldingConsumer, env.sendtSykmeldingAivenKafkaTopic)
@@ -177,7 +181,7 @@ fun main() {
         sendtSykmeldingAivenConsumer
     )
 
-    applicationState.ready = true
+
 
     GlobalScope.launch(Dispatchers.IO) {
         try {
