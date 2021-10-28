@@ -198,7 +198,7 @@ fun main() {
 private inline fun <reified T : Any> getKafkaConsumer(env: Environment, resetConfig: String = "none") = KafkaConsumer(
     KafkaUtils.getAivenKafkaConfig().also {
         it[ConsumerConfig.MAX_POLL_RECORDS_CONFIG] = "100"
-        it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "none"
+        it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = resetConfig
     }.toConsumerConfig(env.applicationName + "-consumer", JacksonKafkaDeserializer::class),
     StringDeserializer(),
     JacksonKafkaDeserializer(T::class)
