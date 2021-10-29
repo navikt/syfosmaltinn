@@ -65,8 +65,6 @@ spec:
   env:
     - name: PDL_BASE_PATH
       value: https://api-gw-q1.oera.no/pdl-api/graphql
-    - name: NARMESTELEDER_SCOPE
-      value: api://dev-gcp.teamsykmelding.narmesteleder/.default
     - name: SECURITYTOKENSERVICE_URL
       value: https://api-gw-q1.oera.no/security-token-service/rest/v1/sts/token
     - name: ALTINN_URL
@@ -77,5 +75,3 @@ spec:
       value: https://api-gw-q1.oera.no/sykmelding-fss-proxy/juridisklogg/juridisklogg/api/rest/logg
     - name: KAFKA_CLIENT_ID
       value: syfosmaltinn
-    - name: NARMESTELEDER_URL
-      value: https://narmesteleder.dev.nav.no
