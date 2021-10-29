@@ -160,9 +160,8 @@ fun main() {
         database
     )
 
-
     val aivenKafkaSykmeldingConsumer: KafkaConsumer<String, SendSykmeldingAivenKafkaMessage> = getKafkaConsumer(env = env, resetConfig = "none")
-    val aivenKafkaNarmestelederConsumer: KafkaConsumer<String, NarmestelederLeesah> = getKafkaConsumer(env = env, resetConfig = "earliest")
+    val aivenKafkaNarmestelederConsumer: KafkaConsumer<String, NarmestelederLeesah> = getKafkaConsumer(env = env, resetConfig = "earliest", consumerGroup = env.applicationName + "-nl-consumer")
 
     val narmestelederConsumer = NarmestelederConsumer(NarmestelederDB(database), aivenKafkaNarmestelederConsumer, env.narmestelederLeesahTopic, applicationState)
 
@@ -181,8 +180,6 @@ fun main() {
         sendtSykmeldingAivenConsumer
     )
 
-
-
     GlobalScope.launch(Dispatchers.IO) {
         try {
             sendtSykmeldingService.start()
@@ -195,11 +192,11 @@ fun main() {
     }
 }
 
-private inline fun <reified T : Any> getKafkaConsumer(env: Environment, resetConfig: String = "none") = KafkaConsumer(
+private inline fun <reified T : Any> getKafkaConsumer(env: Environment, resetConfig: String = "none", consumerGroup: String = env.applicationName + "-consumer") = KafkaConsumer(
     KafkaUtils.getAivenKafkaConfig().also {
         it[ConsumerConfig.MAX_POLL_RECORDS_CONFIG] = "100"
         it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = resetConfig
-    }.toConsumerConfig(env.applicationName + "-consumer", JacksonKafkaDeserializer::class),
+    }.toConsumerConfig(consumerGroup, JacksonKafkaDeserializer::class),
     StringDeserializer(),
     JacksonKafkaDeserializer(T::class)
 )

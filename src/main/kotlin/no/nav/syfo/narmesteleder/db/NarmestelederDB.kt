@@ -12,11 +12,12 @@ class NarmestelederDB(
         database.connection.use { connection ->
             connection.prepareStatement(
                 """
-               insert into narmesteleder(narmeste_leder_id, pasient_fnr, leder_fnr, orgnummer, epost, telefon, fom) 
-               values (?, ?, ?, ?, ?, ?, ?) on conflict (narmeste_leder_id) do update 
-                set epost = ?,
-                    telefon = ?,
-                    fom = ?;
+               insert into narmesteleder(narmeste_leder_id, pasient_fnr, leder_fnr, orgnummer, epost, telefon, fom, arbeidsgiver_forskutterer) 
+               values (?, ?, ?, ?, ?, ?, ?, ?) on conflict (narmeste_leder_id) do update 
+                set epost = EXCLUDED.epost,
+                    telefon = EXCLUDED.telefon,
+                    fom = EXCLUDED.fom,
+                    arbeidsgiver_forskutterer = EXCLUDED.arbeidsgiver_forskutterer;
             """
             ).use { preparedStatement ->
                 // Insert
@@ -27,10 +28,7 @@ class NarmestelederDB(
                 preparedStatement.setString(5, narmesteleder.narmesteLederEpost)
                 preparedStatement.setString(6, narmesteleder.narmesteLederTelefonnummer)
                 preparedStatement.setDate(7, Date.valueOf(narmesteleder.aktivFom))
-                // update
-                preparedStatement.setString(8, narmesteleder.narmesteLederEpost)
-                preparedStatement.setString(9, narmesteleder.narmesteLederTelefonnummer)
-                preparedStatement.setDate(10, Date.valueOf(narmesteleder.aktivFom))
+                preparedStatement.setObject(8, narmesteleder.arbeidsgiverForskutterer)
                 preparedStatement.executeUpdate()
             }
             connection.commit()
@@ -71,7 +69,8 @@ private fun ResultSet.toNarmestelederDbModel(): NarmestelederDbModel? {
             narmesteLederTelefonnummer = getString("telefon"),
             narmesteLederEpost = getString("epost"),
             orgnummer = getString("orgnummer"),
-            aktivFom = getDate("fom").toLocalDate()
+            aktivFom = getDate("fom").toLocalDate(),
+            arbeidsgiverForskutterer = getObject("arbeidsgiver_forskutterer") as Boolean?
         )
     }
 }
