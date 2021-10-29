@@ -8,5 +8,6 @@ data class NarmestelederDbModel(
     val orgnummer: String,
     val narmesteLederTelefonnummer: String,
     val narmesteLederEpost: String,
-    val aktivFom: LocalDate
+    val aktivFom: LocalDate,
+    val arbeidsgiverForskutterer: Boolean?
 )

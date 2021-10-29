@@ -43,7 +43,7 @@ class DatabaseTest : Spek({
             val database = Database(mockEnv)
             val nlDatabase = NarmestelederDB(database)
 
-            val narmesteleder = NarmestelederLeesah(UUID.randomUUID(), "1", "orgnummer", "2", "telefon", "epost", LocalDate.of(2021, 1, 1), null, true, OffsetDateTime.now())
+            val narmesteleder = NarmestelederLeesah(UUID.randomUUID(), "1", "orgnummer", "2", "telefon", "epost", LocalDate.of(2021, 1, 1), null, null, OffsetDateTime.now())
             nlDatabase.insertOrUpdate(narmesteleder)
             nlDatabase.getNarmesteleder("1", "orgnummer") shouldEqual NarmestelederDbModel(
                 sykmeldtFnr = "1",
@@ -51,17 +51,29 @@ class DatabaseTest : Spek({
                 lederFnr = "2",
                 narmesteLederEpost = "epost",
                 narmesteLederTelefonnummer = "telefon",
-                aktivFom = LocalDate.of(2021, 1, 1)
+                aktivFom = LocalDate.of(2021, 1, 1),
+                arbeidsgiverForskutterer = null
             )
 
-            nlDatabase.insertOrUpdate(narmesteleder.copy(narmesteLederEpost = "ny-epost", narmesteLederTelefonnummer = "ny-telefon", aktivFom = LocalDate.of(2021, 2, 1)))
+            nlDatabase.insertOrUpdate(narmesteleder.copy(narmesteLederEpost = "ny-epost", narmesteLederTelefonnummer = "ny-telefon", aktivFom = LocalDate.of(2021, 2, 1), arbeidsgiverForskutterer = true))
             nlDatabase.getNarmesteleder("1", "orgnummer") shouldEqual NarmestelederDbModel(
                 sykmeldtFnr = "1",
                 orgnummer = "orgnummer",
                 lederFnr = "2",
                 narmesteLederEpost = "ny-epost",
                 narmesteLederTelefonnummer = "ny-telefon",
-                aktivFom = LocalDate.of(2021, 2, 1)
+                aktivFom = LocalDate.of(2021, 2, 1),
+                arbeidsgiverForskutterer = true
+            )
+            nlDatabase.insertOrUpdate(narmesteleder.copy(arbeidsgiverForskutterer = false))
+            nlDatabase.getNarmesteleder("1", "orgnummer") shouldEqual NarmestelederDbModel(
+                sykmeldtFnr = "1",
+                orgnummer = "orgnummer",
+                lederFnr = "2",
+                narmesteLederEpost = "epost",
+                narmesteLederTelefonnummer = "telefon",
+                aktivFom = LocalDate.of(2021, 1, 1),
+                arbeidsgiverForskutterer = false
             )
             nlDatabase.deleteNarmesteleder(narmesteleder)
             nlDatabase.getNarmesteleder("1", "orgnummer") shouldEqual null
