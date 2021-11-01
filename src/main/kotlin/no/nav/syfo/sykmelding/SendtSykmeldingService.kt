@@ -37,30 +37,54 @@ class SendtSykmeldingService(
     private suspend fun consumeNewTopic() {
         val sykmeldinger = sendtSykmeldingAivenConsumer.poll()
         sykmeldinger.forEach { sendtSykmeldingAivenKafkaMessage ->
-            handleSendtSykmelding(sendtSykmeldingAivenKafkaMessage.kafkaMetadata, sendtSykmeldingAivenKafkaMessage.event, "aiven") {
+            handleSendtSykmelding(
+                sendtSykmeldingAivenKafkaMessage.kafkaMetadata,
+                sendtSykmeldingAivenKafkaMessage.event,
+                "aiven"
+            ) {
                 SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendtSykmeldingAivenKafkaMessage, it)
             }
         }
     }
 
-    private suspend fun handleSendtSykmelding(kafkaMetadata: KafkaMetadataDTO, event: SykmeldingStatusKafkaEventDTO, topic: String, xmlSykmeldingArbeidsgiver: (pasient: Person) -> XMLSykmeldingArbeidsgiver) {
-        log.info("Mottok sendt sykmelding fra Kafka med sykmeldingId: ${kafkaMetadata.sykmeldingId}, source: ${kafkaMetadata.source} ${when (kafkaMetadata.source) { "syfoservice" -> "ignoring" else -> "sending to altinn"}}")
+    private suspend fun handleSendtSykmelding(
+        kafkaMetadata: KafkaMetadataDTO,
+        event: SykmeldingStatusKafkaEventDTO,
+        topic: String,
+        xmlSykmeldingArbeidsgiver: (pasient: Person) -> XMLSykmeldingArbeidsgiver
+    ) {
+        log.info(
+            "Mottok sendt sykmelding fra Kafka med sykmeldingId: ${kafkaMetadata.sykmeldingId}, source: ${kafkaMetadata.source} ${
+                when (kafkaMetadata.source) {
+                    "syfoservice" -> "ignoring"
+                    else -> "sending to altinn"
+                }
+            }"
+        )
         if (kafkaMetadata.source == "macgyver") {
             return
         }
         val person = pdlClient.getPerson(
-                ident = kafkaMetadata.fnr,
-                stsToken = stsTokenClient.oidcToken().access_token
+            ident = kafkaMetadata.fnr,
+            stsToken = stsTokenClient.oidcToken().access_token
         )
         log.info("Mottok svar fra PDL for sykmeldingId: ${kafkaMetadata.sykmeldingId}")
         val arbeidsgiver = event.arbeidsgiver
             ?: throw ArbeidsgiverNotFoundException(event)
 
-        val narmesteLeder = narmesteLederService.getNarmesteLeder(arbeidsgiver.orgnummer, kafkaMetadata.fnr)
+        val narmesteLeder = narmesteLederService.getNarmesteLeder(
+            orgnummer = arbeidsgiver.orgnummer,
+            fnr = kafkaMetadata.fnr
+        )
         log.info("Mottok narmesteleder: ${narmesteLeder != null} for sykmeldingId: ${kafkaMetadata.sykmeldingId}")
         if (beOmNyNLService.skalBeOmNyNL(event, narmesteLeder)) {
             beOmNyNLService.beOmNyNL(kafkaMetadata, event, person)
         }
-        altinnSykmeldingService.handleSendtSykmelding(xmlSykmeldingArbeidsgiver.invoke(person), person, narmesteLeder, topic)
+        altinnSykmeldingService.handleSendtSykmelding(
+            xmlSykmeldingArbeidsgiver.invoke(person),
+            person,
+            narmesteLeder,
+            topic
+        )
     }
 }
