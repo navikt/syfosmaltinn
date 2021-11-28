@@ -141,7 +141,7 @@ fun main() {
     )
 
     val aivenKafkaSykmeldingConsumer: KafkaConsumer<String, SendSykmeldingAivenKafkaMessage> = getKafkaConsumer(env = env, resetConfig = "none")
-    val aivenKafkaNarmestelederConsumer: KafkaConsumer<String, NarmestelederLeesah> = getKafkaConsumer(env = env, resetConfig = "earliest", consumerGroup = env.applicationName + "-nl-consumer")
+    val aivenKafkaNarmestelederConsumer: KafkaConsumer<String, NarmestelederLeesah> = getKafkaConsumer(env = env, resetConfig = "none", consumerGroup = env.applicationName + "-nl-consumer")
 
     val narmestelederConsumer = NarmestelederConsumer(narmestelederDb, aivenKafkaNarmestelederConsumer, env.narmestelederLeesahTopic, applicationState)
 

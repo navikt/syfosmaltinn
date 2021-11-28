@@ -38,7 +38,7 @@ class NarmestelederConsumer(
     private fun start() {
         kafkaConsumer.subscribe(listOf(narmestelederTopic))
         while (applicationState.ready) {
-            kafkaConsumer.poll(Duration.ofMillis(1000)).map { it.value() }.forEach {
+            kafkaConsumer.poll(Duration.ofMillis(10_000)).map { it.value() }.forEach {
                 when (it.aktivTom) {
                     null -> narmestelederDB.insertOrUpdate(it)
                     else -> narmestelederDB.deleteNarmesteleder(it)
