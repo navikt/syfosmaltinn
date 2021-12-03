@@ -13,6 +13,8 @@ import no.nav.syfo.narmesteleder.service.BeOmNyNLService
 import no.nav.syfo.narmesteleder.service.NarmesteLederService
 import no.nav.syfo.pdl.client.PdlClient
 import no.nav.syfo.pdl.client.model.Person
+import no.nav.syfo.sykmelding.db.DatabaseInterface
+import no.nav.syfo.sykmelding.db.getStatus
 import no.nav.syfo.sykmelding.exceptions.ArbeidsgiverNotFoundException
 import no.nav.syfo.sykmelding.kafka.aiven.SendtSykmeldingAivenConsumer
 
@@ -24,7 +26,8 @@ class SendtSykmeldingService(
     private val stsTokenClient: StsOidcClient,
     private val narmesteLederService: NarmesteLederService,
     private val beOmNyNLService: BeOmNyNLService,
-    private val sendtSykmeldingAivenConsumer: SendtSykmeldingAivenConsumer
+    private val sendtSykmeldingAivenConsumer: SendtSykmeldingAivenConsumer,
+    private val database: DatabaseInterface
 ) {
     suspend fun start() {
         log.info("Starting consumer")
@@ -77,11 +80,17 @@ class SendtSykmeldingService(
             fnr = kafkaMetadata.fnr
         )
         log.info("Mottok narmesteleder: ${narmesteLeder != null} for sykmeldingId: ${kafkaMetadata.sykmeldingId}")
-        if (beOmNyNLService.skalBeOmNyNL(event, narmesteLeder)) {
+
+        val xmlSykmeldingArbeidsgiver = xmlSykmeldingArbeidsgiver.invoke(person)
+        val sykmeldingId = xmlSykmeldingArbeidsgiver.sykmeldingId
+
+        val status = database.getStatus(sykmeldingId)
+
+        if (beOmNyNLService.skalBeOmNyNL(event, narmesteLeder) && status?.altinnTimestamp != null) {
             beOmNyNLService.beOmNyNL(kafkaMetadata, event, person)
         }
         altinnSykmeldingService.handleSendtSykmelding(
-            xmlSykmeldingArbeidsgiver.invoke(person),
+            xmlSykmeldingArbeidsgiver,
             person,
             narmesteLeder,
             topic

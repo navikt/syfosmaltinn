@@ -157,7 +157,8 @@ fun main() {
         stsOidcClient,
         narmesteLederService,
         beOmNyNLService,
-        sendtSykmeldingAivenConsumer
+        sendtSykmeldingAivenConsumer,
+        database
     )
 
     GlobalScope.launch(Dispatchers.IO) {
