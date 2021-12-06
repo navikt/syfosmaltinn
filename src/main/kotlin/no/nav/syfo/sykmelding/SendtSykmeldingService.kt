@@ -81,16 +81,16 @@ class SendtSykmeldingService(
         )
         log.info("Mottok narmesteleder: ${narmesteLeder != null} for sykmeldingId: ${kafkaMetadata.sykmeldingId}")
 
-        val xmlSykmeldingArbeidsgiver = xmlSykmeldingArbeidsgiver.invoke(person)
-        val sykmeldingId = xmlSykmeldingArbeidsgiver.sykmeldingId
+        val xmlSykmeldingArbeidsgiver1 = xmlSykmeldingArbeidsgiver.invoke(person)
+        val sykmeldingId = xmlSykmeldingArbeidsgiver1.sykmeldingId
 
         val status = database.getStatus(sykmeldingId)
 
-        if (beOmNyNLService.skalBeOmNyNL(event, narmesteLeder) && status?.altinnTimestamp != null) {
+        if (beOmNyNLService.skalBeOmNyNL(event, narmesteLeder) && status == null) {
             beOmNyNLService.beOmNyNL(kafkaMetadata, event, person)
         }
         altinnSykmeldingService.handleSendtSykmelding(
-            xmlSykmeldingArbeidsgiver,
+            xmlSykmeldingArbeidsgiver1,
             person,
             narmesteLeder,
             topic
