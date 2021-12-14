@@ -10,6 +10,7 @@ import org.amshove.kluent.shouldBeEqualTo
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import org.testcontainers.containers.PostgreSQLContainer
+import java.time.Clock
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -123,28 +124,28 @@ class DatabaseTest : Spek({
             database.insertStatus("1")
             val status = database.getStatus("1")
             status!!.sykmeldingId shouldBeEqualTo "1"
-            status!!.altinnTimestamp shouldBeEqualTo null
-            status!!.loggTimestamp shouldBeEqualTo null
+            status.altinnTimestamp shouldBeEqualTo null
+            status.loggTimestamp shouldBeEqualTo null
         }
 
         it("Insert new sykmeldingStatus and altinn timestamp") {
-            val dateTime = OffsetDateTime.now(ZoneOffset.UTC)
+            val dateTime = OffsetDateTime.now(Clock.tickMillis(ZoneOffset.UTC))
             database.insertStatus("2")
             database.updateSendtToAlinn("2", dateTime)
             val status = database.getStatus("2")
             status!!.sykmeldingId shouldBeEqualTo "2"
-            status!!.altinnTimestamp shouldBeEqualTo dateTime
-            status!!.loggTimestamp shouldBeEqualTo null
+            status.altinnTimestamp shouldBeEqualTo dateTime
+            status.loggTimestamp shouldBeEqualTo null
         }
         it("Insert new sykmeldingStatus and timestamps") {
-            val dateTime = OffsetDateTime.now(ZoneOffset.UTC)
+            val dateTime = OffsetDateTime.now(Clock.tickMillis(ZoneOffset.UTC))
             database.insertStatus("3")
             database.updateSendtToAlinn("3", dateTime)
             database.updateSendtToLogg("3", dateTime)
             val status = database.getStatus("3")
             status!!.sykmeldingId shouldBeEqualTo "3"
-            status!!.altinnTimestamp shouldBeEqualTo dateTime
-            status!!.loggTimestamp shouldBeEqualTo dateTime
+            status.altinnTimestamp shouldBeEqualTo dateTime
+            status.loggTimestamp shouldBeEqualTo dateTime
         }
     }
 })

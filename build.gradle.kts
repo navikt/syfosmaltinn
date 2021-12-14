@@ -117,7 +117,12 @@ dependencies {
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("org.flywaydb:flyway-core:$flywayVersion")
 
-    implementation("org.xhtmlrenderer:flying-saucer-pdf:$flyingSaucerVersion")
+    implementation("org.xhtmlrenderer:flying-saucer-pdf:$flyingSaucerVersion") {
+        exclude("bouncycastle", "bcmail-jdk14")
+        exclude("bouncycastle", "bcprov-jdk14")
+        exclude("bouncycastle", "bctsp-jdk14")
+        exclude("org.bouncycastle", "bctsp-jdk14")
+    }
     implementation("org.xhtmlrenderer:flying-saucer-core:$flyingSaucerVersion")
     implementation("org.apache.xmlgraphics:batik-transcoder:$baticVersion") {
         exclude("xml-apis", "xml-apis")
@@ -129,7 +134,11 @@ dependencies {
         exclude("bouncycastle", "bcmail-jdk14")
         exclude("bouncycastle", "bcprov-jdk14")
         exclude("bouncycastle", "bctsp-jdk14")
+        exclude("org.bouncycastle", "bctsp-jdk14")
     }
+    // for å overstyre sårbar versjon fra itext:
+//    implementation("org.bouncycastle:bctsp-jdk14:140")
+
     implementation("net.sf.saxon:Saxon-HE:$saxonVersion")
     implementation("org.apache.pdfbox:pdfbox:$pdfBoxVersion") {
         exclude("commons-logging", "commons-logging")
@@ -140,6 +149,9 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
+    // for å overstyre sårbar versjon fra cxf-rt-ws-security
+    implementation("commons-collections:commons-collections:3.2.2")
+
     implementation("org.apache.ws.xmlschema:xmlschema-core:2.2.5")
     implementation("javax.activation:activation:$javaxActivationVersion")
     implementation("javax.xml.ws:jaxws-api:$jaxsWsApiVersion")
