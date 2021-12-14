@@ -1,5 +1,10 @@
 package no.nav.syfo.altinn.util
 
+import no.nav.helse.xml.sykmeldingarbeidsgiver.ObjectFactory
+import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
+import no.nav.syfo.log
+import org.w3c.dom.Document
+import org.xml.sax.InputSource
 import java.io.StringReader
 import java.io.StringWriter
 import javax.xml.bind.JAXBContext
@@ -8,11 +13,6 @@ import javax.xml.bind.JAXBException
 import javax.xml.bind.Marshaller
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.stream.StreamResult
-import no.nav.helse.xml.sykmeldingarbeidsgiver.ObjectFactory
-import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
-import no.nav.syfo.log
-import org.w3c.dom.Document
-import org.xml.sax.InputSource
 
 class JAXB private constructor() {
     companion object {

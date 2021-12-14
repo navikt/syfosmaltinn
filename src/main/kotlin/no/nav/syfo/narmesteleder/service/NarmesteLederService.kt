@@ -1,13 +1,11 @@
 package no.nav.syfo.narmesteleder.service
 
-import io.ktor.util.KtorExperimentalAPI
 import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.narmesteleder.db.NarmestelederDB
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.PdlClient
 import no.nav.syfo.pdl.client.model.Person
 
-@KtorExperimentalAPI
 class NarmesteLederService(
     private val narmestelederDB: NarmestelederDB,
     private val pdlClient: PdlClient,

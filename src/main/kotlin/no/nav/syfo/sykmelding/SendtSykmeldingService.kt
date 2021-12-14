@@ -1,6 +1,5 @@
 package no.nav.syfo.sykmelding
 
-import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.syfo.altinn.AltinnSykmeldingService
 import no.nav.syfo.altinn.model.SykmeldingArbeidsgiverMapper
@@ -16,7 +15,6 @@ import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.exceptions.ArbeidsgiverNotFoundException
 import no.nav.syfo.sykmelding.kafka.aiven.SendtSykmeldingAivenConsumer
 
-@KtorExperimentalAPI
 class SendtSykmeldingService(
     private val applicationState: ApplicationState,
     private val altinnSykmeldingService: AltinnSykmeldingService,
@@ -55,10 +53,10 @@ class SendtSykmeldingService(
     ) {
         log.info(
             "Mottok sendt sykmelding fra Kafka med sykmeldingId: ${kafkaMetadata.sykmeldingId}, source: ${kafkaMetadata.source} ${
-                when (kafkaMetadata.source) {
-                    "syfoservice" -> "ignoring"
-                    else -> "sending to altinn"
-                }
+            when (kafkaMetadata.source) {
+                "syfoservice" -> "ignoring"
+                else -> "sending to altinn"
+            }
             }"
         )
         if (kafkaMetadata.source == "macgyver") {

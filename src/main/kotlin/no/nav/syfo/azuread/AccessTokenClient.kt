@@ -8,9 +8,9 @@ import io.ktor.client.request.post
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.Parameters
-import java.time.Instant
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.time.Instant
 
 class AccessTokenClient(
     private val aadAccessTokenUrl: String,
@@ -27,24 +27,28 @@ class AccessTokenClient(
 
     suspend fun getAccessToken(): String {
         val omToMinutter = Instant.now().plusSeconds(120L)
-        return (token?.takeUnless { expiresOn == null || expiresOn!!.isBefore(omToMinutter) }
+        return (
+            token?.takeUnless { expiresOn == null || expiresOn!!.isBefore(omToMinutter) }
                 ?: run {
                     log.debug("Henter nytt token fra Azure AD")
                     val response: AadAccessToken = httpClient.post(aadAccessTokenUrl) {
                         accept(ContentType.Application.Json)
                         method = HttpMethod.Post
-                        body = FormDataContent(Parameters.build {
-                            append("client_id", clientId)
-                            append("scope", resource)
-                            append("grant_type", "client_credentials")
-                            append("client_secret", clientSecret)
-                        })
+                        body = FormDataContent(
+                            Parameters.build {
+                                append("client_id", clientId)
+                                append("scope", resource)
+                                append("grant_type", "client_credentials")
+                                append("client_secret", clientSecret)
+                            }
+                        )
                     }
                     token = response
                     expiresOn = Instant.now().plusSeconds(response.expires_in.toLong())
                     log.debug("Har hentet accesstoken")
                     return@run response
-                }).access_token
+                }
+            ).access_token
     }
 }
 

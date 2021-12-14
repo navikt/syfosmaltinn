@@ -5,18 +5,18 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = "no.nav.syfo"
 version = "1.0.0"
 
-val coroutinesVersion = "1.3.3"
-val jacksonVersion = "2.9.8"
-val kluentVersion = "1.49"
-val ktorVersion = "1.3.0"
-val logbackVersion = "1.2.3"
-val logstashEncoderVersion = "5.1"
-val prometheusVersion = "0.6.0"
-val spekVersion = "2.0.9"
-val smCommonVersion = "1.88ca328"
-val mockkVersion = "1.9.3"
-val nimbusdsVersion = "7.5.1"
-val testContainerKafkaVersion = "1.15.2"
+val coroutinesVersion = "1.5.1"
+val jacksonVersion = "2.13.0"
+val kluentVersion = "1.68"
+val ktorVersion = "1.6.6"
+val logbackVersion = "1.2.7"
+val logstashEncoderVersion = "7.0.1"
+val prometheusVersion = "0.12.0"
+val spekVersion = "2.0.17"
+val smCommonVersion = "1.a92720c"
+val mockkVersion = "1.12.1"
+val nimbusdsVersion = "9.15.2"
+val testContainerKafkaVersion = "1.16.2"
 val sykmeldingArbeidsgiverVersion = "1.9daf0fa"
 val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
 val flyingSaucerVersion = "9.0.4"
@@ -24,26 +24,26 @@ val baticVersion = "1.9.1"
 val iTextVersion = "2.1.7"
 val saxonVersion = "9.7.0-8"
 val pdfBoxVersion = "1.8.13"
-val dialogarenaVersion = "2.0.3"
-val cxfVersion = "3.3.1"
+val cxfVersion = "3.4.5"
 val jaxsWsApiVersion = "2.3.1"
 val jaxwsRiVersion = "2.3.2"
 val jaxwsToolsVersion = "2.3.1"
 val javaxActivationVersion = "1.1.1"
-val postgresVersion = "42.2.5"
-val flywayVersion = "5.2.4"
-val hikariVersion = "3.3.0"
-val postgresContainerVersion = "1.15.2"
+val postgresVersion = "42.3.1"
+val flywayVersion = "8.1.0"
+val hikariVersion = "5.0.0"
+val postgresContainerVersion = "1.16.2"
+val kotlinVersion = "1.6.0"
 
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
 }
 
 plugins {
-    id("org.jmailen.kotlinter") version "2.1.1"
-    kotlin("jvm") version "1.3.70"
-    id("com.diffplug.gradle.spotless") version "3.23.1"
-    id("com.github.johnrengelman.shadow") version "4.0.4"
+    id("org.jmailen.kotlinter") version "3.6.0"
+    kotlin("jvm") version "1.6.0"
+    id("com.diffplug.spotless") version "5.16.0"
+    id("com.github.johnrengelman.shadow") version "6.1.0"
     jacoco
 }
 
@@ -52,11 +52,7 @@ val githubPassword: String by project
 
 repositories {
     mavenCentral()
-    jcenter()
-    maven(url = "https://dl.bintray.com/kotlin/ktor")
-    maven(url = "https://dl.bintray.com/spekframework/spek-dev")
     maven(url = "https://packages.confluent.io/maven/")
-    maven(url = "https://kotlin.bintray.com/kotlinx")
     maven {
         url = uri("https://maven.pkg.github.com/navikt/syfosm-common")
         credentials {
@@ -94,7 +90,7 @@ buildscript {
 
 
 dependencies {
-    implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:$coroutinesVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
@@ -144,19 +140,21 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
-    implementation("org.apache.ws.xmlschema:xmlschema-core:2.2.4")
+    implementation("org.apache.ws.xmlschema:xmlschema-core:2.2.5")
     implementation("javax.activation:activation:$javaxActivationVersion")
     implementation("javax.xml.ws:jaxws-api:$jaxsWsApiVersion")
     implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
 
+    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
     testImplementation("org.testcontainers:postgresql:$postgresContainerVersion")
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("org.spekframework.spek2:spek-dsl-jvm:$spekVersion")
     testImplementation("com.nimbusds:nimbus-jose-jwt:$nimbusdsVersion")
     testImplementation("org.testcontainers:kafka:$testContainerKafkaVersion")
+    testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
     }
@@ -183,7 +181,7 @@ tasks {
     }
 
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "12"
+        kotlinOptions.jvmTarget = "16"
     }
 
     withType<JacocoReport> {

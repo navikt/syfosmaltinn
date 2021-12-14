@@ -1,8 +1,8 @@
 package no.nav.syfo.sykmelding.kafka.aiven
 
-import java.time.Duration
 import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
 import org.apache.kafka.clients.consumer.KafkaConsumer
+import java.time.Duration
 
 class SendtSykmeldingAivenConsumer(
     private val kafkaConsumer: KafkaConsumer<String, SendSykmeldingAivenKafkaMessage>,

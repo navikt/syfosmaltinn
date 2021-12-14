@@ -2,19 +2,19 @@ package no.nav.syfo.sykmelding.db
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.syfo.Environment
+import no.nav.syfo.narmesteleder.db.NarmestelederDB
+import no.nav.syfo.narmesteleder.db.NarmestelederDbModel
+import no.nav.syfo.narmesteleder.kafka.model.NarmestelederLeesah
+import org.amshove.kluent.shouldBeEqualTo
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
+import org.testcontainers.containers.PostgreSQLContainer
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
 import kotlin.test.assertFailsWith
-import no.nav.syfo.Environment
-import no.nav.syfo.narmesteleder.db.NarmestelederDB
-import no.nav.syfo.narmesteleder.db.NarmestelederDbModel
-import no.nav.syfo.narmesteleder.kafka.model.NarmestelederLeesah
-import org.amshove.kluent.shouldEqual
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
-import org.testcontainers.containers.PostgreSQLContainer
 
 class PsqlContainer : PostgreSQLContainer<PsqlContainer>("postgres:12")
 
@@ -43,9 +43,20 @@ class DatabaseTest : Spek({
             val database = Database(mockEnv)
             val nlDatabase = NarmestelederDB(database)
 
-            val narmesteleder = NarmestelederLeesah(UUID.randomUUID(), "1", "orgnummer", "2", "telefon", "epost", LocalDate.of(2021, 1, 1), null, null, OffsetDateTime.now())
+            val narmesteleder = NarmestelederLeesah(
+                UUID.randomUUID(),
+                "1",
+                "orgnummer",
+                "2",
+                "telefon",
+                "epost",
+                LocalDate.of(2021, 1, 1),
+                null,
+                null,
+                OffsetDateTime.now()
+            )
             nlDatabase.insertOrUpdate(narmesteleder)
-            nlDatabase.getNarmesteleder("1", "orgnummer") shouldEqual NarmestelederDbModel(
+            nlDatabase.getNarmesteleder("1", "orgnummer") shouldBeEqualTo NarmestelederDbModel(
                 sykmeldtFnr = "1",
                 orgnummer = "orgnummer",
                 lederFnr = "2",
@@ -55,8 +66,15 @@ class DatabaseTest : Spek({
                 arbeidsgiverForskutterer = null
             )
 
-            nlDatabase.insertOrUpdate(narmesteleder.copy(narmesteLederEpost = "ny-epost", narmesteLederTelefonnummer = "ny-telefon", aktivFom = LocalDate.of(2021, 2, 1), arbeidsgiverForskutterer = true))
-            nlDatabase.getNarmesteleder("1", "orgnummer") shouldEqual NarmestelederDbModel(
+            nlDatabase.insertOrUpdate(
+                narmesteleder.copy(
+                    narmesteLederEpost = "ny-epost",
+                    narmesteLederTelefonnummer = "ny-telefon",
+                    aktivFom = LocalDate.of(2021, 2, 1),
+                    arbeidsgiverForskutterer = true
+                )
+            )
+            nlDatabase.getNarmesteleder("1", "orgnummer") shouldBeEqualTo NarmestelederDbModel(
                 sykmeldtFnr = "1",
                 orgnummer = "orgnummer",
                 lederFnr = "2",
@@ -66,7 +84,7 @@ class DatabaseTest : Spek({
                 arbeidsgiverForskutterer = true
             )
             nlDatabase.insertOrUpdate(narmesteleder.copy(arbeidsgiverForskutterer = false))
-            nlDatabase.getNarmesteleder("1", "orgnummer") shouldEqual NarmestelederDbModel(
+            nlDatabase.getNarmesteleder("1", "orgnummer") shouldBeEqualTo NarmestelederDbModel(
                 sykmeldtFnr = "1",
                 orgnummer = "orgnummer",
                 lederFnr = "2",
@@ -76,7 +94,7 @@ class DatabaseTest : Spek({
                 arbeidsgiverForskutterer = false
             )
             nlDatabase.deleteNarmesteleder(narmesteleder)
-            nlDatabase.getNarmesteleder("1", "orgnummer") shouldEqual null
+            nlDatabase.getNarmesteleder("1", "orgnummer") shouldBeEqualTo null
         }
     }
 
@@ -96,17 +114,17 @@ class DatabaseTest : Spek({
         val database = Database(mockEnv)
 
         it("Lagre narmesteleder check") {
-            database.hasCheckedNl("1") shouldEqual false
+            database.hasCheckedNl("1") shouldBeEqualTo false
             database.insertNarmestelederCheck("1", OffsetDateTime.now())
-            database.hasCheckedNl("1") shouldEqual true
+            database.hasCheckedNl("1") shouldBeEqualTo true
         }
 
         it("Insert new sykmeldingStatus") {
             database.insertStatus("1")
             val status = database.getStatus("1")
-            status!!.sykmeldingId shouldEqual "1"
-            status!!.altinnTimestamp shouldEqual null
-            status!!.loggTimestamp shouldEqual null
+            status!!.sykmeldingId shouldBeEqualTo "1"
+            status!!.altinnTimestamp shouldBeEqualTo null
+            status!!.loggTimestamp shouldBeEqualTo null
         }
 
         it("Insert new sykmeldingStatus and altinn timestamp") {
@@ -114,9 +132,9 @@ class DatabaseTest : Spek({
             database.insertStatus("2")
             database.updateSendtToAlinn("2", dateTime)
             val status = database.getStatus("2")
-            status!!.sykmeldingId shouldEqual "2"
-            status!!.altinnTimestamp shouldEqual dateTime
-            status!!.loggTimestamp shouldEqual null
+            status!!.sykmeldingId shouldBeEqualTo "2"
+            status!!.altinnTimestamp shouldBeEqualTo dateTime
+            status!!.loggTimestamp shouldBeEqualTo null
         }
         it("Insert new sykmeldingStatus and timestamps") {
             val dateTime = OffsetDateTime.now(ZoneOffset.UTC)
@@ -124,9 +142,9 @@ class DatabaseTest : Spek({
             database.updateSendtToAlinn("3", dateTime)
             database.updateSendtToLogg("3", dateTime)
             val status = database.getStatus("3")
-            status!!.sykmeldingId shouldEqual "3"
-            status!!.altinnTimestamp shouldEqual dateTime
-            status!!.loggTimestamp shouldEqual dateTime
+            status!!.sykmeldingId shouldBeEqualTo "3"
+            status!!.altinnTimestamp shouldBeEqualTo dateTime
+            status!!.loggTimestamp shouldBeEqualTo dateTime
         }
     }
 })
