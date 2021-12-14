@@ -20,7 +20,7 @@ val testContainerKafkaVersion = "1.16.2"
 val sykmeldingArbeidsgiverVersion = "1.9daf0fa"
 val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
 val flyingSaucerVersion = "9.0.4"
-val baticVersion = "1.9.1"
+val baticVersion = "1.13"
 val iTextVersion = "2.1.7"
 val saxonVersion = "9.7.0-8"
 val pdfBoxVersion = "1.8.13"
@@ -136,8 +136,6 @@ dependencies {
         exclude("bouncycastle", "bctsp-jdk14")
         exclude("org.bouncycastle", "bctsp-jdk14")
     }
-    // for å overstyre sårbar versjon fra itext:
-//    implementation("org.bouncycastle:bctsp-jdk14:140")
 
     implementation("net.sf.saxon:Saxon-HE:$saxonVersion")
     implementation("org.apache.pdfbox:pdfbox:$pdfBoxVersion") {
@@ -205,7 +203,6 @@ tasks {
 
     }
     withType<ShadowJar> {
-        isZip64 = true
         transform(ServiceFileTransformer::class.java) {
             setPath("META-INF/cxf")
             include("bus-extensions.txt")
