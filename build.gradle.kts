@@ -142,6 +142,7 @@ dependencies {
         exclude("commons-logging", "commons-logging")
     }
     implementation("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
+    implementation("org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438")
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:$altinnCorrespondenceAgencyExternalVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
