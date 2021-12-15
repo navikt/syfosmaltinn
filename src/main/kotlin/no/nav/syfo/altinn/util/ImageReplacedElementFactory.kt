@@ -1,13 +1,6 @@
 package no.nav.syfo.altinn.util
 
 import com.lowagie.text.Image
-import java.awt.Color
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.util.Base64
-import java.util.Optional.of
-import java.util.Optional.ofNullable
-import java.util.regex.Pattern.compile
 import no.nav.syfo.log
 import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
@@ -23,6 +16,13 @@ import org.xhtmlrenderer.pdf.ITextFSImage
 import org.xhtmlrenderer.pdf.ITextImageElement
 import org.xhtmlrenderer.render.BlockBox
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener
+import java.awt.Color
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.util.Base64
+import java.util.Optional.of
+import java.util.Optional.ofNullable
+import java.util.regex.Pattern.compile
 
 class ImageReplacedElementFactory(private val superFactory: ReplacedElementFactory) : ReplacedElementFactory {
 

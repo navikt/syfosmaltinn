@@ -1,8 +1,5 @@
 package no.nav.syfo.altinn.model
 
-import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
 import no.nav.syfo.model.sykmelding.arbeidsgiver.ArbeidsgiverAGDTO
 import no.nav.syfo.model.sykmelding.arbeidsgiver.ArbeidsgiverSykmelding
 import no.nav.syfo.model.sykmelding.arbeidsgiver.BehandlerAGDTO
@@ -20,6 +17,9 @@ import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
 import org.amshove.kluent.shouldNotBe
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 class AltinnSykmeldingMapperTest : Spek({
     describe("Test sykmelding mapper") {
@@ -117,13 +117,15 @@ private fun getAivenMessage(sykmeldingId: String, timestamp: OffsetDateTime) = S
         id = sykmeldingId,
         arbeidsgiver = ArbeidsgiverAGDTO("ArbeidsgiverNavn", "yrke"),
         behandler = BehandlerAGDTO(
-            "BehandlerFornavn", "BehandlerMellomnavn", "BehandlerEtternavn", "aktorid", AdresseDTO(
+            "BehandlerFornavn", "BehandlerMellomnavn", "BehandlerEtternavn", "aktorid",
+            AdresseDTO(
                 null,
                 null,
                 null,
                 null,
                 null
-            ), "telefonnummer"
+            ),
+            "telefonnummer"
         ),
         behandletTidspunkt = timestamp,
         egenmeldt = false,

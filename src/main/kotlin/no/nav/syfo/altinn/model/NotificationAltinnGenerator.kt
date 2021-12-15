@@ -44,11 +44,11 @@ class NotificationAltinnGenerator private constructor() {
             return createEmailNotification(
                 "Ny sykmelding i Altinn",
                 "<p>En ansatt i \$reporteeName$ (\$reporteeNumber$) har sendt inn en digital sykmelding.</p>" +
-                        "<p><a href=\"" + lenkeAltinnPortal() + "\">" +
-                        "Logg inn på Altinn</a> for å se sykmeldingen.</p>" +
-                        "<p>Husk samtidig å melde inn hvem som er nærmeste leder for den sykmeldte hvis dette ikke er gjort tidligere.</p>" +
-                        "<p>Les mer på <a href=\"https://www.nav.no/digitalsykmelding\">nav.no/digitalsykmelding</a>.</p>" +
-                        "<p>Vennlig hilsen NAV.</p>"
+                    "<p><a href=\"" + lenkeAltinnPortal() + "\">" +
+                    "Logg inn på Altinn</a> for å se sykmeldingen.</p>" +
+                    "<p>Husk samtidig å melde inn hvem som er nærmeste leder for den sykmeldte hvis dette ikke er gjort tidligere.</p>" +
+                    "<p>Les mer på <a href=\"https://www.nav.no/digitalsykmelding\">nav.no/digitalsykmelding</a>.</p>" +
+                    "<p>Vennlig hilsen NAV.</p>"
             )
         }
 
@@ -70,9 +70,11 @@ class NotificationAltinnGenerator private constructor() {
                 .withNotificationType(
                     "TokenTextOnly"
                 )
-                .withFromAddress(fromEmail?.let {
-                    it
-                })
+                .withFromAddress(
+                    fromEmail?.let {
+                        it
+                    }
+                )
                 .withReceiverEndPoints(
                     ReceiverEndPointBEList()
                         .withReceiverEndPoint(

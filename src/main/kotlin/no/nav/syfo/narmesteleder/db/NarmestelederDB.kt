@@ -1,9 +1,9 @@
 package no.nav.syfo.narmesteleder.db
 
-import java.sql.Date
-import java.sql.ResultSet
 import no.nav.syfo.narmesteleder.kafka.model.NarmestelederLeesah
 import no.nav.syfo.sykmelding.db.DatabaseInterface
+import java.sql.Date
+import java.sql.ResultSet
 
 class NarmestelederDB(
     private val database: DatabaseInterface

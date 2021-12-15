@@ -10,10 +10,10 @@ import com.lowagie.text.pdf.PdfPTable
 import com.lowagie.text.pdf.PdfReader
 import com.lowagie.text.pdf.PdfStamper
 import com.lowagie.text.pdf.PdfWriter
-import java.io.ByteArrayOutputStream
 import no.nav.syfo.log
 import org.apache.commons.io.IOUtils.toByteArray
 import org.xhtmlrenderer.pdf.ITextRenderer
+import java.io.ByteArrayOutputStream
 
 class PdfFactory private constructor () {
     companion object {
@@ -70,7 +70,8 @@ class PdfFactory private constructor () {
                 renderer.pdfVersion = PdfWriter.VERSION_1_7
                 renderer.createPDF(byteArrayOutputStream, false)
                 renderer.writer.setOutputIntents(
-                    "Custom", "PDF/A", "http://www.color.org", "AdobeRGB1998", toByteArray(
+                    "Custom", "PDF/A", "http://www.color.org", "AdobeRGB1998",
+                    toByteArray(
                         PdfFactory::class.java.classLoader.getResourceAsStream(
                             "AdobeRGB1998.icc"
                         )

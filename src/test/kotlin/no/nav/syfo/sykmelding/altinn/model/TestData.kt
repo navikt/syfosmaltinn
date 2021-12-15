@@ -1,6 +1,4 @@
 
-import java.time.LocalDate
-import java.time.OffsetDateTime
 import no.nav.syfo.model.sykmelding.arbeidsgiver.ArbeidsgiverAGDTO
 import no.nav.syfo.model.sykmelding.arbeidsgiver.ArbeidsgiverSykmelding
 import no.nav.syfo.model.sykmelding.arbeidsgiver.BehandlerAGDTO
@@ -13,6 +11,8 @@ import no.nav.syfo.model.sykmeldingstatus.ArbeidsgiverStatusDTO
 import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
 import no.nav.syfo.model.sykmeldingstatus.SykmeldingStatusKafkaEventDTO
 import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
+import java.time.LocalDate
+import java.time.OffsetDateTime
 
 fun getSykmeldingKafkaMessage(sykmeldingId: String): SendSykmeldingAivenKafkaMessage {
     val sendtSykmeldingKafkaMessage = SendSykmeldingAivenKafkaMessage(

@@ -9,10 +9,10 @@ import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.engine.apache.ApacheEngineConfig
 import io.ktor.client.features.auth.Auth
+import io.ktor.client.features.auth.providers.BasicAuthCredentials
 import io.ktor.client.features.auth.providers.basic
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
-import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.hotspot.DefaultExports
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -56,7 +56,6 @@ import org.slf4j.LoggerFactory
 
 val log: Logger = LoggerFactory.getLogger("no.nav.syfo.syfosmaltinn")
 
-@KtorExperimentalAPI
 fun main() {
     val env = Environment()
     DefaultExports.initialize()
@@ -108,9 +107,13 @@ fun main() {
         config()
         install(Auth) {
             basic {
-                username = vaultSecrets.serviceuserUsername
-                password = vaultSecrets.serviceuserPassword
-                sendWithoutRequest = true
+                credentials {
+                    BasicAuthCredentials(
+                        username = vaultSecrets.serviceuserUsername,
+                        password = vaultSecrets.serviceuserPassword
+                    )
+                }
+                sendWithoutRequest { true }
             }
         }
     }

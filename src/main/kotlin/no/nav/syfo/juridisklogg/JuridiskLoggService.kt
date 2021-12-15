@@ -1,10 +1,10 @@
 package no.nav.syfo.juridisklogg
 
-import java.security.MessageDigest
-import java.util.Base64
 import no.nav.syfo.altinn.model.SykmeldingAltinn
 import no.nav.syfo.application.metrics.JURIDISK_LOGG_COUNTER
 import no.nav.syfo.pdl.client.model.Person
+import java.security.MessageDigest
+import java.util.Base64
 
 class JuridiskLoggService(private val juridiskLoggClient: JuridiskLoggClient) {
 
