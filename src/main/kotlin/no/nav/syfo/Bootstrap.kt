@@ -8,11 +8,13 @@ import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.engine.apache.ApacheEngineConfig
+import io.ktor.client.features.HttpResponseValidator
 import io.ktor.client.features.auth.Auth
 import io.ktor.client.features.auth.providers.BasicAuthCredentials
 import io.ktor.client.features.auth.providers.basic
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
+import io.ktor.network.sockets.SocketTimeoutException
 import io.prometheus.client.hotspot.DefaultExports
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -24,6 +26,7 @@ import no.nav.syfo.altinn.orgnummer.AltinnOrgnummerLookupFacotry
 import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
+import no.nav.syfo.application.exception.ServiceUnavailableException
 import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.juridisklogg.JuridiskLoggClient
 import no.nav.syfo.juridisklogg.JuridiskLoggService
@@ -101,6 +104,13 @@ fun main() {
             }
         }
         expectSuccess = false
+        HttpResponseValidator {
+            handleResponseException { exception ->
+                when (exception) {
+                    is SocketTimeoutException -> throw ServiceUnavailableException(exception.message)
+                }
+            }
+        }
     }
 
     val basichAuthConfig: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
