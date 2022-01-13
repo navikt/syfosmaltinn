@@ -35,7 +35,12 @@ class BeOmNyNLService(
         nlRequestProducer.send(
             NlRequestKafkaMessage(
                 nlRequest = NlRequest(
-                    requestId = UUID.fromString(kafkaMetadata.sykmeldingId),
+                    requestId = try {
+                        UUID.fromString(kafkaMetadata.sykmeldingId)
+                    } catch (e: Exception) {
+                        log.warn("Sykmeldingid ${kafkaMetadata.sykmeldingId} er ikke uuid, genererer ny id")
+                        UUID.randomUUID()
+                    },
                     sykmeldingId = kafkaMetadata.sykmeldingId,
                     fnr = kafkaMetadata.fnr,
                     orgnr = event.arbeidsgiver!!.orgnummer,
