@@ -22,7 +22,7 @@ spec:
             envVarPrefix: NAIS_DATABASE
 
   replicas:
-    min: 2
+    min: 3
     max: 3
     cpuThresholdPercentage: 90
   port: 8080
