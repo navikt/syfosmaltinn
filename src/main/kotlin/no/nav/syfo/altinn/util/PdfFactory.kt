@@ -142,27 +142,6 @@ class PdfFactory private constructor () {
                 BaseFont.EMBEDDED,
                 null
             )
-            renderer.fontResolver.addFont(
-                "/org/apache/pdfbox/resources/ttf/ArialMT.ttf",
-                "Arial",
-                BaseFont.IDENTITY_H,
-                BaseFont.EMBEDDED,
-                null
-            )
-            renderer.fontResolver.addFont(
-                "/org/apache/pdfbox/resources/ttf/Arial-BoldMT.ttf",
-                "Arial",
-                BaseFont.IDENTITY_H,
-                BaseFont.EMBEDDED,
-                null
-            )
-            renderer.fontResolver.addFont(
-                "/org/apache/pdfbox/resources/ttf/Arial-BoldItalicMT.ttf",
-                "Arial",
-                BaseFont.IDENTITY_H,
-                BaseFont.EMBEDDED,
-                null
-            )
         }
     }
 }
