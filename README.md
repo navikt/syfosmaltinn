@@ -1,9 +1,15 @@
 # syfosmaltinn
+[![Deploy to dev and prod](https://github.com/navikt/syfosmaltinn/actions/workflows/deploy.yml/badge.svg)](https://github.com/navikt/syfosmaltinn/actions/workflows/deploy.yml)
+
 This project contains the application code and infrastructure for syfosmaltinn
+
 ## Technologies used
 * Kotlin
 * Ktor
 * Gradle
+
+## Requirements
+* JDK 17
 
 ## Getting started
 ### Getting github-package-registry packages NAV-IT
