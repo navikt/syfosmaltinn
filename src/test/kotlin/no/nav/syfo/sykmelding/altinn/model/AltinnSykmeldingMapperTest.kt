@@ -1,19 +1,17 @@
 package no.nav.syfo.sykmelding.altinn.model
 
-import getSykmeldingKafkaMessage
+import io.kotest.core.spec.style.FunSpec
 import no.nav.syfo.altinn.model.AltinnSykmeldingMapper
 import no.nav.syfo.altinn.model.SykmeldingAltinn
 import no.nav.syfo.altinn.model.SykmeldingArbeidsgiverMapper
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
 import org.amshove.kluent.shouldNotBe
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import java.time.LocalDate
 
-class AltinnSykmeldingMapperTest : Spek({
-    describe("Test sykmelding mapper") {
-        it("Shuold create InsertCorrespondenceV2") {
+class AltinnSykmeldingMapperTest : FunSpec({
+    context("Test sykmelding mapper") {
+        test("Shuold create InsertCorrespondenceV2") {
             val sykmeldingId = "uuid"
             val sendtSykmeldingKafkaMessage = getSykmeldingKafkaMessage(sykmeldingId)
             System.setProperty("environment.name", "local")

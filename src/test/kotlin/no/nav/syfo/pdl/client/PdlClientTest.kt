@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import io.kotest.core.spec.style.FunSpec
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -11,13 +12,10 @@ import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
-import kotlinx.coroutines.runBlocking
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import java.io.File
 import kotlin.test.assertFailsWith
 
-class PdlClientTest : Spek({
+class PdlClientTest : FunSpec({
 
     val httpClient = HttpClient(MockEngine) {
         install(JsonFeature) {
@@ -38,12 +36,10 @@ class PdlClientTest : Spek({
     val graphQlQuery = File("src/main/resources/graphql/getPerson.graphql").readText().replace(Regex("[\n\t]"), "")
     val pdlClient = PdlClient(httpClient, "graphqlend", "key", graphQlQuery)
 
-    describe("getPerson OK") {
-        it("Kaster exception hvis person ikke finnes i PDL") {
-            runBlocking {
-                assertFailsWith<RuntimeException> {
-                    pdlClient.getPerson("12345678901", "Bearer token")
-                }
+    context("getPerson OK") {
+        test("Kaster exception hvis person ikke finnes i PDL") {
+            assertFailsWith<RuntimeException> {
+                pdlClient.getPerson("12345678901", "Bearer token")
             }
         }
     }

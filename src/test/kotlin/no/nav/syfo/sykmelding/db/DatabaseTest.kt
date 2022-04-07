@@ -1,5 +1,6 @@
 package no.nav.syfo.sykmelding.db
 
+import io.kotest.core.spec.style.FunSpec
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.syfo.Environment
@@ -7,8 +8,6 @@ import no.nav.syfo.narmesteleder.db.NarmestelederDB
 import no.nav.syfo.narmesteleder.db.NarmestelederDbModel
 import no.nav.syfo.narmesteleder.kafka.model.NarmestelederLeesah
 import org.amshove.kluent.shouldBeEqualTo
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import org.testcontainers.containers.PostgreSQLContainer
 import java.time.Clock
 import java.time.LocalDate
@@ -19,7 +18,7 @@ import kotlin.test.assertFailsWith
 
 class PsqlContainer : PostgreSQLContainer<PsqlContainer>("postgres:12")
 
-class DatabaseTest : Spek({
+class DatabaseTest : FunSpec({
     val mockEnv = mockk<Environment>(relaxed = true)
     every { mockEnv.databaseUsername } returns "username"
     every { mockEnv.databasePassword } returns "password"
@@ -33,13 +32,13 @@ class DatabaseTest : Spek({
 
     psqlContainer.start()
 
-    beforeEachTest {
+    beforeTest {
         every { mockEnv.databaseUsername } returns "username"
         every { mockEnv.databasePassword } returns "password"
     }
 
-    describe("Test NL database") {
-        it("test save, update and delete") {
+    context("Test NL database") {
+        test("test save, update and delete") {
             every { mockEnv.jdbcUrl() } returns psqlContainer.jdbcUrl
             val database = Database(mockEnv)
             val nlDatabase = NarmestelederDB(database)
@@ -99,28 +98,28 @@ class DatabaseTest : Spek({
         }
     }
 
-    describe("Test database") {
-        it("Should fail 20 times then connect") {
+    context("Test database") {
+        test("Should fail 20 times then connect") {
             every { mockEnv.jdbcUrl() } returnsMany (0 until 20).map { "jdbc:postgresql://127.0.0.1:5433/databasename1" } andThen psqlContainer.jdbcUrl
             Database(mockEnv, 30, 0)
         }
-        it("Fail after timeout exeeded") {
+        test("Fail after timeout exeeded") {
             every { mockEnv.jdbcUrl() } returns "jdbc:postgresql://127.0.0.1:5433/databasename1"
             assertFailsWith<RuntimeException> { Database(mockEnv, retries = 30, sleepTime = 0) }
         }
     }
 
-    describe("Test db queries") {
+    context("Test db queries") {
         every { mockEnv.jdbcUrl() } returns psqlContainer.jdbcUrl
         val database = Database(mockEnv)
 
-        it("Lagre narmesteleder check") {
+        test("Lagre narmesteleder check") {
             database.hasCheckedNl("1") shouldBeEqualTo false
             database.insertNarmestelederCheck("1", OffsetDateTime.now())
             database.hasCheckedNl("1") shouldBeEqualTo true
         }
 
-        it("Insert new sykmeldingStatus") {
+        test("Insert new sykmeldingStatus") {
             database.insertStatus("1")
             val status = database.getStatus("1")
             status!!.sykmeldingId shouldBeEqualTo "1"
@@ -128,7 +127,7 @@ class DatabaseTest : Spek({
             status.loggTimestamp shouldBeEqualTo null
         }
 
-        it("Insert new sykmeldingStatus and altinn timestamp") {
+        test("Insert new sykmeldingStatus and altinn timestamp") {
             val dateTime = OffsetDateTime.now(Clock.tickMillis(ZoneOffset.UTC))
             database.insertStatus("2")
             database.updateSendtToAlinn("2", dateTime)
@@ -137,7 +136,7 @@ class DatabaseTest : Spek({
             status.altinnTimestamp shouldBeEqualTo dateTime
             status.loggTimestamp shouldBeEqualTo null
         }
-        it("Insert new sykmeldingStatus and timestamps") {
+        test("Insert new sykmeldingStatus and timestamps") {
             val dateTime = OffsetDateTime.now(Clock.tickMillis(ZoneOffset.UTC))
             database.insertStatus("3")
             database.updateSendtToAlinn("3", dateTime)

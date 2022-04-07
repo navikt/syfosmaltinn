@@ -1,10 +1,10 @@
 package no.nav.syfo.narmesteleder.service
 
+import io.kotest.core.spec.style.FunSpec
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
 import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.narmesteleder.db.NarmestelederDB
 import no.nav.syfo.narmesteleder.db.NarmestelederDbModel
@@ -12,24 +12,22 @@ import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.PdlClient
 import no.nav.syfo.pdl.client.model.Person
 import org.amshove.kluent.shouldBeEqualTo
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import java.time.LocalDate
 
-object NarmesteLederServiceTest : Spek({
+class NarmesteLederServiceTest : FunSpec({
     val narmestelederDb = mockk<NarmestelederDB>()
     val pdlClient = mockk<PdlClient>()
     val stsOidcClient = mockk<StsOidcClient>(relaxed = true)
     val narmesteLederService = NarmesteLederService(narmestelederDb, pdlClient, stsOidcClient)
 
-    beforeEachTest {
+    beforeTest {
         clearAllMocks()
         coEvery { stsOidcClient.oidcToken().access_token } returns "access_token"
     }
     val leder = Person("Fornavn", "Mellomnavn", "Etternavn", "aktørid", "lederFnr")
-    describe("NarmestelederService - leder får riktig navn") {
+    context("NarmestelederService - leder får riktig navn") {
 
-        it("Should get correct NL") {
+        test("Should get correct NL") {
             every { narmestelederDb.getNarmesteleder("1", "orgnummer") } returns NarmestelederDbModel(
                 sykmeldtFnr = "1",
                 lederFnr = "lederFnr",
@@ -42,7 +40,7 @@ object NarmesteLederServiceTest : Spek({
 
             coEvery { pdlClient.getPerson("lederFnr", "access_token") } returns leder
 
-            val nl = runBlocking { narmesteLederService.getNarmesteLeder(orgnummer = "orgnummer", fnr = "1") }
+            val nl = narmesteLederService.getNarmesteLeder(orgnummer = "orgnummer", fnr = "1")
             nl shouldBeEqualTo NarmesteLeder(
                 "epost",
                 "orgnummer",
@@ -54,17 +52,17 @@ object NarmesteLederServiceTest : Spek({
             )
         }
 
-        it("Should get null") {
+        test("Should get null") {
             every { narmestelederDb.getNarmesteleder("1", "orgnummer") } returns null
             coEvery { pdlClient.getPerson("lederFnr", "access_token") } returns leder
-            val nl = runBlocking { narmesteLederService.getNarmesteLeder("orgnummer", "1") }
+            val nl = narmesteLederService.getNarmesteLeder("orgnummer", "1")
             nl shouldBeEqualTo null
         }
-        it("Leder med mellomnavn") {
+        test("Leder med mellomnavn") {
             val navn = narmesteLederService.getName(leder)
             navn shouldBeEqualTo "Fornavn Mellomnavn Etternavn"
         }
-        it("Leder uten mellomnavn") {
+        test("Leder uten mellomnavn") {
             val person = leder.copy(mellomnavn = null)
             val navn = narmesteLederService.getName(person)
             navn shouldBeEqualTo "Fornavn Etternavn"

@@ -1,5 +1,6 @@
 package no.nav.syfo.narmesteleder.service
 
+import io.kotest.core.spec.style.FunSpec
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -15,29 +16,27 @@ import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.sykmelding.db.DatabaseInterface
 import no.nav.syfo.sykmelding.db.hasCheckedNl
 import org.amshove.kluent.shouldBeEqualTo
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import java.time.LocalDate
 import java.time.OffsetDateTime
 
-class BeOmNyNLServiceTest : Spek({
+class BeOmNyNLServiceTest : FunSpec({
     val nlRequestProducer = mockk<NLRequestProducer>(relaxed = true)
     val nlResponseProducer = mockk<NLResponseProducer>(relaxed = true)
     val database = mockk<DatabaseInterface>()
     mockkStatic("no.nav.syfo.sykmelding.db.DatabaseQueriesKt")
     val beOmNyNLService = BeOmNyNLService(nlRequestProducer, nlResponseProducer, database)
 
-    afterEachTest {
+    afterTest {
         mockkStatic("no.nav.syfo.sykmelding.db.DatabaseQueriesKt")
         clearMocks(database)
     }
 
-    beforeEachTest {
+    beforeTest {
         every { database.hasCheckedNl(any()) } returns false
     }
 
-    describe("BeOmNyNLService") {
-        it("Skal ikke be om ny NL om det er gjort") {
+    context("BeOmNyNLService") {
+        test("Skal ikke be om ny NL om det er gjort") {
             every { database.hasCheckedNl(any()) } returns true
             val sykmeldingStatusKafkaEvent = getSykmeldingStatusKafkaEvent(
                 listOf(
@@ -52,7 +51,7 @@ class BeOmNyNLServiceTest : Spek({
             beOmNyNLService.skalBeOmNyNL(sykmeldingStatusKafkaEvent, getNarmesteleder(true)) shouldBeEqualTo false
         }
 
-        it("Skal ikke be om ny NL om det ikke er gjort") {
+        test("Skal ikke be om ny NL om det ikke er gjort") {
             every { database.hasCheckedNl(any()) } returns false
             val sykmeldingStatusKafkaEvent = getSykmeldingStatusKafkaEvent(
                 listOf(
@@ -67,7 +66,7 @@ class BeOmNyNLServiceTest : Spek({
             beOmNyNLService.skalBeOmNyNL(sykmeldingStatusKafkaEvent, getNarmesteleder(true)) shouldBeEqualTo true
         }
 
-        it("Skal be om ny NL hvis det er svart ja på spørsmål om NL") {
+        test("Skal be om ny NL hvis det er svart ja på spørsmål om NL") {
             val sykmeldingStatusKafkaEvent = getSykmeldingStatusKafkaEvent(
                 listOf(
                     SporsmalOgSvarDTO(
@@ -84,12 +83,12 @@ class BeOmNyNLServiceTest : Spek({
                 getNarmesteleder(forskutterer = false)
             ) shouldBeEqualTo true
         }
-        it("Skal be om ny NL hvis det ikke er registrert noen NL") {
+        test("Skal be om ny NL hvis det ikke er registrert noen NL") {
             val sykmeldingStatusKafkaEvent = getSykmeldingStatusKafkaEvent(emptyList())
 
             beOmNyNLService.skalBeOmNyNL(sykmeldingStatusKafkaEvent, null) shouldBeEqualTo true
         }
-        it("Skal be om ny NL hvis det ikke er svart på om NL forskutterer lønn") {
+        test("Skal be om ny NL hvis det ikke er svart på om NL forskutterer lønn") {
             val sykmeldingStatusKafkaEvent = getSykmeldingStatusKafkaEvent(
                 emptyList()
             )
@@ -99,7 +98,7 @@ class BeOmNyNLServiceTest : Spek({
                 getNarmesteleder(forskutterer = null)
             ) shouldBeEqualTo true
         }
-        it("Skal ikke be om ny NL hvis NL er registrert og har svart på forskuttering og bruker ikke har bedt om ny NL") {
+        test("Skal ikke be om ny NL hvis NL er registrert og har svart på forskuttering og bruker ikke har bedt om ny NL") {
             val sykmeldingStatusKafkaEvent = getSykmeldingStatusKafkaEvent(
                 emptyList()
             )
@@ -109,7 +108,7 @@ class BeOmNyNLServiceTest : Spek({
                 getNarmesteleder(forskutterer = false)
             ) shouldBeEqualTo false
         }
-        it("Skal ikke be om ny NL hvis det er svart nei på spørsmål om NL") {
+        test("Skal ikke be om ny NL hvis det er svart nei på spørsmål om NL") {
             val sykmeldingStatusKafkaEvent = getSykmeldingStatusKafkaEvent(
                 listOf(
                     SporsmalOgSvarDTO(
