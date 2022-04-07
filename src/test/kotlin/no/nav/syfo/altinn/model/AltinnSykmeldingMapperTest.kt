@@ -1,5 +1,6 @@
 package no.nav.syfo.altinn.model
 
+import io.kotest.core.spec.style.FunSpec
 import no.nav.syfo.model.sykmelding.arbeidsgiver.ArbeidsgiverAGDTO
 import no.nav.syfo.model.sykmelding.arbeidsgiver.ArbeidsgiverSykmelding
 import no.nav.syfo.model.sykmelding.arbeidsgiver.BehandlerAGDTO
@@ -15,15 +16,13 @@ import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
 import org.amshove.kluent.shouldNotBe
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
-class AltinnSykmeldingMapperTest : Spek({
-    describe("Test sykmelding mapper") {
-        it("Shuold create InsertCorrespondenceV2") {
+class AltinnSykmeldingMapperTest : FunSpec({
+    context("Test sykmelding mapper") {
+        test("Shuold create InsertCorrespondenceV2") {
             val sykmeldingId = "uuid"
             val timestamp = OffsetDateTime.now(ZoneOffset.UTC)
             val sendtSykmeldingKafkaMessage = getAivenMessage(sykmeldingId, timestamp)

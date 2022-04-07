@@ -10,6 +10,7 @@ import no.nav.syfo.narmesteleder.kafka.model.NarmestelederLeesah
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.slf4j.LoggerFactory
 import java.time.Duration
+import kotlinx.coroutines.DelicateCoroutinesApi
 
 class NarmestelederConsumer(
     private val narmestelederDB: NarmestelederDB,
@@ -21,6 +22,7 @@ class NarmestelederConsumer(
         private val log = LoggerFactory.getLogger(NarmestelederConsumer::class.java)
     }
 
+    @DelicateCoroutinesApi
     fun startConsumer() {
         GlobalScope.launch(Dispatchers.IO) {
             while (applicationState.ready) {

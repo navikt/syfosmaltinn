@@ -1,3 +1,4 @@
+package no.nav.syfo.sykmelding.altinn.model
 
 import no.nav.syfo.model.sykmelding.arbeidsgiver.ArbeidsgiverAGDTO
 import no.nav.syfo.model.sykmelding.arbeidsgiver.ArbeidsgiverSykmelding
@@ -15,7 +16,7 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 
 fun getSykmeldingKafkaMessage(sykmeldingId: String): SendSykmeldingAivenKafkaMessage {
-    val sendtSykmeldingKafkaMessage = SendSykmeldingAivenKafkaMessage(
+    return SendSykmeldingAivenKafkaMessage(
         sykmelding = ArbeidsgiverSykmelding(
             id = sykmeldingId,
             arbeidsgiver = ArbeidsgiverAGDTO("ArbeidsgiverNavn", "yrke"),
@@ -69,5 +70,4 @@ fun getSykmeldingKafkaMessage(sykmeldingId: String): SendSykmeldingAivenKafkaMes
         ),
         kafkaMetadata = KafkaMetadataDTO(sykmeldingId, OffsetDateTime.now(), "fnr", "user")
     )
-    return sendtSykmeldingKafkaMessage
 }
