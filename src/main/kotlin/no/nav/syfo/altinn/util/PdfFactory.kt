@@ -15,7 +15,7 @@ import org.apache.commons.io.IOUtils.toByteArray
 import org.xhtmlrenderer.pdf.ITextRenderer
 import java.io.ByteArrayOutputStream
 
-class PdfFactory private constructor () {
+class PdfFactory private constructor() {
     companion object {
         private const val PATH_TO_RESOURCES = "/pdf/sm/"
         private val SOURCE_SANS_PRO_REGULAR = FontFactory.getFont("/fonts/Source_Sans_Pro/SourceSansPro-Regular.ttf")

@@ -1,5 +1,6 @@
 package no.nav.syfo.narmesteleder.kafka
 
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -10,7 +11,6 @@ import no.nav.syfo.narmesteleder.kafka.model.NarmestelederLeesah
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.slf4j.LoggerFactory
 import java.time.Duration
-import kotlinx.coroutines.DelicateCoroutinesApi
 
 class NarmestelederConsumer(
     private val narmestelederDB: NarmestelederDB,
