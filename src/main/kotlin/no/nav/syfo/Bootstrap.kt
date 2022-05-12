@@ -28,7 +28,7 @@ import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
 import no.nav.syfo.application.exception.ServiceUnavailableException
-import no.nav.syfo.client.StsOidcClient
+import no.nav.syfo.azuread.AccessTokenClient
 import no.nav.syfo.juridisklogg.JuridiskLoggClient
 import no.nav.syfo.juridisklogg.JuridiskLoggService
 import no.nav.syfo.kafka.aiven.KafkaUtils
@@ -132,20 +132,21 @@ fun main() {
 
     val httpClient = HttpClient(Apache, config)
     val httpClientWithAuth = HttpClient(Apache, basichAuthConfig)
+    val accessTokenClient = AccessTokenClient(
+        aadAccessTokenUrl = env.aadAccessTokenUrl,
+        clientId = env.clientId,
+        clientSecret = env.clientSecret,
+        httpClient = httpClient
+    )
     val pdlClient = PdlClient(
         httpClient,
         env.pdlBasePath,
-        env.pdlApiKey,
-        PdlClient::class.java.getResource("/graphql/getPerson.graphql").readText()
-    )
-    val stsOidcClient = StsOidcClient(
-        username = vaultSecrets.serviceuserUsername,
-        password = vaultSecrets.serviceuserPassword,
-        stsUrl = env.stsOidcUrl,
-        apiKey = env.stsApiKey
+        PdlClient::class.java.getResource("/graphql/getPerson.graphql").readText(),
+        accessTokenClient,
+        env.pdlScope
     )
     val narmestelederDb = NarmestelederDB(database)
-    val narmesteLederService = NarmesteLederService(narmestelederDb, pdlClient, stsOidcClient)
+    val narmesteLederService = NarmesteLederService(narmestelederDb, pdlClient)
     val juridiskLoggService =
         JuridiskLoggService(JuridiskLoggClient(httpClientWithAuth, env.juridiskLoggUrl, env.sykmeldingProxyApiKey))
     val altinnSendtSykmeldingService = AltinnSykmeldingService(
@@ -169,7 +170,6 @@ fun main() {
         applicationState,
         altinnSendtSykmeldingService,
         pdlClient,
-        stsOidcClient,
         narmesteLederService,
         beOmNyNLService,
         sendtSykmeldingAivenConsumer

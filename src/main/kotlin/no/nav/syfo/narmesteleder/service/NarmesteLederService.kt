@@ -1,6 +1,5 @@
 package no.nav.syfo.narmesteleder.service
 
-import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.narmesteleder.db.NarmestelederDB
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.PdlClient
@@ -8,8 +7,7 @@ import no.nav.syfo.pdl.client.model.Person
 
 class NarmesteLederService(
     private val narmestelederDB: NarmestelederDB,
-    private val pdlClient: PdlClient,
-    private val stsOidcClient: StsOidcClient
+    private val pdlClient: PdlClient
 ) {
     suspend fun getNarmesteLeder(orgnummer: String, fnr: String): NarmesteLeder? {
         return narmestelederDB.getNarmesteleder(
@@ -17,7 +15,7 @@ class NarmesteLederService(
             orgnummer = orgnummer
         )?.let { narmesteLederRelasjon ->
 
-            val lederPerson = pdlClient.getPerson(narmesteLederRelasjon.lederFnr, stsOidcClient.oidcToken().access_token)
+            val lederPerson = pdlClient.getPerson(narmesteLederRelasjon.lederFnr)
 
             NarmesteLeder(
                 epost = narmesteLederRelasjon.narmesteLederEpost,

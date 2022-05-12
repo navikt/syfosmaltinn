@@ -4,7 +4,6 @@ import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.syfo.altinn.AltinnSykmeldingService
 import no.nav.syfo.altinn.model.SykmeldingArbeidsgiverMapper
 import no.nav.syfo.application.ApplicationState
-import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.log
 import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
 import no.nav.syfo.model.sykmeldingstatus.SykmeldingStatusKafkaEventDTO
@@ -19,7 +18,6 @@ class SendtSykmeldingService(
     private val applicationState: ApplicationState,
     private val altinnSykmeldingService: AltinnSykmeldingService,
     private val pdlClient: PdlClient,
-    private val stsTokenClient: StsOidcClient,
     private val narmesteLederService: NarmesteLederService,
     private val beOmNyNLService: BeOmNyNLService,
     private val sendtSykmeldingAivenConsumer: SendtSykmeldingAivenConsumer
@@ -62,10 +60,7 @@ class SendtSykmeldingService(
         if (kafkaMetadata.source == "macgyver") {
             return
         }
-        val person = pdlClient.getPerson(
-            ident = kafkaMetadata.fnr,
-            stsToken = stsTokenClient.oidcToken().access_token
-        )
+        val person = pdlClient.getPerson(ident = kafkaMetadata.fnr)
         log.info("Mottok svar fra PDL for sykmeldingId: ${kafkaMetadata.sykmeldingId}")
         val arbeidsgiver = event.arbeidsgiver
             ?: throw ArbeidsgiverNotFoundException(event)

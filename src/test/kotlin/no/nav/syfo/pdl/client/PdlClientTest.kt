@@ -12,10 +12,14 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import io.ktor.serialization.jackson.jackson
+import io.mockk.coEvery
+import io.mockk.mockk
+import no.nav.syfo.azuread.AccessTokenClient
 import java.io.File
 import kotlin.test.assertFailsWith
 
 class PdlClientTest : FunSpec({
+    val accessTokenClient = mockk<AccessTokenClient>()
 
     val httpClient = HttpClient(MockEngine) {
         install(ContentNegotiation) {
@@ -33,13 +37,15 @@ class PdlClientTest : FunSpec({
         }
     }
 
+    coEvery { accessTokenClient.getAccessToken(any()) } returns "token"
+
     val graphQlQuery = File("src/main/resources/graphql/getPerson.graphql").readText().replace(Regex("[\n\t]"), "")
-    val pdlClient = PdlClient(httpClient, "graphqlend", "key", graphQlQuery)
+    val pdlClient = PdlClient(httpClient, "graphqlend", graphQlQuery, accessTokenClient, "scope")
 
     context("getPerson OK") {
         test("Kaster exception hvis person ikke finnes i PDL") {
             assertFailsWith<RuntimeException> {
-                pdlClient.getPerson("12345678901", "Bearer token")
+                pdlClient.getPerson("12345678901")
             }
         }
     }
