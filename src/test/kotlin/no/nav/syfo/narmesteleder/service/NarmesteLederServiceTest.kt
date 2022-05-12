@@ -5,7 +5,6 @@ import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.syfo.client.StsOidcClient
 import no.nav.syfo.narmesteleder.db.NarmestelederDB
 import no.nav.syfo.narmesteleder.db.NarmestelederDbModel
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
@@ -17,12 +16,10 @@ import java.time.LocalDate
 class NarmesteLederServiceTest : FunSpec({
     val narmestelederDb = mockk<NarmestelederDB>()
     val pdlClient = mockk<PdlClient>()
-    val stsOidcClient = mockk<StsOidcClient>(relaxed = true)
-    val narmesteLederService = NarmesteLederService(narmestelederDb, pdlClient, stsOidcClient)
+    val narmesteLederService = NarmesteLederService(narmestelederDb, pdlClient)
 
     beforeTest {
         clearAllMocks()
-        coEvery { stsOidcClient.oidcToken().access_token } returns "access_token"
     }
     val leder = Person("Fornavn", "Mellomnavn", "Etternavn", "aktørid", "lederFnr")
     context("NarmestelederService - leder får riktig navn") {
@@ -38,7 +35,7 @@ class NarmesteLederServiceTest : FunSpec({
                 arbeidsgiverForskutterer = true
             )
 
-            coEvery { pdlClient.getPerson("lederFnr", "access_token") } returns leder
+            coEvery { pdlClient.getPerson("lederFnr") } returns leder
 
             val nl = narmesteLederService.getNarmesteLeder(orgnummer = "orgnummer", fnr = "1")
             nl shouldBeEqualTo NarmesteLeder(
@@ -54,7 +51,7 @@ class NarmesteLederServiceTest : FunSpec({
 
         test("Should get null") {
             every { narmestelederDb.getNarmesteleder("1", "orgnummer") } returns null
-            coEvery { pdlClient.getPerson("lederFnr", "access_token") } returns leder
+            coEvery { pdlClient.getPerson("lederFnr") } returns leder
             val nl = narmesteLederService.getNarmesteLeder("orgnummer", "1")
             nl shouldBeEqualTo null
         }

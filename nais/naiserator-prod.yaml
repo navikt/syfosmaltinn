@@ -63,10 +63,10 @@ spec:
     - "https://syfosmaltinn.intern.nav.no"
   webproxy: true
   env:
-    - name: PDL_BASE_PATH
-      value: https://api-gw.oera.no/pdl-api/graphql
-    - name: SECURITYTOKENSERVICE_URL
-      value: https://api-gw.oera.no/security-token-service/rest/v1/sts/token
+    - name: PDL_GRAPHQL_PATH
+      value: https://pdl-api.prod-fss-pub.nais.io/graphql
+    - name: PDL_SCOPE
+      value: api://prod-fss.pdl.pdl-api/.default
     - name: ALTINN_URL
       value: https://www.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
     - name: JURIDISKLOGG_REST_URL

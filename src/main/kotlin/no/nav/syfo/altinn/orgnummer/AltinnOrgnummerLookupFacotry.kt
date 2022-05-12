@@ -1,6 +1,6 @@
 package no.nav.syfo.altinn.orgnummer
 
-class AltinnOrgnummerLookupFacotry private constructor () {
+class AltinnOrgnummerLookupFacotry private constructor() {
     companion object {
 
         private val DEV_CLUSTER = listOf("dev-fss", "dev-gcp")
