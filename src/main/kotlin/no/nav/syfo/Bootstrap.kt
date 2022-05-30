@@ -70,7 +70,6 @@ fun main() {
         applicationState
     )
     val applicationServer = ApplicationServer(applicationEngine, applicationState)
-    applicationServer.start()
     val database = Database(env)
     val vaultSecrets = VaultSecrets()
 
@@ -161,8 +160,6 @@ fun main() {
 
     val narmestelederConsumer = NarmestelederConsumer(narmestelederDb, aivenKafkaNarmestelederConsumer, env.narmestelederLeesahTopic, applicationState)
 
-    applicationState.ready = true
-
     narmestelederConsumer.startConsumer()
 
     val sendtSykmeldingAivenConsumer = SendtSykmeldingAivenConsumer(aivenKafkaSykmeldingConsumer, env.sendtSykmeldingAivenKafkaTopic)
@@ -185,6 +182,8 @@ fun main() {
             applicationState.alive = false
         }
     }
+
+    applicationServer.start()
 }
 
 private inline fun <reified T : Any> getKafkaConsumer(env: Environment, resetConfig: String = "none", consumerGroup: String = env.applicationName + "-consumer") = KafkaConsumer(
