@@ -132,6 +132,7 @@ dependencies {
         exclude("xml-apis", "xml-apis")
         exclude("commons-logging", "commons-logging")
         exclude("org.python", "jython")
+        exclude("xalan", "xalan")
     }
     runtimeOnly("org.apache.xmlgraphics:batik-codec:$baticVersion")
     implementation("com.lowagie:itext:$iTextVersion") {
