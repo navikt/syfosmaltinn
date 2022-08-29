@@ -4,7 +4,6 @@ import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.Storage
 import no.nav.syfo.altinn.model.SykmeldingAltinn
-import no.nav.syfo.altinn.model.serialiser
 import no.nav.syfo.application.metrics.JURIDISK_LOGG_COUNTER
 import no.nav.syfo.log
 import java.io.ByteArrayOutputStream
@@ -30,7 +29,6 @@ class JuridiskLoggService(
             storage.create(blobInfo, content)
         }
 
-        val serialisertRequest = sykmeldingAltinn.serialiser()
         lagreFil(
             filnavn = "sykmelding.pdf",
             contentType = "application/pdf",
@@ -40,16 +38,6 @@ class JuridiskLoggService(
             filnavn = "sykmelding.xml",
             contentType = "application/xml",
             content = sykmeldingAltinn.sykmeldingXml.toByteArray(),
-        )
-        lagreFil(
-            filnavn = "correspondence.xml",
-            contentType = "application/xml",
-            content = serialisertRequest.toByteArray(),
-        )
-        lagreFil(
-            filnavn = "correspondence.gz",
-            contentType = "application/gzip",
-            content = serialisertRequest.gzip(),
         )
 
         log.info("Lastet opp dokumenter til mappe $mappe i juridisk logg-bucket")

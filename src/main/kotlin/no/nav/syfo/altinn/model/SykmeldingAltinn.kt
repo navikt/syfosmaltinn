@@ -9,8 +9,6 @@ import no.nav.syfo.altinn.util.SykmeldingHTMLandPDFMapper.Companion.toSykmelding
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.pdl.client.model.fulltNavn
-import java.io.StringWriter
-import javax.xml.bind.JAXBContext
 
 class SykmeldingAltinn(
     val xmlSykmeldingArbeidsgiver: XMLSykmeldingArbeidsgiver,
@@ -40,12 +38,4 @@ class SykmeldingAltinn(
             pasient.fulltNavn()
         )
     }
-}
-
-fun SykmeldingAltinn.serialiser(): String {
-    val writer = StringWriter()
-    val context: JAXBContext = JAXBContext.newInstance(SykmeldingAltinn::class.java)
-    val m = context.createMarshaller()
-    m.marshal(this, writer)
-    return writer.toString()
 }
