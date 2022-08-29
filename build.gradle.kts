@@ -205,6 +205,7 @@ tasks {
 
     }
     withType<ShadowJar> {
+        isZip64 = true
         transform(ServiceFileTransformer::class.java) {
             setPath("META-INF/cxf")
             include("bus-extensions.txt")
