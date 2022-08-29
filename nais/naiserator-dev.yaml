@@ -11,7 +11,6 @@ spec:
     outbound:
       external:
         - host: tt02.altinn.no
-        - host: api-gw-q1.oera.no
   gcp:
     sqlInstances:
       - name: syfosmaltinn-db-instance
@@ -20,7 +19,12 @@ spec:
         databases:
           - name: syfosmaltinn
             envVarPrefix: NAIS_DATABASE
-
+    buckets:
+      - name: teamsykmelding-syfosmaltinn-bucket-dev
+        retentionPeriodDays: 2
+        lifecycleCondition:
+          age: 2
+          withState: ANY
   replicas:
     min: 1
     max: 1
@@ -57,11 +61,7 @@ spec:
     enabled: false
   filesFrom:
     - secret: syfosmaltinn-secrets
-  envFrom:
-    - secret: syfosmaltinn-api-keys
-  ingresses:
-    - "https://syfosmaltinn.dev.nav.no"
-  webproxy: true
+  webproxy: false
   env:
     - name: PDL_GRAPHQL_PATH
       value: https://pdl-api.dev-fss-pub.nais.io/graphql
@@ -71,7 +71,7 @@ spec:
       value: https://tt02.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
     - name: ALTINN_PORTAL_BASEURL
       value: https://tt02.altinn.no
-    - name: JURIDISKLOGG_REST_URL
-      value: https://api-gw-q1.oera.no/sykmelding-fss-proxy/juridisklogg/juridisklogg/api/rest/logg
     - name: KAFKA_CLIENT_ID
       value: syfosmaltinn
+    - name: BUCKET_NAME
+      value: teamsykmelding-syfosmaltinn-bucket-dev

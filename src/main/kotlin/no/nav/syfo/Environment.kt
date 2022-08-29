@@ -13,9 +13,7 @@ data class Environment(
     val altinnUsername: String = getFileAsString("/var/run/secrets/ALTINN_USERNAME"),
     val altinnPassword: String = getFileAsString("/var/run/secrets/ALTINN_PASSWORD"),
     val altinnUrl: String = getEnvVar("ALTINN_URL"),
-    val juridiskLoggUrl: String = getEnvVar("JURIDISKLOGG_REST_URL"),
     val pdlScope: String = getEnvVar("PDL_SCOPE"),
-    val sykmeldingProxyApiKey: String = getEnvVar("SYKMELDING_FSS_PROXY_API_KEY"),
     val databaseUsername: String = getEnvVar("NAIS_DATABASE_USERNAME"),
     val databasePassword: String = getEnvVar("NAIS_DATABASE_PASSWORD"),
     val dbHost: String = getEnvVar("NAIS_DATABASE_HOST"),
@@ -26,17 +24,13 @@ data class Environment(
     val narmestelederLeesahTopic: String = "teamsykmelding.syfo-narmesteleder-leesah",
     val aadAccessTokenUrl: String = getEnvVar("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT"),
     val clientId: String = getEnvVar("AZURE_APP_CLIENT_ID"),
-    val clientSecret: String = getEnvVar("AZURE_APP_CLIENT_SECRET")
+    val clientSecret: String = getEnvVar("AZURE_APP_CLIENT_SECRET"),
+    val juridiskloggBucketName: String = getEnvVar("BUCKET_NAME")
 ) {
     fun jdbcUrl(): String {
         return "jdbc:postgresql://$dbHost:$dbPort/$dbName"
     }
 }
-
-data class VaultSecrets(
-    val serviceuserUsername: String = getFileAsString("/var/run/secrets/SYFOSMALTINN_USERNAME"),
-    val serviceuserPassword: String = getFileAsString("/var/run/secrets/SYFOSMALTINN_PASSWORD")
-)
 
 fun getEnvVar(varName: String, defaultValue: String? = null) =
     System.getenv(varName) ?: defaultValue ?: throw RuntimeException("Missing required variable \"$varName\"")

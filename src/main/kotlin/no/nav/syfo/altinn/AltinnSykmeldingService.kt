@@ -27,7 +27,7 @@ class AltinnSykmeldingService(
     private val database: DatabaseInterface
 ) {
 
-    suspend fun handleSendtSykmelding(
+    fun handleSendtSykmelding(
         xmlSykmeldingArbeidsgiver: XMLSykmeldingArbeidsgiver,
         pasient: Person,
         narmesteLeder: NarmesteLeder?,
@@ -49,7 +49,7 @@ class AltinnSykmeldingService(
             database.insertStatus(sykmeldingId)
         }
         sendtToAltinn(status, insertCorrespondenceV2, orgnummer, sykmeldingId, topic)
-        sendtToLogg(sykmeldingAltinn, pasient, status, topic)
+        sendtToLogg(sykmeldingAltinn, status, topic)
     }
 
     private fun sendtToAltinn(
@@ -89,22 +89,21 @@ class AltinnSykmeldingService(
         ALTINN_COUNTER.inc()
     }
 
-    private suspend fun sendtToLogg(
+    private fun sendtToLogg(
         sykmeldingAltinn: SykmeldingAltinn,
-        pasient: Person,
         status: SykmeldingStatus?,
         topic: String
     ) {
         when (status?.loggTimestamp) {
             null -> {
-                juridiskLoggService.sendJuridiskLogg(sykmeldingAltinn, person = pasient)
+                juridiskLoggService.sendJuridiskLogg(sykmeldingAltinn, sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId)
                 database.updateSendtToLogg(
                     sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId,
                     OffsetDateTime.now(ZoneOffset.UTC)
                 )
             }
             else -> {
-                log.info("Sykmelding already sendt to juridisk logg, from kafka: $topic")
+                log.info("Sykmelding ${sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId} already sendt to juridisk logg, from kafka: $topic")
             }
         }
     }

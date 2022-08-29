@@ -1,35 +1,55 @@
 package no.nav.syfo.juridisklogg
 
+import com.google.cloud.storage.BlobId
+import com.google.cloud.storage.BlobInfo
+import com.google.cloud.storage.Storage
 import no.nav.syfo.altinn.model.SykmeldingAltinn
 import no.nav.syfo.application.metrics.JURIDISK_LOGG_COUNTER
-import no.nav.syfo.pdl.client.model.Person
-import java.security.MessageDigest
-import java.util.Base64
+import no.nav.syfo.log
+import java.io.ByteArrayOutputStream
+import java.nio.charset.StandardCharsets.UTF_8
+import java.time.Instant
+import java.time.temporal.ChronoUnit
+import java.util.zip.GZIPOutputStream
 
-class JuridiskLoggService(private val juridiskLoggClient: JuridiskLoggClient) {
+class JuridiskLoggService(
+    private val bucketName: String,
+    private val storage: Storage
+) {
 
-    suspend fun sendJuridiskLogg(
+    fun sendJuridiskLogg(
         sykmeldingAltinn: SykmeldingAltinn,
-        person: Person
+        sykmeldingId: String
     ) {
-        val log = Logg(
-            meldingsId = sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId,
-            antallAarLagres = ANTALL_AR_LAGRES,
-            avsender = person.aktorId,
-            meldingsInnhold = sha512AsBase64String(sykmeldingAltinn.sykmeldingXml),
-            mottaker = sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer
+        val mappe = "$sykmeldingId/${mappeTidspunkt()}/"
+        fun lagreFil(filnavn: String, contentType: String, content: ByteArray) {
+            val blobInfo = BlobInfo.newBuilder(
+                BlobId.of(bucketName, mappe + filnavn)
+            ).setContentType(contentType).build()
+            storage.create(blobInfo, content)
+        }
+
+        lagreFil(
+            filnavn = "sykmelding.pdf",
+            contentType = "application/pdf",
+            content = sykmeldingAltinn.sykmeldingPdf,
         )
-        juridiskLoggClient.logg(log)
+        lagreFil(
+            filnavn = "sykmelding.xml",
+            contentType = "application/xml",
+            content = sykmeldingAltinn.sykmeldingXml.toByteArray(),
+        )
+
+        log.info("Lastet opp dokumenter til mappe $mappe i juridisk logg-bucket")
         JURIDISK_LOGG_COUNTER.inc()
     }
 
-    private fun sha512AsBase64String(source: String): String {
-        val sha512 = MessageDigest.getInstance("SHA-512")
-        val digest = sha512.digest(source.toByteArray())
-        return Base64.getEncoder().encodeToString(digest)
+    private fun String.gzip(): ByteArray {
+        val bos = ByteArrayOutputStream()
+        GZIPOutputStream(bos).bufferedWriter(UTF_8).use { it.write(this) }
+        return bos.toByteArray()
     }
 
-    companion object {
-        private const val ANTALL_AR_LAGRES = 5
-    }
+    private fun mappeTidspunkt() =
+        Instant.now().truncatedTo(ChronoUnit.SECONDS).toString().replace("-", "").replace(":", "")
 }

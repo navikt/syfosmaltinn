@@ -5,18 +5,18 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = "no.nav.syfo"
 version = "1.0.0"
 
-val coroutinesVersion = "1.6.1"
+val coroutinesVersion = "1.6.4"
 val jacksonVersion = "2.13.3"
 val kluentVersion = "1.68"
-val ktorVersion = "2.0.1"
+val ktorVersion = "2.1.0"
 val logbackVersion = "1.2.11"
-val logstashEncoderVersion = "7.1.1"
-val prometheusVersion = "0.15.0"
-val kotestVersion = "5.3.0"
+val logstashEncoderVersion = "7.2"
+val prometheusVersion = "0.16.0"
+val kotestVersion = "5.4.2"
 val smCommonVersion = "1.f132f2b"
-val mockkVersion = "1.12.4"
-val nimbusdsVersion = "9.22"
-val testContainerKafkaVersion = "1.17.1"
+val mockkVersion = "1.12.5"
+val nimbusdsVersion = "9.24.2"
+val testContainerKafkaVersion = "1.17.3"
 val sykmeldingArbeidsgiverVersion = "1.9daf0fa"
 val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
 val flyingSaucerVersion = "9.1.22"
@@ -29,11 +29,12 @@ val jaxsWsApiVersion = "2.3.1"
 val jaxwsRiVersion = "2.3.2"
 val jaxwsToolsVersion = "2.3.1"
 val javaxActivationVersion = "1.1.1"
-val postgresVersion = "42.3.4"
-val flywayVersion = "8.5.10"
+val postgresVersion = "42.4.2"
+val flywayVersion = "9.1.6"
 val hikariVersion = "5.0.1"
-val postgresContainerVersion = "1.17.1"
-val kotlinVersion = "1.6.21"
+val postgresContainerVersion = "1.17.3"
+val kotlinVersion = "1.7.10"
+val googleCloudStorageVersion = "2.11.3"
 
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
@@ -41,7 +42,7 @@ tasks.withType<Jar> {
 
 plugins {
     id("org.jmailen.kotlinter") version "3.10.0"
-    kotlin("jvm") version "1.6.21"
+    kotlin("jvm") version "1.7.10"
     id("com.diffplug.spotless") version "6.5.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     jacoco
@@ -104,7 +105,6 @@ dependencies {
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-    implementation("io.ktor:ktor-client-auth:$ktorVersion")
 
     implementation("no.nav.helse.xml:sykmeldingArbeidsgiver:$sykmeldingArbeidsgiverVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
@@ -121,6 +121,8 @@ dependencies {
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("org.flywaydb:flyway-core:$flywayVersion")
 
+    implementation("com.google.cloud:google-cloud-storage:$googleCloudStorageVersion")
+
     implementation("org.xhtmlrenderer:flying-saucer-pdf:$flyingSaucerVersion") {
         exclude("bouncycastle", "bcmail-jdk14")
         exclude("bouncycastle", "bcprov-jdk14")
@@ -132,6 +134,7 @@ dependencies {
         exclude("xml-apis", "xml-apis")
         exclude("commons-logging", "commons-logging")
         exclude("org.python", "jython")
+        exclude("xalan", "xalan")
     }
     runtimeOnly("org.apache.xmlgraphics:batik-codec:$baticVersion")
     implementation("com.lowagie:itext:$iTextVersion") {
@@ -202,6 +205,7 @@ tasks {
 
     }
     withType<ShadowJar> {
+        isZip64 = true
         transform(ServiceFileTransformer::class.java) {
             setPath("META-INF/cxf")
             include("bus-extensions.txt")

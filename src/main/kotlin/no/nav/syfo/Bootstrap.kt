@@ -4,14 +4,13 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.google.cloud.storage.Storage
+import com.google.cloud.storage.StorageOptions
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.engine.apache.ApacheEngineConfig
 import io.ktor.client.plugins.HttpResponseValidator
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BasicAuthCredentials
-import io.ktor.client.plugins.auth.providers.basic
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.network.sockets.SocketTimeoutException
 import io.ktor.serialization.jackson.jackson
@@ -29,7 +28,6 @@ import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
 import no.nav.syfo.application.exception.ServiceUnavailableException
 import no.nav.syfo.azuread.AccessTokenClient
-import no.nav.syfo.juridisklogg.JuridiskLoggClient
 import no.nav.syfo.juridisklogg.JuridiskLoggService
 import no.nav.syfo.kafka.aiven.KafkaUtils
 import no.nav.syfo.kafka.toConsumerConfig
@@ -71,7 +69,6 @@ fun main() {
     )
     val applicationServer = ApplicationServer(applicationEngine, applicationState)
     val database = Database(env)
-    val vaultSecrets = VaultSecrets()
 
     val kafkaProducer = KafkaProducer<String, NlRequestKafkaMessage>(
         KafkaUtils
@@ -114,23 +111,7 @@ fun main() {
         }
     }
 
-    val basichAuthConfig: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
-        config()
-        install(Auth) {
-            basic {
-                credentials {
-                    BasicAuthCredentials(
-                        username = vaultSecrets.serviceuserUsername,
-                        password = vaultSecrets.serviceuserPassword
-                    )
-                }
-                sendWithoutRequest { true }
-            }
-        }
-    }
-
     val httpClient = HttpClient(Apache, config)
-    val httpClientWithAuth = HttpClient(Apache, basichAuthConfig)
     val accessTokenClient = AccessTokenClient(
         aadAccessTokenUrl = env.aadAccessTokenUrl,
         clientId = env.clientId,
@@ -146,8 +127,10 @@ fun main() {
     )
     val narmestelederDb = NarmestelederDB(database)
     val narmesteLederService = NarmesteLederService(narmestelederDb, pdlClient)
-    val juridiskLoggService =
-        JuridiskLoggService(JuridiskLoggClient(httpClientWithAuth, env.juridiskLoggUrl, env.sykmeldingProxyApiKey))
+
+    val juridiskloggStorage: Storage = StorageOptions.newBuilder().build().service
+    val juridiskLoggService = JuridiskLoggService(env.juridiskloggBucketName, juridiskloggStorage)
+
     val altinnSendtSykmeldingService = AltinnSykmeldingService(
         altinnClient,
         altinnOrgnummerLookup,
