@@ -34,6 +34,7 @@ val flywayVersion = "9.1.6"
 val hikariVersion = "5.0.1"
 val postgresContainerVersion = "1.17.3"
 val kotlinVersion = "1.7.10"
+val googleCloudStorageVersion = "2.11.3"
 
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
@@ -104,7 +105,6 @@ dependencies {
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-    implementation("io.ktor:ktor-client-auth:$ktorVersion")
 
     implementation("no.nav.helse.xml:sykmeldingArbeidsgiver:$sykmeldingArbeidsgiverVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
@@ -120,6 +120,8 @@ dependencies {
     implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("org.flywaydb:flyway-core:$flywayVersion")
+
+    implementation("com.google.cloud:google-cloud-storage:$googleCloudStorageVersion")
 
     implementation("org.xhtmlrenderer:flying-saucer-pdf:$flyingSaucerVersion") {
         exclude("bouncycastle", "bcmail-jdk14")
