@@ -14,8 +14,8 @@ val logstashEncoderVersion = "7.2"
 val prometheusVersion = "0.16.0"
 val kotestVersion = "5.4.2"
 val smCommonVersion = "1.f132f2b"
-val mockkVersion = "1.12.5"
-val nimbusdsVersion = "9.24.2"
+val mockkVersion = "1.12.7"
+val nimbusdsVersion = "9.24.3"
 val testContainerKafkaVersion = "1.17.3"
 val sykmeldingArbeidsgiverVersion = "1.9daf0fa"
 val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
@@ -35,6 +35,10 @@ val hikariVersion = "5.0.1"
 val postgresContainerVersion = "1.17.3"
 val kotlinVersion = "1.7.10"
 val googleCloudStorageVersion = "2.11.3"
+val commonsVollectionsVersion = "3.2.2"
+val xmlschemaCoreVersion = "2.2.5"
+val jaxbApiVersion = "2.4.0-b180830.0359"
+val jaxbRuntimeVersion = "2.4.0-b180830.0438"
 
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
@@ -148,17 +152,17 @@ dependencies {
     implementation("org.apache.pdfbox:pdfbox:$pdfBoxVersion") {
         exclude("commons-logging", "commons-logging")
     }
-    implementation("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
-    implementation("org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438")
+    implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
+    implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:$altinnCorrespondenceAgencyExternalVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
     // for å overstyre sårbar versjon fra cxf-rt-ws-security
-    implementation("commons-collections:commons-collections:3.2.2")
+    implementation("commons-collections:commons-collections:$commonsVollectionsVersion")
 
-    implementation("org.apache.ws.xmlschema:xmlschema-core:2.2.5")
+    implementation("org.apache.ws.xmlschema:xmlschema-core:$xmlschemaCoreVersion")
     implementation("javax.activation:activation:$javaxActivationVersion")
     implementation("javax.xml.ws:jaxws-api:$jaxsWsApiVersion")
     implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
@@ -180,8 +184,8 @@ dependencies {
 
 tasks.jacocoTestReport {
     reports {
-        xml.isEnabled = true
-        html.isEnabled = true
+        xml.required.set(true)
+        html.required.set(true)
     }
 }
 
@@ -215,7 +219,11 @@ tasks {
     withType<Test> {
         useJUnitPlatform {
         }
-        testLogging.showStandardStreams = true
+        testLogging {
+            events("skipped", "failed")
+            showStackTraces = true
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        }
     }
 
     "check" {
