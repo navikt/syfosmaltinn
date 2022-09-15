@@ -11,6 +11,7 @@ This project contains the application code and infrastructure for syfosmaltinn
 
 ## Requirements
 * JDK 17
+* Docker
 
 ## Getting started
 ### Getting github-package-registry packages NAV-IT
