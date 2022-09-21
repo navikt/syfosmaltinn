@@ -13,7 +13,7 @@ val logbackVersion = "1.4.0"
 val logstashEncoderVersion = "7.2"
 val prometheusVersion = "0.16.0"
 val kotestVersion = "5.4.2"
-val smCommonVersion = "1.f132f2b"
+val smCommonVersion = "1.069b5f9"
 val mockkVersion = "1.12.7"
 val nimbusdsVersion = "9.24.3"
 val testContainerKafkaVersion = "1.17.3"
@@ -49,7 +49,6 @@ plugins {
     kotlin("jvm") version "1.7.10"
     id("com.diffplug.spotless") version "6.5.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    jacoco
 }
 
 val githubUser: String by project
@@ -180,13 +179,6 @@ dependencies {
         exclude(group = "org.eclipse.jetty")
     }
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
-}
-
-tasks.jacocoTestReport {
-    reports {
-        xml.required.set(true)
-        html.required.set(true)
-    }
 }
 
 
