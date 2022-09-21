@@ -26,8 +26,8 @@ spec:
           age: 1825
           withState: ANY
   replicas:
-    min: 3
-    max: 3
+    min: 4
+    max: 4
     cpuThresholdPercentage: 90
   port: 8080
   liveness:
