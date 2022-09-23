@@ -134,18 +134,6 @@ dependencies {
     }
     implementation("org.xhtmlrenderer:flying-saucer-core:$flyingSaucerVersion")
     
-    implementation("org.apache.xmlgraphics:batik-transcoder:$baticVersion") {
-        exclude("xml-apis", "xml-apis")
-        exclude("commons-logging", "commons-logging")
-        exclude("org.python", "jython")
-        exclude("xalan", "xalan")
-    }
-    implementation("org.apache.xmlgraphics:batik-dom:$baticVersion") {
-        exclude("xml-apis", "xml-apis")
-        exclude("commons-logging", "commons-logging")
-        exclude("org.python", "jython")
-        exclude("xalan", "xalan")
-    }
     runtimeOnly("org.apache.xmlgraphics:batik-codec:$baticVersion")
     implementation("com.lowagie:itext:$iTextVersion") {
         exclude("bouncycastle", "bcmail-jdk14")
