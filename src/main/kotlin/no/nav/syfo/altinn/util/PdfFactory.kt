@@ -11,7 +11,7 @@ import com.lowagie.text.pdf.PdfReader
 import com.lowagie.text.pdf.PdfStamper
 import com.lowagie.text.pdf.PdfWriter
 import no.nav.syfo.log
-import org.apache.commons.io.IOUtils.toByteArray
+import org.apache.pdfbox.io.IOUtils.toByteArray
 import org.xhtmlrenderer.pdf.ITextRenderer
 import java.io.ByteArrayOutputStream
 
@@ -62,7 +62,6 @@ class PdfFactory private constructor() {
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 val renderer = ITextRenderer()
                 renderer.listener = PdfCreator()
-                renderer.sharedContext.replacedElementFactory = ImageReplacedElementFactory(renderer.sharedContext.replacedElementFactory)
                 val resource = PdfFactory::class.java.getResource(PATH_TO_RESOURCES)
                 renderer.setDocumentFromString(html, resource.toExternalForm())
                 leggTilFonter(renderer)

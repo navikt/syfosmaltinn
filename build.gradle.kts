@@ -134,7 +134,6 @@ dependencies {
     }
     implementation("org.xhtmlrenderer:flying-saucer-core:$flyingSaucerVersion")
     
-    runtimeOnly("org.apache.xmlgraphics:batik-codec:$baticVersion")
     implementation("com.lowagie:itext:$iTextVersion") {
         exclude("bouncycastle", "bcmail-jdk14")
         exclude("bouncycastle", "bcprov-jdk14")
