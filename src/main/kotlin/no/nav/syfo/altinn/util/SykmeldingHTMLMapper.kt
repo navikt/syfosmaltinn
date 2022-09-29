@@ -10,13 +10,13 @@ import javax.xml.transform.TransformerFactory
 import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.stream.StreamSource
 
-class SykmeldingHTMLandPDFMapper private constructor() {
+class SykmeldingHTMLMapper private constructor() {
     companion object {
 
         fun toSykmeldingHtml(sykmeldingXml: String): String {
             containsInvalidCharacters(sykmeldingXml)
             try {
-                val sykmeldingXsl = SykmeldingHTMLandPDFMapper::class.java.classLoader.getResourceAsStream("sykmelding.xsl")
+                val sykmeldingXsl = SykmeldingHTMLMapper::class.java.classLoader.getResourceAsStream("sykmelding.xsl")
                 val transformerFacotry = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null)
                 val xslDocStreamSource = StreamSource(sykmeldingXsl)
                 val xmlDocInputStream = StreamSource(sykmeldingXml.byteInputStream(Charsets.UTF_8))

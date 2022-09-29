@@ -2,14 +2,15 @@ package no.nav.syfo.altinn
 
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.clearAllMocks
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.verify
 import no.nav.syfo.Environment
-import no.nav.syfo.altinn.model.SykmeldingArbeidsgiverMapper
 import no.nav.syfo.altinn.orgnummer.AltinnOrgnummerLookup
+import no.nav.syfo.altinn.pdf.PdfgenClient
 import no.nav.syfo.juridisklogg.JuridiskLoggService
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.altinn.model.getSykmeldingKafkaMessage
@@ -28,17 +29,20 @@ class AltinnSykmeldingServiceTest : FunSpec({
     val altinnOrgnummerLookup = mockk<AltinnOrgnummerLookup>(relaxed = true)
     val juridiskLoggService = mockk<JuridiskLoggService>(relaxed = true)
     val database = mockk<DatabaseInterface>(relaxed = true)
+    val pdfgenClient = mockk<PdfgenClient>()
     val altinnSykmeldingService = AltinnSykmeldingService(
         altinnClient,
         altinnOrgnummerLookup,
         juridiskLoggService,
-        database
+        database,
+        pdfgenClient
     )
 
     beforeTest {
         clearAllMocks()
         mockkStatic("no.nav.syfo.sykmelding.db.DatabaseQueriesKt")
         every { env.cluster } returns "dev-gcp"
+        coEvery { pdfgenClient.createPdf(any()) } returns "pdf".toByteArray()
     }
 
     context("Send to altinn") {
@@ -48,7 +52,7 @@ class AltinnSykmeldingServiceTest : FunSpec({
         test("Should send to altinn") {
             every { database.getStatus(any()) } returns null
 
-            altinnSykmeldingService.handleSendtSykmelding(SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendtSykmeldingKafkaMessage, person), person, null, "topic")
+            altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage, person, null)
 
             verify(exactly = 1) { database.insertStatus(any()) }
             verify(exactly = 1) { altinnClient.sendToAltinn(any(), any()) }
@@ -58,7 +62,7 @@ class AltinnSykmeldingServiceTest : FunSpec({
         test("Should not send to altinn or logg") {
             every { database.getStatus(any()) } returns SykmeldingStatus("123", OffsetDateTime.now(), OffsetDateTime.now())
 
-            altinnSykmeldingService.handleSendtSykmelding(SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendtSykmeldingKafkaMessage, person), person, null, "topic")
+            altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage, person, null)
 
             verify(exactly = 0) { database.insertStatus(any()) }
             verify(exactly = 0) { altinnClient.sendToAltinn(any(), any()) }
@@ -69,7 +73,7 @@ class AltinnSykmeldingServiceTest : FunSpec({
             every { database.getStatus(any()) } returns SykmeldingStatus("123", null, null)
             every { altinnClient.isSendt(any(), any()) } returns false
 
-            altinnSykmeldingService.handleSendtSykmelding(SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendtSykmeldingKafkaMessage, person), person, null, "topic")
+            altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage, person, null)
 
             verify(exactly = 1) { altinnClient.isSendt(any(), any()) }
             verify(exactly = 1) { altinnClient.sendToAltinn(any(), any()) }
@@ -83,7 +87,7 @@ class AltinnSykmeldingServiceTest : FunSpec({
             every { database.getStatus(any()) } returns SykmeldingStatus("123", null, null)
             every { altinnClient.isSendt(any(), any()) } returns true
 
-            altinnSykmeldingService.handleSendtSykmelding(SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendtSykmeldingKafkaMessage, person), person, null, "topic")
+            altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage, person, null)
 
             verify(exactly = 1) { altinnClient.isSendt(any(), any()) }
             verify(exactly = 0) { altinnClient.sendToAltinn(any(), any()) }
@@ -96,7 +100,7 @@ class AltinnSykmeldingServiceTest : FunSpec({
         test("send to juridisk logg when timestamp is null") {
             every { database.getStatus(any()) } returns SykmeldingStatus("123", OffsetDateTime.now(), null)
 
-            altinnSykmeldingService.handleSendtSykmelding(SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendtSykmeldingKafkaMessage, person), person, null, "topic")
+            altinnSykmeldingService.handleSendtSykmelding(sendtSykmeldingKafkaMessage, person, null)
 
             verify(exactly = 0) { altinnClient.isSendt(any(), any()) }
             verify(exactly = 0) { altinnClient.sendToAltinn(any(), any()) }

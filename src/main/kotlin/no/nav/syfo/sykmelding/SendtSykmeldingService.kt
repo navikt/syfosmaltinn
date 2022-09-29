@@ -1,18 +1,14 @@
 package no.nav.syfo.sykmelding
 
-import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.syfo.altinn.AltinnSykmeldingService
-import no.nav.syfo.altinn.model.SykmeldingArbeidsgiverMapper
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.log
-import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
-import no.nav.syfo.model.sykmeldingstatus.SykmeldingStatusKafkaEventDTO
 import no.nav.syfo.narmesteleder.service.BeOmNyNLService
 import no.nav.syfo.narmesteleder.service.NarmesteLederService
 import no.nav.syfo.pdl.client.PdlClient
-import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.exceptions.ArbeidsgiverNotFoundException
 import no.nav.syfo.sykmelding.kafka.aiven.SendtSykmeldingAivenConsumer
+import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
 
 class SendtSykmeldingService(
     private val applicationState: ApplicationState,
@@ -33,51 +29,36 @@ class SendtSykmeldingService(
     private suspend fun consumeNewTopic() {
         val sykmeldinger = sendtSykmeldingAivenConsumer.poll()
         sykmeldinger.forEach { sendtSykmeldingAivenKafkaMessage ->
-            handleSendtSykmelding(
-                sendtSykmeldingAivenKafkaMessage.kafkaMetadata,
-                sendtSykmeldingAivenKafkaMessage.event,
-                "aiven"
-            ) {
-                SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendtSykmeldingAivenKafkaMessage, it)
-            }
+            handleSendtSykmelding(sendtSykmeldingAivenKafkaMessage)
         }
     }
 
     private suspend fun handleSendtSykmelding(
-        kafkaMetadata: KafkaMetadataDTO,
-        event: SykmeldingStatusKafkaEventDTO,
-        topic: String,
-        xmlSykmeldingArbeidsgiver: (pasient: Person) -> XMLSykmeldingArbeidsgiver
+        sendSykmeldingAivenKafkaMessage: SendSykmeldingAivenKafkaMessage
     ) {
         log.info(
-            "Mottok sendt sykmelding fra Kafka med sykmeldingId: ${kafkaMetadata.sykmeldingId}, source: ${kafkaMetadata.source} ${
-            when (kafkaMetadata.source) {
-                "syfoservice" -> "ignoring"
-                else -> "sending to altinn"
-            }
-            }"
+            "Mottok sendt sykmelding fra Kafka med sykmeldingId: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.sykmeldingId}, source: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.source}"
         )
-        if (kafkaMetadata.source == "macgyver") {
+        if (sendSykmeldingAivenKafkaMessage.kafkaMetadata.source == "macgyver") {
             return
         }
-        val person = pdlClient.getPerson(ident = kafkaMetadata.fnr)
-        log.info("Mottok svar fra PDL for sykmeldingId: ${kafkaMetadata.sykmeldingId}")
-        val arbeidsgiver = event.arbeidsgiver
-            ?: throw ArbeidsgiverNotFoundException(event)
+        val person = pdlClient.getPerson(ident = sendSykmeldingAivenKafkaMessage.kafkaMetadata.fnr)
+        log.info("Mottok svar fra PDL for sykmeldingId: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.sykmeldingId}")
+        val arbeidsgiver = sendSykmeldingAivenKafkaMessage.event.arbeidsgiver
+            ?: throw ArbeidsgiverNotFoundException(sendSykmeldingAivenKafkaMessage.event)
 
         val narmesteLeder = narmesteLederService.getNarmesteLeder(
             orgnummer = arbeidsgiver.orgnummer,
-            fnr = kafkaMetadata.fnr
+            fnr = sendSykmeldingAivenKafkaMessage.kafkaMetadata.fnr
         )
-        log.info("Mottok narmesteleder: ${narmesteLeder != null} for sykmeldingId: ${kafkaMetadata.sykmeldingId}")
-        if (beOmNyNLService.skalBeOmNyNL(event, narmesteLeder)) {
-            beOmNyNLService.beOmNyNL(kafkaMetadata, event, person)
+        log.info("Mottok narmesteleder: ${narmesteLeder != null} for sykmeldingId: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.sykmeldingId}")
+        if (beOmNyNLService.skalBeOmNyNL(sendSykmeldingAivenKafkaMessage.event, narmesteLeder)) {
+            beOmNyNLService.beOmNyNL(sendSykmeldingAivenKafkaMessage.kafkaMetadata, sendSykmeldingAivenKafkaMessage.event, person)
         }
         altinnSykmeldingService.handleSendtSykmelding(
-            xmlSykmeldingArbeidsgiver.invoke(person),
+            sendSykmeldingAivenKafkaMessage,
             person,
-            narmesteLeder,
-            topic
+            narmesteLeder
         )
     }
 }

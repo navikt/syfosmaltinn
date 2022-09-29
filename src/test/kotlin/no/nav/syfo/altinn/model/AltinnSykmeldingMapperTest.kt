@@ -34,7 +34,7 @@ class AltinnSykmeldingMapperTest : FunSpec({
                 "aktorid",
                 "fnr"
             )
-            val narmesteLEder = NarmesteLeder(
+            val narmesteLeder = NarmesteLeder(
                 "nl-epost",
                 "orgnummer",
                 "Telefonnummer",
@@ -43,7 +43,7 @@ class AltinnSykmeldingMapperTest : FunSpec({
                 "NL Navn", "fnrLeder"
             )
             val sykmeldingAltinn = SykmeldingAltinn(
-                SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendtSykmeldingKafkaMessage, pasient), pasient, narmesteLEder
+                SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendtSykmeldingKafkaMessage, pasient), narmesteLeder, "pdf".toByteArray()
             )
 
             val insertCorrespondanceV2 = AltinnSykmeldingMapper.sykmeldingTilCorrespondence(
@@ -55,61 +55,6 @@ class AltinnSykmeldingMapperTest : FunSpec({
         }
     }
 })
-
-private fun getOnPremMessage(sykmeldingId: String, timestamp: OffsetDateTime) = SendSykmeldingAivenKafkaMessage(
-    sykmelding = ArbeidsgiverSykmelding(
-        id = sykmeldingId,
-        arbeidsgiver = ArbeidsgiverAGDTO("ArbeidsgiverNavn", "yrke"),
-        behandler = BehandlerAGDTO(
-            "BehandlerFornavn",
-            "BehandlerMellomnavn",
-            "BehandlerEtternavn",
-            "aktorid",
-            AdresseDTO(
-                null,
-                null,
-                null,
-                null,
-                null
-            ),
-            "telefonnummer"
-        ),
-        behandletTidspunkt = timestamp,
-        egenmeldt = false,
-        harRedusertArbeidsgiverperiode = false,
-        kontaktMedPasient = KontaktMedPasientAGDTO(LocalDate.of(2016, 12, 7)),
-        meldingTilArbeidsgiver = "MeldingTilArbeidsgiver",
-        mottattTidspunkt = timestamp,
-        papirsykmelding = false,
-        prognose = PrognoseAGDTO(
-            arbeidsforEtterPeriode = false,
-            hensynArbeidsplassen = "BeskrivHensynArbeidsplassen"
-        ),
-        syketilfelleStartDato = LocalDate.of(2016, 12, 7),
-        sykmeldingsperioder = listOf(
-            SykmeldingsperiodeAGDTO(
-                LocalDate.of(2016, 12, 7),
-                LocalDate.of(2016, 12, 7),
-                null,
-                null,
-                "AvventendeSykmelding",
-                PeriodetypeDTO.AVVENTENDE,
-                null,
-                false
-            )
-        ),
-        tiltakArbeidsplassen = "TiltakArbeidsplassen",
-        merknader = emptyList()
-    ),
-    event = SykmeldingStatusKafkaEventDTO(
-        sykmeldingId = sykmeldingId,
-        arbeidsgiver = ArbeidsgiverStatusDTO("orgnummer", "1234", "orgnavn"),
-        sporsmals = emptyList(),
-        statusEvent = "SENDT",
-        timestamp = OffsetDateTime.now()
-    ),
-    kafkaMetadata = KafkaMetadataDTO(sykmeldingId, OffsetDateTime.now(), "fnr", "syfoservice")
-)
 
 private fun getAivenMessage(sykmeldingId: String, timestamp: OffsetDateTime) = SendSykmeldingAivenKafkaMessage(
     sykmelding = ArbeidsgiverSykmelding(

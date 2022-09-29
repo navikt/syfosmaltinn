@@ -16,7 +16,7 @@ fun Person.fulltNavn(): String {
     }
 }
 
-private fun capitalizeFirstLetter(string: String): String {
+fun capitalizeFirstLetter(string: String): String {
     return string.toLowerCase()
         .split(" ").joinToString(" ") { it.capitalize() }
         .split("-").joinToString("-") { it.capitalize() }.trimEnd()
