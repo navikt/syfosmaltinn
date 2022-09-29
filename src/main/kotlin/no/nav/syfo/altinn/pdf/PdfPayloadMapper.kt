@@ -18,8 +18,8 @@ fun ArbeidsgiverSykmelding.toPdfPayload(
             fnr = pasient.fnr,
             navn = pasient.fulltNavn()
         ),
-        narmesteLeder = narmesteLeder,
-        arbeidsgiverSykmeldingPdf = ArbeidsgiverSykmeldingPdf(
+        narmesteleder = narmesteLeder,
+        arbeidsgiverSykmelding = ArbeidsgiverSykmeldingPdf(
             id = id,
             syketilfelleStartDato = syketilfelleStartDato,
             behandletTidspunkt = behandletTidspunkt,

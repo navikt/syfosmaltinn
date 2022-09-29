@@ -64,16 +64,16 @@ class PdfPayloadMapperKtTest : FunSpec({
             val pdfPayload = sykmeldingKafkaMessage.sykmelding.toPdfPayload(person, narmesteLeder)
 
             pdfPayload.ansatt shouldBeEqualTo Ansatt("fnr", "Per Person")
-            pdfPayload.narmesteLeder shouldBeEqualTo narmesteLeder
-            pdfPayload.arbeidsgiverSykmeldingPdf.arbeidsgiverNavn shouldBeEqualTo "ArbeidsgiverNavn"
-            pdfPayload.arbeidsgiverSykmeldingPdf.prognose shouldBeEqualTo sykmeldingKafkaMessage.sykmelding.prognose
-            pdfPayload.arbeidsgiverSykmeldingPdf.tiltakArbeidsplassen shouldBeEqualTo sykmeldingKafkaMessage.sykmelding.tiltakArbeidsplassen
-            pdfPayload.arbeidsgiverSykmeldingPdf.meldingTilArbeidsgiver shouldBeEqualTo sykmeldingKafkaMessage.sykmelding.meldingTilArbeidsgiver
-            pdfPayload.arbeidsgiverSykmeldingPdf.behandler shouldBeEqualTo BehandlerPdf(
+            pdfPayload.narmesteleder shouldBeEqualTo narmesteLeder
+            pdfPayload.arbeidsgiverSykmelding.arbeidsgiverNavn shouldBeEqualTo "ArbeidsgiverNavn"
+            pdfPayload.arbeidsgiverSykmelding.prognose shouldBeEqualTo sykmeldingKafkaMessage.sykmelding.prognose
+            pdfPayload.arbeidsgiverSykmelding.tiltakArbeidsplassen shouldBeEqualTo sykmeldingKafkaMessage.sykmelding.tiltakArbeidsplassen
+            pdfPayload.arbeidsgiverSykmelding.meldingTilArbeidsgiver shouldBeEqualTo sykmeldingKafkaMessage.sykmelding.meldingTilArbeidsgiver
+            pdfPayload.arbeidsgiverSykmelding.behandler shouldBeEqualTo BehandlerPdf(
                 "Behandlerfornavn Behandlermellomnavn Behandleretternavn",
                 "telefon"
             )
-            pdfPayload.arbeidsgiverSykmeldingPdf.sykmeldingsperioder.first() shouldBeEqualTo SykmeldingsperiodePdf(
+            pdfPayload.arbeidsgiverSykmelding.sykmeldingsperioder.first() shouldBeEqualTo SykmeldingsperiodePdf(
                 fom = LocalDate.of(2022, 1, 1),
                 tom = LocalDate.of(2022, 1, 6),
                 varighet = 6,
@@ -84,7 +84,7 @@ class PdfPayloadMapperKtTest : FunSpec({
                 aktivitetIkkeMulig = AktivitetIkkeMuligAGDTO(null),
                 reisetilskudd = false
             )
-            pdfPayload.arbeidsgiverSykmeldingPdf.sykmeldingsperioder[1] shouldBeEqualTo SykmeldingsperiodePdf(
+            pdfPayload.arbeidsgiverSykmelding.sykmeldingsperioder[1] shouldBeEqualTo SykmeldingsperiodePdf(
                 fom = LocalDate.of(2022, 1, 7),
                 tom = LocalDate.of(2022, 1, 15),
                 varighet = 9,
@@ -95,7 +95,7 @@ class PdfPayloadMapperKtTest : FunSpec({
                 aktivitetIkkeMulig = null,
                 reisetilskudd = false
             )
-            pdfPayload.arbeidsgiverSykmeldingPdf.sykmeldingsperioder.last() shouldBeEqualTo SykmeldingsperiodePdf(
+            pdfPayload.arbeidsgiverSykmelding.sykmeldingsperioder.last() shouldBeEqualTo SykmeldingsperiodePdf(
                 fom = LocalDate.of(2022, 1, 16),
                 tom = LocalDate.of(2022, 1, 20),
                 varighet = 5,

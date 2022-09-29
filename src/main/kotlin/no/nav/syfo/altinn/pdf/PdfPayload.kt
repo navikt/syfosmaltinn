@@ -10,8 +10,8 @@ import java.time.OffsetDateTime
 
 data class PdfPayload(
     val ansatt: Ansatt,
-    val narmesteLeder: NarmesteLeder?,
-    val arbeidsgiverSykmeldingPdf: ArbeidsgiverSykmeldingPdf
+    val narmesteleder: NarmesteLeder?,
+    val arbeidsgiverSykmelding: ArbeidsgiverSykmeldingPdf
 )
 
 data class Ansatt(
