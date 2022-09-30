@@ -25,7 +25,8 @@ data class Environment(
     val aadAccessTokenUrl: String = getEnvVar("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT"),
     val clientId: String = getEnvVar("AZURE_APP_CLIENT_ID"),
     val clientSecret: String = getEnvVar("AZURE_APP_CLIENT_SECRET"),
-    val juridiskloggBucketName: String = getEnvVar("BUCKET_NAME")
+    val juridiskloggBucketName: String = getEnvVar("BUCKET_NAME"),
+    val pdfgenUrl: String = getEnvVar("PDF_GEN_URL", "http://smarbeidsgiver-pdfgen/api/v1/genpdf/smarbeidsgiver/smarbeidsgiver")
 ) {
     fun jdbcUrl(): String {
         return "jdbc:postgresql://$dbHost:$dbPort/$dbName"

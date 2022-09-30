@@ -9,19 +9,16 @@ val coroutinesVersion = "1.6.4"
 val jacksonVersion = "2.13.4"
 val kluentVersion = "1.68"
 val ktorVersion = "2.1.1"
-val logbackVersion = "1.4.0"
+val logbackVersion = "1.4.1"
 val logstashEncoderVersion = "7.2"
 val prometheusVersion = "0.16.0"
 val kotestVersion = "5.4.2"
-val smCommonVersion = "1.069b5f9"
-val mockkVersion = "1.12.7"
-val nimbusdsVersion = "9.24.3"
+val smCommonVersion = "1.ea531b3"
+val mockkVersion = "1.12.8"
+val nimbusdsVersion = "9.25.1"
 val testContainerKafkaVersion = "1.17.3"
 val sykmeldingArbeidsgiverVersion = "1.9daf0fa"
 val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
-val flyingSaucerVersion = "9.1.22"
-val baticVersion = "1.14"
-val iTextVersion = "2.1.7"
 val saxonVersion = "10.6"
 val pdfBoxVersion = "2.0.24"
 val cxfVersion = "3.4.5"
@@ -29,12 +26,12 @@ val jaxsWsApiVersion = "2.3.1"
 val jaxwsRiVersion = "2.3.2"
 val jaxwsToolsVersion = "2.3.1"
 val javaxActivationVersion = "1.1.1"
-val postgresVersion = "42.4.2"
-val flywayVersion = "9.1.6"
+val postgresVersion = "42.5.0"
+val flywayVersion = "9.3.0"
 val hikariVersion = "5.0.1"
 val postgresContainerVersion = "1.17.3"
 val kotlinVersion = "1.7.10"
-val googleCloudStorageVersion = "2.11.3"
+val googleCloudStorageVersion = "2.12.0"
 val commonsVollectionsVersion = "3.2.2"
 val xmlschemaCoreVersion = "2.2.5"
 val jaxbApiVersion = "2.4.0-b180830.0359"
@@ -126,31 +123,8 @@ dependencies {
 
     implementation("com.google.cloud:google-cloud-storage:$googleCloudStorageVersion")
 
-    implementation("org.xhtmlrenderer:flying-saucer-pdf:$flyingSaucerVersion") {
-        exclude("bouncycastle", "bcmail-jdk14")
-        exclude("bouncycastle", "bcprov-jdk14")
-        exclude("bouncycastle", "bctsp-jdk14")
-        exclude("org.bouncycastle", "bctsp-jdk14")
-    }
-    implementation("org.xhtmlrenderer:flying-saucer-core:$flyingSaucerVersion")
-    implementation("org.apache.xmlgraphics:batik-transcoder:$baticVersion") {
-        exclude("xml-apis", "xml-apis")
-        exclude("commons-logging", "commons-logging")
-        exclude("org.python", "jython")
-        exclude("xalan", "xalan")
-    }
-    runtimeOnly("org.apache.xmlgraphics:batik-codec:$baticVersion")
-    implementation("com.lowagie:itext:$iTextVersion") {
-        exclude("bouncycastle", "bcmail-jdk14")
-        exclude("bouncycastle", "bcprov-jdk14")
-        exclude("bouncycastle", "bctsp-jdk14")
-        exclude("org.bouncycastle", "bctsp-jdk14")
-    }
-
     implementation("net.sf.saxon:Saxon-HE:$saxonVersion")
-    implementation("org.apache.pdfbox:pdfbox:$pdfBoxVersion") {
-        exclude("commons-logging", "commons-logging")
-    }
+
     implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
     implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbRuntimeVersion")
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:$altinnCorrespondenceAgencyExternalVersion")

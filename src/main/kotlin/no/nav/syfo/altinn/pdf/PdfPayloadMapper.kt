@@ -1,0 +1,59 @@
+package no.nav.syfo.altinn.pdf
+
+import no.nav.syfo.model.sykmelding.arbeidsgiver.ArbeidsgiverSykmelding
+import no.nav.syfo.model.sykmelding.arbeidsgiver.BehandlerAGDTO
+import no.nav.syfo.model.sykmelding.arbeidsgiver.SykmeldingsperiodeAGDTO
+import no.nav.syfo.narmesteleder.model.NarmesteLeder
+import no.nav.syfo.pdl.client.model.Person
+import no.nav.syfo.pdl.client.model.capitalizeFirstLetter
+import no.nav.syfo.pdl.client.model.fulltNavn
+import java.time.Period
+
+fun ArbeidsgiverSykmelding.toPdfPayload(
+    pasient: Person,
+    narmesteLeder: NarmesteLeder?
+): PdfPayload {
+    return PdfPayload(
+        ansatt = Ansatt(
+            fnr = pasient.fnr,
+            navn = pasient.fulltNavn()
+        ),
+        narmesteleder = narmesteLeder,
+        arbeidsgiverSykmelding = ArbeidsgiverSykmeldingPdf(
+            id = id,
+            syketilfelleStartDato = syketilfelleStartDato,
+            behandletTidspunkt = behandletTidspunkt,
+            arbeidsgiverNavn = arbeidsgiver.navn,
+            sykmeldingsperioder = sykmeldingsperioder.map { it.toSykmeldingsPeriodePdf() }.sortedBy { it.fom },
+            prognose = prognose,
+            tiltakArbeidsplassen = tiltakArbeidsplassen,
+            meldingTilArbeidsgiver = meldingTilArbeidsgiver,
+            behandler = BehandlerPdf(
+                navn = behandler.getFormattertNavn(),
+                tlf = behandler.tlf
+            )
+        )
+    )
+}
+
+private fun SykmeldingsperiodeAGDTO.toSykmeldingsPeriodePdf(): SykmeldingsperiodePdf {
+    return SykmeldingsperiodePdf(
+        fom = fom,
+        tom = tom,
+        varighet = Period.between(fom, tom).days + 1,
+        gradert = gradert,
+        behandlingsdager = behandlingsdager,
+        innspillTilArbeidsgiver = innspillTilArbeidsgiver,
+        type = type,
+        aktivitetIkkeMulig = aktivitetIkkeMulig,
+        reisetilskudd = reisetilskudd
+    )
+}
+
+private fun BehandlerAGDTO.getFormattertNavn(): String {
+    return if (mellomnavn.isNullOrEmpty()) {
+        capitalizeFirstLetter("$fornavn $etternavn")
+    } else {
+        capitalizeFirstLetter("$fornavn $mellomnavn $etternavn")
+    }
+}

@@ -236,47 +236,7 @@
                                     </div>
                                 </xsl:if>
                             </xsl:for-each>
-
-
-                            <xsl:if test="sykmelding/prognose/arbeidsutsikter/harEgetArbeidPaaSikt ='true' or sykmelding/prognose/arbeidsutsikter/harAnnetArbeidPaaSikt ='true'">
-                                <div class="sykmelding-seksjon">
-                                    <div class="sykmelding-nokkelopplysning">
-                                        <h2>Friskmelding</h2>
-                                        <xsl:if test="sykmelding/prognose/arbeidsutsikter/harEgetArbeidPaaSikt ='true'">
-                                            <xsl:variable name="dato"
-                                                          select="sykmelding/prognose/arbeidsutsikter/arbeidFom"/>
-                                            <div class="luft">
-                                                <img class="checkbox" alt="checkboks"
-                                                     src="{$checkboxSrc}" />
-                                                <p class="sykmelding-checkbox-label">Jeg antar at pasienten kan komme
-                                                    tilbake
-                                                    til eget eller annet arbeid hos samme arbeidsgiver
-                                                </p>
-                                            </div>
-                                            <div class="luft sykmelding-subopplysning">
-                                                <h3>Når antar du at det kan skje?</h3>
-                                                <p>
-                                                    &#8211;
-                                                    <xsl:value-of
-                                                            select="format-date(xs:date($dato), '[D01].[M01].[Y0001]')"/>
-                                                </p>
-                                            </div>
-
-                                        </xsl:if>
-                                        <xsl:if test="sykmelding/prognose/arbeidsutsikter/harAnnetArbeidPaaSikt ='true'">
-                                            <div>
-                                                <img class="checkbox" alt="checkboks"
-                                                     src="{$checkboxSrc}" />
-                                                <p class="sykmelding-checkbox-label">Jeg antar at pasienten på sikt kan
-                                                    komme i
-                                                    arbeid hos annen arbeidsgiver
-                                                </p>
-                                            </div>
-                                        </xsl:if>
-                                    </div>
-                                </div>
-                            </xsl:if>
-
+                            
                             <xsl:if test="sykmelding/tiltak/tiltakArbeidsplassen">
                                 <div class="sykmelding-seksjon">
                                     <div class="sykmelding-nokkelopplysning">

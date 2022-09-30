@@ -22,7 +22,7 @@ class AltinnSykmeldingMapperTest : FunSpec({
                 "aktorid",
                 "fnr"
             )
-            val narmesteLEder = NarmesteLeder(
+            val narmesteLeder = NarmesteLeder(
                 "nl-epost",
                 "orgnummer",
                 "Telefonnummer",
@@ -31,7 +31,7 @@ class AltinnSykmeldingMapperTest : FunSpec({
                 "NL Navn", "fnrLeder"
             )
             val sykmeldingAltinn = SykmeldingAltinn(
-                SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendtSykmeldingKafkaMessage, pasient), pasient, narmesteLEder
+                SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendtSykmeldingKafkaMessage, pasient), narmesteLeder, "pdf".toByteArray()
             )
 
             val insertCorrespondanceV2 = AltinnSykmeldingMapper.sykmeldingTilCorrespondence(

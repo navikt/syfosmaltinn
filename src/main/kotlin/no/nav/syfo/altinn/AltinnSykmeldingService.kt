@@ -1,10 +1,12 @@
 package no.nav.syfo.altinn
 
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
-import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.syfo.altinn.model.AltinnSykmeldingMapper
 import no.nav.syfo.altinn.model.SykmeldingAltinn
+import no.nav.syfo.altinn.model.SykmeldingArbeidsgiverMapper
 import no.nav.syfo.altinn.orgnummer.AltinnOrgnummerLookup
+import no.nav.syfo.altinn.pdf.PdfgenClient
+import no.nav.syfo.altinn.pdf.toPdfPayload
 import no.nav.syfo.application.metrics.ALTINN_COUNTER
 import no.nav.syfo.juridisklogg.JuridiskLoggService
 import no.nav.syfo.log
@@ -17,6 +19,7 @@ import no.nav.syfo.sykmelding.db.getStatus
 import no.nav.syfo.sykmelding.db.insertStatus
 import no.nav.syfo.sykmelding.db.updateSendtToAlinn
 import no.nav.syfo.sykmelding.db.updateSendtToLogg
+import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
@@ -24,16 +27,18 @@ class AltinnSykmeldingService(
     private val altinnClient: AltinnClient,
     private val altinnOrgnummerLookup: AltinnOrgnummerLookup,
     private val juridiskLoggService: JuridiskLoggService,
-    private val database: DatabaseInterface
+    private val database: DatabaseInterface,
+    private val pdfgenClient: PdfgenClient
 ) {
 
-    fun handleSendtSykmelding(
-        xmlSykmeldingArbeidsgiver: XMLSykmeldingArbeidsgiver,
+    suspend fun handleSendtSykmelding(
+        sendSykmeldingAivenKafkaMessage: SendSykmeldingAivenKafkaMessage,
         pasient: Person,
-        narmesteLeder: NarmesteLeder?,
-        topic: String
+        narmesteLeder: NarmesteLeder?
     ) {
-        val sykmeldingAltinn = SykmeldingAltinn(xmlSykmeldingArbeidsgiver, pasient, narmesteLeder)
+        val xmlSykmeldingArbeidsgiver = SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendSykmeldingAivenKafkaMessage, pasient)
+        val pdf = pdfgenClient.createPdf(sendSykmeldingAivenKafkaMessage.sykmelding.toPdfPayload(pasient, narmesteLeder))
+        val sykmeldingAltinn = SykmeldingAltinn(xmlSykmeldingArbeidsgiver, narmesteLeder, pdf)
         val orgnummer = altinnOrgnummerLookup.getOrgnummer(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer)
         val sykmeldingId = xmlSykmeldingArbeidsgiver.sykmeldingId
 
@@ -48,16 +53,15 @@ class AltinnSykmeldingService(
         if (status == null) {
             database.insertStatus(sykmeldingId)
         }
-        sendtToAltinn(status, insertCorrespondenceV2, orgnummer, sykmeldingId, topic)
-        sendtToLogg(sykmeldingAltinn, status, topic)
+        sendtToAltinn(status, insertCorrespondenceV2, orgnummer, sykmeldingId)
+        sendtToLogg(sykmeldingAltinn, status)
     }
 
     private fun sendtToAltinn(
         status: SykmeldingStatus?,
         insertCorrespondenceV2: InsertCorrespondenceV2,
         orgnummer: String,
-        sykmeldingId: String,
-        topic: String
+        sykmeldingId: String
     ) {
         when {
             status == null -> {
@@ -70,12 +74,12 @@ class AltinnSykmeldingService(
                         insertCorrespondenceV2,
                         sykmeldingId
                     )
-                    true -> log.info("Sykmelding already sendt to altinn, sykmelding from kafka: $topic")
+                    true -> log.info("Sykmelding already sendt to altinn")
                 }
                 database.updateSendtToAlinn(sykmeldingId, OffsetDateTime.now(ZoneOffset.UTC))
             }
             else -> {
-                log.info("Sykmelding already sendt to altinn, sykmelding from kafka: $topic")
+                log.info("Sykmelding already sendt to altinn")
             }
         }
     }
@@ -91,8 +95,7 @@ class AltinnSykmeldingService(
 
     private fun sendtToLogg(
         sykmeldingAltinn: SykmeldingAltinn,
-        status: SykmeldingStatus?,
-        topic: String
+        status: SykmeldingStatus?
     ) {
         when (status?.loggTimestamp) {
             null -> {
@@ -103,7 +106,7 @@ class AltinnSykmeldingService(
                 )
             }
             else -> {
-                log.info("Sykmelding ${sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId} already sendt to juridisk logg, from kafka: $topic")
+                log.info("Sykmelding ${sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId} already sendt to juridisk logg")
             }
         }
     }

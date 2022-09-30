@@ -15,7 +15,23 @@ import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
 import java.time.LocalDate
 import java.time.OffsetDateTime
 
-fun getSykmeldingKafkaMessage(sykmeldingId: String): SendSykmeldingAivenKafkaMessage {
+val defaultPeriodeliste = listOf(
+    SykmeldingsperiodeAGDTO(
+        LocalDate.of(2016, 12, 7),
+        LocalDate.of(2016, 12, 7),
+        null,
+        null,
+        "AvventendeSykmelding",
+        PeriodetypeDTO.AVVENTENDE,
+        null,
+        false
+    )
+)
+
+fun getSykmeldingKafkaMessage(
+    sykmeldingId: String,
+    periodeliste: List<SykmeldingsperiodeAGDTO> = defaultPeriodeliste
+): SendSykmeldingAivenKafkaMessage {
     return SendSykmeldingAivenKafkaMessage(
         sykmelding = ArbeidsgiverSykmelding(
             id = sykmeldingId,
@@ -46,18 +62,7 @@ fun getSykmeldingKafkaMessage(sykmeldingId: String): SendSykmeldingAivenKafkaMes
                 hensynArbeidsplassen = "BeskrivHensynArbeidsplassen"
             ),
             syketilfelleStartDato = LocalDate.of(2016, 12, 7),
-            sykmeldingsperioder = listOf(
-                SykmeldingsperiodeAGDTO(
-                    LocalDate.of(2016, 12, 7),
-                    LocalDate.of(2016, 12, 7),
-                    null,
-                    null,
-                    "AvventendeSykmelding",
-                    PeriodetypeDTO.AVVENTENDE,
-                    null,
-                    false
-                )
-            ),
+            sykmeldingsperioder = periodeliste,
             tiltakArbeidsplassen = "TiltakArbeidsplassen",
             merknader = emptyList()
         ),

@@ -24,6 +24,7 @@ import no.nav.syfo.altinn.AltinnClient
 import no.nav.syfo.altinn.AltinnSykmeldingService
 import no.nav.syfo.altinn.config.createPort
 import no.nav.syfo.altinn.orgnummer.AltinnOrgnummerLookupFacotry
+import no.nav.syfo.altinn.pdf.PdfgenClient
 import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
@@ -147,11 +148,14 @@ fun main() {
     val juridiskloggStorage: Storage = StorageOptions.newBuilder().build().service
     val juridiskLoggService = JuridiskLoggService(env.juridiskloggBucketName, juridiskloggStorage)
 
+    val pdfgenClient = PdfgenClient(env.pdfgenUrl, httpClient)
+
     val altinnSendtSykmeldingService = AltinnSykmeldingService(
         altinnClient,
         altinnOrgnummerLookup,
         juridiskLoggService,
-        database
+        database,
+        pdfgenClient
     )
 
     val aivenKafkaSykmeldingConsumer: KafkaConsumer<String, SendSykmeldingAivenKafkaMessage> = getKafkaConsumer(env = env, resetConfig = "none")
