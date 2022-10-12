@@ -7,7 +7,8 @@ import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.pdl.client.model.capitalizeFirstLetter
 import no.nav.syfo.pdl.client.model.fulltNavn
-import java.time.Period
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 fun ArbeidsgiverSykmelding.toPdfPayload(
     pasient: Person,
@@ -40,7 +41,7 @@ private fun SykmeldingsperiodeAGDTO.toSykmeldingsPeriodePdf(): Sykmeldingsperiod
     return SykmeldingsperiodePdf(
         fom = fom,
         tom = tom,
-        varighet = Period.between(fom, tom).days + 1,
+        varighet = (fom..tom).daysBetween().toInt() + 1,
         gradert = gradert,
         behandlingsdager = behandlingsdager,
         innspillTilArbeidsgiver = innspillTilArbeidsgiver,
@@ -49,6 +50,8 @@ private fun SykmeldingsperiodeAGDTO.toSykmeldingsPeriodePdf(): Sykmeldingsperiod
         reisetilskudd = reisetilskudd
     )
 }
+
+fun ClosedRange<LocalDate>.daysBetween(): Long = ChronoUnit.DAYS.between(start, endInclusive)
 
 private fun BehandlerAGDTO.getFormattertNavn(): String {
     return if (mellomnavn.isNullOrEmpty()) {
