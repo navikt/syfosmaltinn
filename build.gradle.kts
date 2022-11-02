@@ -7,31 +7,30 @@ version = "1.0.0"
 
 val coroutinesVersion = "1.6.4"
 val jacksonVersion = "2.13.4"
-val kluentVersion = "1.68"
-val ktorVersion = "2.1.1"
-val logbackVersion = "1.4.1"
+val kluentVersion = "1.72"
+val ktorVersion = "2.1.3"
+val logbackVersion = "1.4.4"
 val logstashEncoderVersion = "7.2"
 val prometheusVersion = "0.16.0"
-val kotestVersion = "5.4.2"
+val kotestVersion = "5.5.3"
 val smCommonVersion = "1.ea531b3"
-val mockkVersion = "1.12.8"
-val nimbusdsVersion = "9.25.1"
-val testContainerKafkaVersion = "1.17.3"
+val mockkVersion = "1.13.2"
+val testContainerKafkaVersion = "1.17.4"
 val sykmeldingArbeidsgiverVersion = "1.9daf0fa"
 val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
 val saxonVersion = "10.6"
 val pdfBoxVersion = "2.0.24"
-val cxfVersion = "3.4.5"
+val cxfVersion = "3.5.3"
 val jaxsWsApiVersion = "2.3.1"
 val jaxwsRiVersion = "2.3.2"
 val jaxwsToolsVersion = "2.3.1"
 val javaxActivationVersion = "1.1.1"
 val postgresVersion = "42.5.0"
-val flywayVersion = "9.3.0"
+val flywayVersion = "9.6.0"
 val hikariVersion = "5.0.1"
-val postgresContainerVersion = "1.17.3"
-val kotlinVersion = "1.7.10"
-val googleCloudStorageVersion = "2.12.0"
+val postgresContainerVersion = "1.17.4"
+val kotlinVersion = "1.7.20"
+val googleCloudStorageVersion = "2.13.1"
 val commonsVollectionsVersion = "3.2.2"
 val xmlschemaCoreVersion = "2.2.5"
 val jaxbApiVersion = "2.4.0-b180830.0359"
@@ -43,7 +42,7 @@ tasks.withType<Jar> {
 
 plugins {
     id("org.jmailen.kotlinter") version "3.10.0"
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm") version "1.7.20"
     id("com.diffplug.spotless") version "6.5.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
@@ -103,7 +102,7 @@ dependencies {
     implementation("io.ktor:ktor-server-call-id:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
-    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-apache:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 
     implementation("no.nav.helse.xml:sykmeldingArbeidsgiver:$sykmeldingArbeidsgiverVersion")
@@ -116,6 +115,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("no.nav.helse:syfosm-common-kafka:$smCommonVersion")
     implementation("no.nav.helse:syfosm-common-models:$smCommonVersion")
+    implementation("no.nav.helse:syfosm-common-networking:$smCommonVersion")
 
     implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("com.zaxxer:HikariCP:$hikariVersion")
@@ -146,7 +146,6 @@ dependencies {
     testImplementation("org.testcontainers:postgresql:$postgresContainerVersion")
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
-    testImplementation("com.nimbusds:nimbus-jose-jwt:$nimbusdsVersion")
     testImplementation("org.testcontainers:kafka:$testContainerKafkaVersion")
     testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
@@ -166,14 +165,6 @@ tasks {
         kotlinOptions.jvmTarget = "17"
     }
 
-    withType<JacocoReport> {
-        classDirectories.setFrom(
-                sourceSets.main.get().output.asFileTree.matching {
-                    exclude()
-                }
-        )
-
-    }
     withType<ShadowJar> {
         isZip64 = true
         transform(ServiceFileTransformer::class.java) {

@@ -57,7 +57,7 @@ class AltinnSykmeldingService(
         sendtToLogg(sykmeldingAltinn, status)
     }
 
-    private fun sendtToAltinn(
+    private suspend fun sendtToAltinn(
         status: SykmeldingStatus?,
         insertCorrespondenceV2: InsertCorrespondenceV2,
         orgnummer: String,
@@ -84,7 +84,7 @@ class AltinnSykmeldingService(
         }
     }
 
-    private fun sendToAltinn(
+    private suspend fun sendToAltinn(
         insertCorrespondenceV2: InsertCorrespondenceV2,
         sykmeldingId: String
     ) {
