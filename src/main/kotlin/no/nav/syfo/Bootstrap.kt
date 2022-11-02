@@ -8,8 +8,8 @@ import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.engine.cio.CIOEngineConfig
+import io.ktor.client.engine.apache.Apache
+import io.ktor.client.engine.apache.ApacheEngineConfig
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -94,7 +94,7 @@ fun main() {
     )
     val altinnOrgnummerLookup = AltinnOrgnummerLookupFacotry.getOrgnummerResolver(env.cluster)
 
-    val config: HttpClientConfig<CIOEngineConfig>.() -> Unit = {
+    val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
         install(ContentNegotiation) {
             jackson {
                 registerKotlinModule()
@@ -128,7 +128,7 @@ fun main() {
         }
     }
 
-    val httpClient = HttpClient(CIO, config)
+    val httpClient = HttpClient(Apache, config)
     val accessTokenClient = AccessTokenClient(
         aadAccessTokenUrl = env.aadAccessTokenUrl,
         clientId = env.clientId,
