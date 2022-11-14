@@ -23,7 +23,7 @@ class HttpClientTest {
             }
         }
         engine {
-            addHandler { request ->
+            addHandler { _ ->
                 respond(responseData!!.content, responseData!!.httpStatusCode, responseData!!.headers)
             }
         }
