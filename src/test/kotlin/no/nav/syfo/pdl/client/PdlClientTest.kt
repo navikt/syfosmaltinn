@@ -31,7 +31,7 @@ class PdlClientTest : FunSpec({
             }
         }
         engine {
-            addHandler { request ->
+            addHandler { _ ->
                 respond(getTestData(), HttpStatusCode.OK, headersOf("Content-Type", "application/json"))
             }
         }
