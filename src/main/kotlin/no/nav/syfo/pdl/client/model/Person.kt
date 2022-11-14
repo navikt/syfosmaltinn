@@ -1,7 +1,5 @@
 package no.nav.syfo.pdl.client.model
 
-import java.util.Locale
-
 data class Person(
     val fornavn: String,
     val mellomnavn: String?,
