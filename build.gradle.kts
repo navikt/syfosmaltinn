@@ -13,7 +13,7 @@ val logbackVersion = "1.4.4"
 val logstashEncoderVersion = "7.2"
 val prometheusVersion = "0.16.0"
 val kotestVersion = "5.5.4"
-val smCommonVersion = "1.ea531b3"
+val smCommonVersion = "1.966f3d4"
 val mockkVersion = "1.13.2"
 val testContainerKafkaVersion = "1.17.4"
 val sykmeldingArbeidsgiverVersion = "1.9daf0fa"
@@ -131,7 +131,9 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion") {
+        exclude(group = "org.apache.velocity", module = "velocity")
+    }
     // for å overstyre sårbar versjon fra cxf-rt-ws-security
     implementation("commons-collections:commons-collections:$commonsVollectionsVersion")
 
