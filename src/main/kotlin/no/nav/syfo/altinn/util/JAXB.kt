@@ -8,7 +8,6 @@ import org.xml.sax.InputSource
 import java.io.StringReader
 import java.io.StringWriter
 import javax.xml.bind.JAXBContext
-import javax.xml.bind.JAXBElement
 import javax.xml.bind.JAXBException
 import javax.xml.bind.Marshaller
 import javax.xml.parsers.DocumentBuilderFactory
@@ -29,18 +28,6 @@ class JAXB private constructor() {
             } catch (ex: JAXBException) {
                 log.error("Error marshalling sykmelding")
                 throw ex
-            }
-        }
-
-        fun unmarshalSykmeldingArbeidsgiver(melding: String?): JAXBElement<XMLSykmeldingArbeidsgiver> {
-            return try {
-                val unmarshaller = SYKMELDING_ARBEIDSGIVER_CONTEXT.createUnmarshaller()
-                unmarshaller.setEventHandler {
-                    it.message == null
-                }
-                unmarshaller.unmarshal(StringReader(melding)) as JAXBElement<XMLSykmeldingArbeidsgiver>
-            } catch (e: JAXBException) {
-                throw RuntimeException(e)
             }
         }
 

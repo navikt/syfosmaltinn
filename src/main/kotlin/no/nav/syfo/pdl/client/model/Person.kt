@@ -1,5 +1,7 @@
 package no.nav.syfo.pdl.client.model
 
+import java.util.Locale
+
 data class Person(
     val fornavn: String,
     val mellomnavn: String?,
@@ -17,7 +19,14 @@ fun Person.fulltNavn(): String {
 }
 
 fun capitalizeFirstLetter(string: String): String {
-    return string.toLowerCase()
-        .split(" ").joinToString(" ") { it.capitalize() }
-        .split("-").joinToString("-") { it.capitalize() }.trimEnd()
+    return string.lowercase(Locale.getDefault())
+        .split(" ")
+        .joinToString(" ") { it ->
+            it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+        }
+        .split("-")
+        .joinToString("-") { it ->
+            it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+        }
+        .trimEnd()
 }
