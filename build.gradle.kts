@@ -15,12 +15,12 @@ val prometheusVersion = "0.16.0"
 val kotestVersion = "5.5.4"
 val smCommonVersion = "1.966f3d4"
 val mockkVersion = "1.13.2"
-val testContainerKafkaVersion = "1.17.4"
+val testContainerKafkaVersion = "1.17.6"
 val sykmeldingArbeidsgiverVersion = "1.9daf0fa"
 val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
 val saxonVersion = "10.6"
 val pdfBoxVersion = "2.0.24"
-val cxfVersion = "3.5.3"
+val cxfVersion = "3.5.4"
 val jaxsWsApiVersion = "2.3.1"
 val jaxwsRiVersion = "2.3.2"
 val jaxwsToolsVersion = "2.3.1"
@@ -28,7 +28,7 @@ val javaxActivationVersion = "1.1.1"
 val postgresVersion = "42.5.0"
 val flywayVersion = "9.6.0"
 val hikariVersion = "5.0.1"
-val postgresContainerVersion = "1.17.4"
+val postgresContainerVersion = "1.17.6"
 val kotlinVersion = "1.7.21"
 val googleCloudStorageVersion = "2.15.0"
 val commonsVollectionsVersion = "3.2.2"
@@ -148,7 +148,9 @@ dependencies {
     testImplementation("org.testcontainers:postgresql:$postgresContainerVersion")
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
-    testImplementation("org.testcontainers:kafka:$testContainerKafkaVersion")
+    testImplementation("org.testcontainers:kafka:$testContainerKafkaVersion") {
+        exclude(group = "junit", module = "junit")
+    }
     testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
