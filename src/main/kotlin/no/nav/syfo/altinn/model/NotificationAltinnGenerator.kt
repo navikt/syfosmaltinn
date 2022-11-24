@@ -44,8 +44,7 @@ class NotificationAltinnGenerator private constructor() {
             return createEmailNotification(
                 "Ny sykmelding i Altinn",
                 "<p>En ansatt i \$reporteeName$ (\$reporteeNumber$) har sendt inn en digital sykmelding.</p>" +
-                    "<p><a href=\"" + lenkeAltinnPortal() + "\">" +
-                    "Logg inn på Altinn</a> for å se sykmeldingen.</p>" +
+                    "<p>Logg inn på Altinn for å se sykmeldingen.</p>" +
                     "<p>Husk samtidig å melde inn hvem som er nærmeste leder for den sykmeldte hvis dette ikke er gjort tidligere.</p>" +
                     "<p>Vennlig hilsen NAV.</p>"
             )
@@ -54,7 +53,7 @@ class NotificationAltinnGenerator private constructor() {
         private fun smsNotification(): Notification? {
             return createSmsNotification(
                 "En ansatt i \$reporteeName$ (\$reporteeNumber$) har sendt inn en ny sykmelding. ",
-                "Gå til " + smsLenkeAltinnPortal() + " for å se sykmeldingen. Vennlig hilsen NAV."
+                "Logg inn på Altinn for å se sykmeldingen. Vennlig hilsen NAV."
             )
         }
 
