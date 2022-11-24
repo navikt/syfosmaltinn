@@ -47,7 +47,6 @@ class NotificationAltinnGenerator private constructor() {
                     "<p><a href=\"" + lenkeAltinnPortal() + "\">" +
                     "Logg inn på Altinn</a> for å se sykmeldingen.</p>" +
                     "<p>Husk samtidig å melde inn hvem som er nærmeste leder for den sykmeldte hvis dette ikke er gjort tidligere.</p>" +
-                    "<p>Les mer på <a href=\"https://www.nav.no/digitalsykmelding\">nav.no/digitalsykmelding</a>.</p>" +
                     "<p>Vennlig hilsen NAV.</p>"
             )
         }
