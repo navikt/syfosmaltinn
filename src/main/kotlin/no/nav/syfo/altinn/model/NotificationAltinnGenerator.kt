@@ -29,17 +29,6 @@ class NotificationAltinnGenerator private constructor() {
             return createNotification(null, SMS, convertToTextTokens(*text))
         }
 
-        fun smsLenkeAltinnPortal(): String {
-            return urlEncode(lenkeAltinnPortal())
-        }
-
-        fun lenkeAltinnPortal(): String {
-            return getEnvVar(
-                "ALTINN_PORTAL_BASEURL",
-                "https://www.altinn.no"
-            ) + "/ui/MessageBox?O=\$reporteeNumber$"
-        }
-
         private fun epostNotification(): Notification? {
             return createEmailNotification(
                 "Ny sykmelding i Altinn",
