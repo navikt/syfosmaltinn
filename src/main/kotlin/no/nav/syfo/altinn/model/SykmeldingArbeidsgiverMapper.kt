@@ -166,10 +166,10 @@ class SykmeldingArbeidsgiverMapper private constructor() {
             return xmlKontaktMedPasient
         }
 
-        private fun getBehandler(behandler: BehandlerAGDTO): XMLBehandler? {
+        private fun getBehandler(behandler: BehandlerAGDTO?): XMLBehandler? {
             val xmlBehandler = ObjectFactory().createXMLBehandler()
             xmlBehandler.navn = getNavn(behandler)
-            xmlBehandler.telefonnummer = getTelefonnr(behandler.tlf)
+            xmlBehandler.telefonnummer = getTelefonnr(behandler?.tlf)
             return xmlBehandler
         }
 
@@ -197,11 +197,11 @@ class SykmeldingArbeidsgiverMapper private constructor() {
                     .orElse(kontaktinfo)
             }
 
-        private fun getNavn(behandler: BehandlerAGDTO): XMLNavn? {
+        private fun getNavn(behandler: BehandlerAGDTO?): XMLNavn? {
             val xmlNavn = ObjectFactory().createXMLNavn()
-            xmlNavn.fornavn = behandler.fornavn
-            xmlNavn.etternavn = behandler.etternavn
-            xmlNavn.mellomnavn = behandler.mellomnavn
+            xmlNavn.fornavn = behandler?.fornavn ?: ""
+            xmlNavn.etternavn = behandler?.etternavn
+            xmlNavn.mellomnavn = behandler?.mellomnavn ?: ""
             return xmlNavn
         }
 

@@ -3,6 +3,7 @@ package no.nav.syfo.altinn.pdf
 import io.kotest.core.spec.style.FunSpec
 import no.nav.syfo.model.sykmelding.arbeidsgiver.AktivitetIkkeMuligAGDTO
 import no.nav.syfo.model.sykmelding.arbeidsgiver.SykmeldingsperiodeAGDTO
+import no.nav.syfo.model.sykmelding.arbeidsgiver.UtenlandskSykmeldingAGDTO
 import no.nav.syfo.model.sykmelding.model.GradertDTO
 import no.nav.syfo.model.sykmelding.model.PeriodetypeDTO
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
@@ -135,6 +136,43 @@ class PdfPayloadMapperKtTest : FunSpec({
                 "Behandlerfornavn Behandlermellomnavn Behandleretternavn",
                 "telefon"
             )
+            val sykmeldingsperiode = pdfPayload.arbeidsgiverSykmelding.sykmeldingsperioder.first()
+            sykmeldingsperiode.fom shouldBeEqualTo LocalDate.of(2022, 10, 3)
+            sykmeldingsperiode.tom shouldBeEqualTo LocalDate.of(2022, 11, 6)
+            sykmeldingsperiode.varighet shouldBeEqualTo 35
+            sykmeldingsperiode.gradert shouldBeEqualTo null
+            sykmeldingsperiode.behandlingsdager shouldBeEqualTo null
+            sykmeldingsperiode.innspillTilArbeidsgiver shouldBeEqualTo null
+            sykmeldingsperiode.type shouldBeEqualTo PeriodetypeDTO.AKTIVITET_IKKE_MULIG
+            sykmeldingsperiode.aktivitetIkkeMulig shouldBeEqualTo AktivitetIkkeMuligAGDTO(null)
+            sykmeldingsperiode.reisetilskudd shouldBeEqualTo false
+        }
+
+        test("Mapper utenlandsk sykmelding riktig") {
+            val sykmeldingId = UUID.randomUUID().toString()
+            val perioder = listOf(
+                SykmeldingsperiodeAGDTO(
+                    fom = LocalDate.of(2022, 10, 3),
+                    tom = LocalDate.of(2022, 11, 6),
+                    gradert = null,
+                    behandlingsdager = null,
+                    innspillTilArbeidsgiver = null,
+                    type = PeriodetypeDTO.AKTIVITET_IKKE_MULIG,
+                    aktivitetIkkeMulig = AktivitetIkkeMuligAGDTO(null),
+                    reisetilskudd = false
+                )
+            )
+            val sykmeldingKafkaMessage = getSykmeldingKafkaMessage(sykmeldingId, perioder, UtenlandskSykmeldingAGDTO("POL"))
+
+            val pdfPayload = sykmeldingKafkaMessage.sykmelding.toPdfPayload(person, narmesteLeder)
+
+            pdfPayload.ansatt shouldBeEqualTo Ansatt("fnr", "Per Person")
+            pdfPayload.narmesteleder shouldBeEqualTo narmesteLeder
+            pdfPayload.arbeidsgiverSykmelding.arbeidsgiverNavn shouldBeEqualTo "ArbeidsgiverNavn"
+            pdfPayload.arbeidsgiverSykmelding.prognose shouldBeEqualTo sykmeldingKafkaMessage.sykmelding.prognose
+            pdfPayload.arbeidsgiverSykmelding.tiltakArbeidsplassen shouldBeEqualTo sykmeldingKafkaMessage.sykmelding.tiltakArbeidsplassen
+            pdfPayload.arbeidsgiverSykmelding.meldingTilArbeidsgiver shouldBeEqualTo sykmeldingKafkaMessage.sykmelding.meldingTilArbeidsgiver
+            pdfPayload.arbeidsgiverSykmelding.behandler shouldBeEqualTo BehandlerPdf("", null)
             val sykmeldingsperiode = pdfPayload.arbeidsgiverSykmelding.sykmeldingsperioder.first()
             sykmeldingsperiode.fom shouldBeEqualTo LocalDate.of(2022, 10, 3)
             sykmeldingsperiode.tom shouldBeEqualTo LocalDate.of(2022, 11, 6)
