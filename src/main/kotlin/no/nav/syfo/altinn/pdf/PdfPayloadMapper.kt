@@ -30,8 +30,8 @@ fun ArbeidsgiverSykmelding.toPdfPayload(
             tiltakArbeidsplassen = tiltakArbeidsplassen,
             meldingTilArbeidsgiver = meldingTilArbeidsgiver,
             behandler = BehandlerPdf(
-                navn = behandler.getFormattertNavn(),
-                tlf = behandler.tlf
+                navn = behandler?.getFormattertNavn() ?: "",
+                tlf = behandler?.tlf
             )
         )
     )

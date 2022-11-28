@@ -96,7 +96,8 @@ private fun getAivenMessage(sykmeldingId: String, timestamp: OffsetDateTime) = S
             )
         ),
         tiltakArbeidsplassen = "TiltakArbeidsplassen",
-        merknader = emptyList()
+        merknader = emptyList(),
+        utenlandskSykmelding = null
     ),
     event = SykmeldingStatusKafkaEventDTO(
         sykmeldingId = sykmeldingId,

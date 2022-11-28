@@ -9,7 +9,6 @@ import no.altinn.schemas.services.serviceengine.notification._2009._10.ReceiverE
 import no.altinn.schemas.services.serviceengine.notification._2009._10.ReceiverEndPointBEList
 import no.altinn.schemas.services.serviceengine.notification._2009._10.TextToken
 import no.altinn.schemas.services.serviceengine.notification._2009._10.TextTokenSubstitutionBEList
-import no.nav.syfo.getEnvVar
 
 class NotificationAltinnGenerator private constructor() {
     companion object {

@@ -6,6 +6,7 @@ import no.nav.syfo.model.sykmelding.arbeidsgiver.BehandlerAGDTO
 import no.nav.syfo.model.sykmelding.arbeidsgiver.KontaktMedPasientAGDTO
 import no.nav.syfo.model.sykmelding.arbeidsgiver.PrognoseAGDTO
 import no.nav.syfo.model.sykmelding.arbeidsgiver.SykmeldingsperiodeAGDTO
+import no.nav.syfo.model.sykmelding.arbeidsgiver.UtenlandskSykmeldingAGDTO
 import no.nav.syfo.model.sykmelding.model.AdresseDTO
 import no.nav.syfo.model.sykmelding.model.PeriodetypeDTO
 import no.nav.syfo.model.sykmeldingstatus.ArbeidsgiverStatusDTO
@@ -30,26 +31,31 @@ val defaultPeriodeliste = listOf(
 
 fun getSykmeldingKafkaMessage(
     sykmeldingId: String,
-    periodeliste: List<SykmeldingsperiodeAGDTO> = defaultPeriodeliste
+    periodeliste: List<SykmeldingsperiodeAGDTO> = defaultPeriodeliste,
+    utenlandskSykmelding: UtenlandskSykmeldingAGDTO? = null
 ): SendSykmeldingAivenKafkaMessage {
     return SendSykmeldingAivenKafkaMessage(
         sykmelding = ArbeidsgiverSykmelding(
             id = sykmeldingId,
             arbeidsgiver = ArbeidsgiverAGDTO("ArbeidsgiverNavn", "yrke"),
-            behandler = BehandlerAGDTO(
-                "BehandlerFornavn",
-                "BehandlerMellomnavn",
-                "BehandlerEtternavn",
-                "aktorid",
-                AdresseDTO(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
-                ),
-                "telefon"
-            ),
+            behandler = if (utenlandskSykmelding != null) {
+                null
+            } else {
+                BehandlerAGDTO(
+                    "BehandlerFornavn",
+                    "BehandlerMellomnavn",
+                    "BehandlerEtternavn",
+                    "aktorid",
+                    AdresseDTO(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                    ),
+                    "telefon"
+                )
+            },
             behandletTidspunkt = OffsetDateTime.now(),
             egenmeldt = false,
             harRedusertArbeidsgiverperiode = false,
@@ -64,7 +70,8 @@ fun getSykmeldingKafkaMessage(
             syketilfelleStartDato = LocalDate.of(2016, 12, 7),
             sykmeldingsperioder = periodeliste,
             tiltakArbeidsplassen = "TiltakArbeidsplassen",
-            merknader = emptyList()
+            merknader = emptyList(),
+            utenlandskSykmelding = utenlandskSykmelding
         ),
         event = SykmeldingStatusKafkaEventDTO(
             sykmeldingId = sykmeldingId,
