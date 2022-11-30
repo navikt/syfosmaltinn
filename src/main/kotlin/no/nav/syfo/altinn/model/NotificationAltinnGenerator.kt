@@ -77,10 +77,6 @@ class NotificationAltinnGenerator private constructor() {
                 )
         }
 
-        fun urlEncode(lenke: String): String {
-            return lenke.replace("=", "%3D")
-        }
-
         private fun convertToTextTokens(vararg text: String): Array<TextToken?> {
             val textTokens = arrayOfNulls<TextToken>(text.size)
             for (i in text.indices) {
