@@ -1,5 +1,10 @@
 package no.nav.syfo.altinn
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
 import no.altinn.schemas.services.serviceengine.correspondence._2016._02.CorrespondenceStatusFilterV3
@@ -11,6 +16,7 @@ import no.nav.syfo.helpers.retry
 import no.nav.syfo.log
 import java.io.IOException
 import javax.xml.ws.soap.SOAPFaultException
+import no.nav.syfo.securelog
 
 class AltinnClient(
     private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
@@ -18,8 +24,15 @@ class AltinnClient(
     private val password: String
 ) {
     val SYSTEM_USER_CODE = "NAV_DIGISYFO"
+    val objectMapper: ObjectMapper = jacksonObjectMapper().apply {
+        registerModule(JavaTimeModule())
+        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+        configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
+    }
     suspend fun sendToAltinn(insertCorrespondenceV2: InsertCorrespondenceV2, sykmeldingId: String): Int {
         try {
+            securelog.info("insertCorrespondenceV2: ${objectMapper.writeValueAsString(insertCorrespondenceV2)}")
             val receiptExternal = retry(
                 callName = "insertCorrespondenceBasicV2",
                 retryIntervals = arrayOf(500L, 1000L, 300L),
@@ -37,6 +50,7 @@ class AltinnClient(
                     insertCorrespondenceV2
                 )
             }
+            securelog.info("receipt: ${objectMapper.writeValueAsString(receiptExternal)}")
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
                 log.error(
                     "Error fra altinn {} for sykmeldingId: {}, {}",

@@ -66,6 +66,8 @@ spec:
   filesFrom:
     - secret: syfosmaltinn-secrets
   webproxy: false
+  secureLogs:
+    enabled: true
   env:
     - name: PDL_GRAPHQL_PATH
       value: https://pdl-api.dev-fss-pub.nais.io/graphql
