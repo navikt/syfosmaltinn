@@ -1,8 +1,6 @@
 package no.nav.syfo.altinn.model
 
-import no.altinn.schemas.serviceengine.formsengine._2009._10.TransportType
 import no.altinn.schemas.serviceengine.formsengine._2009._10.TransportType.EMAIL
-import no.altinn.schemas.serviceengine.formsengine._2009._10.TransportType.SMS
 import no.altinn.schemas.services.serviceengine.notification._2009._10.Notification
 import no.altinn.schemas.services.serviceengine.notification._2009._10.NotificationBEList
 import no.altinn.schemas.services.serviceengine.notification._2009._10.ReceiverEndPoint
@@ -17,15 +15,11 @@ class NotificationAltinnGenerator private constructor() {
 
         fun createNotifications(): NotificationBEList {
             return NotificationBEList()
-                .withNotification(epostNotification(), smsNotification())
+                .withNotification(epostNotification())
         }
 
-        fun createEmailNotification(vararg text: String): Notification {
-            return createNotification(FRA_EPOST_ALTINN, EMAIL, convertToTextTokens(*text))
-        }
-
-        fun createSmsNotification(vararg text: String): Notification {
-            return createNotification(null, SMS, convertToTextTokens(*text))
+        private fun createEmailNotification(vararg text: String): Notification {
+            return createNotification(convertToTextTokens(*text))
         }
 
         private fun epostNotification(): Notification? {
@@ -38,14 +32,7 @@ class NotificationAltinnGenerator private constructor() {
             )
         }
 
-        private fun smsNotification(): Notification? {
-            return createSmsNotification(
-                "En ansatt i \$reporteeName$ (\$reporteeNumber$) har sendt inn en ny sykmelding. ",
-                "Logg inn på Altinn for å se sykmeldingen. Vennlig hilsen NAV."
-            )
-        }
-
-        fun createNotification(fromEmail: String?, type: TransportType, textTokens: Array<TextToken?>): Notification {
+        private fun createNotification(textTokens: Array<TextToken?>): Notification {
             if (textTokens.size != 2) {
                 throw IllegalArgumentException("Antall textTokens må være 2. Var ${textTokens.size}")
             }
@@ -57,16 +44,14 @@ class NotificationAltinnGenerator private constructor() {
                     "TokenTextOnly"
                 )
                 .withFromAddress(
-                    fromEmail?.let {
-                        it
-                    }
+                    FRA_EPOST_ALTINN
                 )
                 .withReceiverEndPoints(
                     ReceiverEndPointBEList()
                         .withReceiverEndPoint(
                             ReceiverEndPoint()
                                 .withTransportType(
-                                    type
+                                    EMAIL
                                 )
                         )
                 )

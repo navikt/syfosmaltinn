@@ -1,6 +1,7 @@
 package no.nav.syfo.altinn.model
 
 import io.kotest.core.spec.style.FunSpec
+import no.altinn.schemas.serviceengine.formsengine._2009._10.TransportType
 import no.nav.syfo.model.sykmelding.arbeidsgiver.ArbeidsgiverAGDTO
 import no.nav.syfo.model.sykmelding.arbeidsgiver.ArbeidsgiverSykmelding
 import no.nav.syfo.model.sykmelding.arbeidsgiver.BehandlerAGDTO
@@ -15,6 +16,7 @@ import no.nav.syfo.model.sykmeldingstatus.SykmeldingStatusKafkaEventDTO
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
+import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldNotBe
 import java.time.LocalDate
 import java.time.OffsetDateTime
@@ -52,6 +54,9 @@ class AltinnSykmeldingMapperTest : FunSpec({
                 sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer
             )
             insertCorrespondanceV2 shouldNotBe null
+            insertCorrespondanceV2.notifications.notification.size shouldBeEqualTo 1
+            insertCorrespondanceV2.notifications.notification[0].fromAddress shouldBeEqualTo "noreply@altinn.no"
+            insertCorrespondanceV2.notifications.notification[0].receiverEndPoints.receiverEndPoint[0].transportType shouldBeEqualTo TransportType.EMAIL
         }
     }
 })
