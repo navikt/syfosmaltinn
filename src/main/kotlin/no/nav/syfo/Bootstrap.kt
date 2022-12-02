@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.google.api.gax.retrying.RetrySettings
 import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
 import io.ktor.client.HttpClient
@@ -17,6 +18,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.network.sockets.SocketTimeoutException
 import io.ktor.serialization.jackson.jackson
 import io.prometheus.client.hotspot.DefaultExports
+import org.threeten.bp.Duration
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -152,7 +154,8 @@ fun main() {
     val narmestelederDb = NarmestelederDB(database)
     val narmesteLederService = NarmesteLederService(narmestelederDb, pdlClient)
 
-    val juridiskloggStorage: Storage = StorageOptions.newBuilder().build().service
+    val retrySettings = RetrySettings.newBuilder().setTotalTimeout(Duration.ofMillis(3000)).build()
+    val juridiskloggStorage: Storage = StorageOptions.newBuilder().setRetrySettings(retrySettings).build().service
     val juridiskLoggService = JuridiskLoggService(env.juridiskloggBucketName, juridiskloggStorage)
 
     val pdfgenClient = PdfgenClient(env.pdfgenUrl, httpClient)
