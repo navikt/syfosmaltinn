@@ -154,7 +154,10 @@ fun main() {
     val narmestelederDb = NarmestelederDB(database)
     val narmesteLederService = NarmesteLederService(narmestelederDb, pdlClient)
 
-    val retrySettings = RetrySettings.newBuilder().setTotalTimeout(Duration.ofMillis(3000)).build()
+    val retrySettings = RetrySettings.newBuilder()
+        .setTotalTimeout(Duration.ofMillis(3000))
+        .setMaxAttempts(3)
+        .build()
     val juridiskloggStorage: Storage = StorageOptions.newBuilder().setRetrySettings(retrySettings).build().service
     val juridiskLoggService = JuridiskLoggService(env.juridiskloggBucketName, juridiskloggStorage)
 
