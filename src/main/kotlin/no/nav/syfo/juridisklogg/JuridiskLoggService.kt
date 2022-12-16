@@ -32,12 +32,12 @@ class JuridiskLoggService(
         lagreFil(
             filnavn = "sykmelding.pdf",
             contentType = "application/pdf",
-            content = sykmeldingAltinn.sykmeldingPdf,
+            content = sykmeldingAltinn.sykmeldingPdf
         )
         lagreFil(
             filnavn = "sykmelding.xml",
             contentType = "application/xml",
-            content = sykmeldingAltinn.sykmeldingXml.toByteArray(),
+            content = sykmeldingAltinn.sykmeldingXml.toByteArray()
         )
 
         log.info("Lastet opp dokumenter til mappe $mappe i juridisk logg-bucket")

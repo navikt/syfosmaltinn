@@ -28,10 +28,13 @@ class AltinnSykmeldingMapperTest : FunSpec({
                 "Telefonnummer",
                 LocalDate.now(),
                 null,
-                "NL Navn", "fnrLeder"
+                "NL Navn",
+                "fnrLeder"
             )
             val sykmeldingAltinn = SykmeldingAltinn(
-                SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendtSykmeldingKafkaMessage, pasient), narmesteLeder, "pdf".toByteArray()
+                SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendtSykmeldingKafkaMessage, pasient),
+                narmesteLeder,
+                "pdf".toByteArray()
             )
 
             val insertCorrespondanceV2 = AltinnSykmeldingMapper.sykmeldingTilCorrespondence(

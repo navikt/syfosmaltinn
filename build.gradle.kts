@@ -6,43 +6,43 @@ group = "no.nav.syfo"
 version = "1.0.0"
 
 val coroutinesVersion = "1.6.4"
-val jacksonVersion = "2.14.0"
+val jacksonVersion = "2.14.1"
 val kluentVersion = "1.72"
-val ktorVersion = "2.1.3"
-val logbackVersion = "1.4.4"
+val ktorVersion = "2.2.1"
+val logbackVersion = "1.4.5"
 val logstashEncoderVersion = "7.2"
 val prometheusVersion = "0.16.0"
 val kotestVersion = "5.5.4"
-val smCommonVersion = "1.1e5e122"
+val smCommonVersion = "1.1490275"
 val mockkVersion = "1.13.2"
 val testContainerKafkaVersion = "1.17.6"
 val sykmeldingArbeidsgiverVersion = "1.9daf0fa"
 val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
 val saxonVersion = "10.6"
-val pdfBoxVersion = "2.0.24"
-val cxfVersion = "3.5.4"
+val cxfVersion = "3.5.5"
 val jaxsWsApiVersion = "2.3.1"
 val jaxwsRiVersion = "2.3.2"
 val jaxwsToolsVersion = "2.3.1"
 val javaxActivationVersion = "1.1.1"
-val postgresVersion = "42.5.0"
-val flywayVersion = "9.6.0"
+val postgresVersion = "42.5.1"
+val flywayVersion = "9.8.3"
 val hikariVersion = "5.0.1"
 val postgresContainerVersion = "1.17.6"
-val kotlinVersion = "1.7.21"
-val googleCloudStorageVersion = "2.15.0"
+val kotlinVersion = "1.7.22"
+val googleCloudStorageVersion = "2.15.1"
 val commonsVollectionsVersion = "3.2.2"
 val xmlschemaCoreVersion = "2.2.5"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val jaxbRuntimeVersion = "2.4.0-b180830.0438"
+val nettyCodecVersion = "4.1.86.Final"
 
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
 }
 
 plugins {
-    id("org.jmailen.kotlinter") version "3.10.0"
-    kotlin("jvm") version "1.7.21"
+    id("org.jmailen.kotlinter") version "3.12.0"
+    kotlin("jvm") version "1.7.22"
     id("com.diffplug.spotless") version "6.5.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
@@ -97,6 +97,9 @@ dependencies {
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    // This is to override version that is in io.ktor:ktor-server-netty
+    // https://www.cve.org/CVERecord?id=CVE-2022-41915
+    implementation("io.netty:netty-codec:$nettyCodecVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
     implementation("io.ktor:ktor-server-call-id:$ktorVersion")

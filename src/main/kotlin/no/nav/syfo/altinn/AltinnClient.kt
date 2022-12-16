@@ -14,9 +14,9 @@ import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondence
 import no.nav.syfo.altinn.model.AltinnSykmeldingMapper
 import no.nav.syfo.helpers.retry
 import no.nav.syfo.log
+import no.nav.syfo.securelog
 import java.io.IOException
 import javax.xml.ws.soap.SOAPFaultException
-import no.nav.syfo.securelog
 
 class AltinnClient(
     private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
