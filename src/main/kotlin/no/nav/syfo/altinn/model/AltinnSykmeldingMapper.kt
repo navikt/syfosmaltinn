@@ -38,7 +38,6 @@ class AltinnSykmeldingMapper private constructor() {
             brukernavn: String,
             orgnummer: String
         ): InsertCorrespondenceV2 {
-
             val insertCorrespondenceV2 = InsertCorrespondenceV2()
                 .withAllowForwarding(FALSE)
                 .withReportee(
