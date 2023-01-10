@@ -28,13 +28,12 @@ val postgresVersion = "42.5.1"
 val flywayVersion = "9.8.3"
 val hikariVersion = "5.0.1"
 val postgresContainerVersion = "1.17.6"
-val kotlinVersion = "1.7.22"
+val kotlinVersion = "1.8.0"
 val googleCloudStorageVersion = "2.15.1"
 val commonsVollectionsVersion = "3.2.2"
 val xmlschemaCoreVersion = "2.2.5"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val jaxbRuntimeVersion = "2.4.0-b180830.0438"
-val nettyCodecVersion = "4.1.86.Final"
 
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
@@ -42,7 +41,7 @@ tasks.withType<Jar> {
 
 plugins {
     id("org.jmailen.kotlinter") version "3.12.0"
-    kotlin("jvm") version "1.7.22"
+    kotlin("jvm") version "1.8.0"
     id("com.diffplug.spotless") version "6.5.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
@@ -97,9 +96,6 @@ dependencies {
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    // This is to override version that is in io.ktor:ktor-server-netty
-    // https://www.cve.org/CVERecord?id=CVE-2022-41915
-    implementation("io.netty:netty-codec:$nettyCodecVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
     implementation("io.ktor:ktor-server-call-id:$ktorVersion")
