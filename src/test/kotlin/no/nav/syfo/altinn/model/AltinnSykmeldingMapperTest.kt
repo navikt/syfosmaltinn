@@ -15,6 +15,7 @@ import no.nav.syfo.model.sykmeldingstatus.SykmeldingStatusKafkaEventDTO
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
+import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldNotBe
 import java.time.LocalDate
 import java.time.OffsetDateTime
@@ -22,7 +23,7 @@ import java.time.ZoneOffset
 
 class AltinnSykmeldingMapperTest : FunSpec({
     context("Test sykmelding mapper") {
-        test("Shuold create InsertCorrespondenceV2") {
+        test("Should create InsertCorrespondenceV2") {
             val sykmeldingId = "uuid"
             val timestamp = OffsetDateTime.now(ZoneOffset.UTC)
             val sendtSykmeldingKafkaMessage = getAivenMessage(sykmeldingId, timestamp)
@@ -56,6 +57,24 @@ class AltinnSykmeldingMapperTest : FunSpec({
             )
             insertCorrespondanceV2 shouldNotBe null
         }
+        test("Should create empty string when behandler telefonnummer is null") {
+            val sykmeldingId = "uuid"
+            val timestamp = OffsetDateTime.now(ZoneOffset.UTC)
+            val sendtSykmeldingKafkaMessage = getAivenMessage(sykmeldingId, timestamp)
+            System.setProperty("environment.name", "local")
+            val pasient = Person(
+                "PasientFornavn",
+                "PasientMellomnavn",
+                "PasientEtternavn",
+                "aktorid",
+                "fnr"
+            )
+
+            val xmlSykmeldingArbeidsgiver =
+                SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendtSykmeldingKafkaMessage, pasient)
+
+            xmlSykmeldingArbeidsgiver.sykmelding.behandler.telefonnummer shouldBeEqualTo ""
+        }
     }
 })
 
@@ -75,7 +94,7 @@ private fun getAivenMessage(sykmeldingId: String, timestamp: OffsetDateTime) = S
                 null,
                 null
             ),
-            "telefonnummer"
+            null
         ),
         behandletTidspunkt = timestamp,
         egenmeldt = false,

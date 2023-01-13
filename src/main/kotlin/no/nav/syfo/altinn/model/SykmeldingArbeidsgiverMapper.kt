@@ -173,8 +173,8 @@ class SykmeldingArbeidsgiverMapper private constructor() {
             return xmlBehandler
         }
 
-        private fun getTelefonnr(telefonnr: String?): String? {
-            return ofNullable(telefonnr).map(removePrefix).orElseGet { telefonnr }
+        private fun getTelefonnr(telefonnr: String?): String {
+            return ofNullable(telefonnr).map(removePrefix).orElseGet { telefonnr } ?: ""
         }
 
         private val removePrefix =
