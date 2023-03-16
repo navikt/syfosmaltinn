@@ -23,6 +23,9 @@ spec:
         databases:
           - name: syfosmaltinn
             envVarPrefix: NAIS_DATABASE
+        flags:
+          - name: cloudsql.logical_decoding
+            value: "on"
     buckets:
       - name: teamsykmelding-syfosmaltinn-bucket-prod
         retentionPeriodDays: 1825

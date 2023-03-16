@@ -29,6 +29,7 @@ class DatabaseTest : FunSpec({
         .withPassword("password")
         .withDatabaseName("databasename1")
         .withInitScript("db/testdb-init.sql")
+        .withCommand("postgres", "-c", "wal_level=logical")
 
     psqlContainer.start()
 
