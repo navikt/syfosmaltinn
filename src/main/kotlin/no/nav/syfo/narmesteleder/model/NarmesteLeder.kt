@@ -9,5 +9,5 @@ data class NarmesteLeder(
     val aktivFom: LocalDate,
     val arbeidsgiverForskutterer: Boolean?,
     val navn: String,
-    val fnr: String
+    val fnr: String,
 )

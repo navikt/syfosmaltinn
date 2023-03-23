@@ -25,12 +25,12 @@ import java.util.UUID
 class BeOmNyNLService(
     private val nlRequestProducer: NLRequestProducer,
     private val nlResponseProducer: NLResponseProducer,
-    private val database: DatabaseInterface
+    private val database: DatabaseInterface,
 ) {
     fun beOmNyNL(kafkaMetadata: KafkaMetadataDTO, event: SykmeldingStatusKafkaEventDTO, person: Person) {
         log.info(
             "Ber om ny nærmeste leder og bryter eksisterende kobling for sykmeldingid {}",
-            kafkaMetadata.sykmeldingId
+            kafkaMetadata.sykmeldingId,
         )
         nlRequestProducer.send(
             NlRequestKafkaMessage(
@@ -44,33 +44,33 @@ class BeOmNyNLService(
                     sykmeldingId = kafkaMetadata.sykmeldingId,
                     fnr = kafkaMetadata.fnr,
                     orgnr = event.arbeidsgiver!!.orgnummer,
-                    name = person.fulltNavn()
+                    name = person.fulltNavn(),
                 ),
                 metadata = NlKafkaMetadata(
                     timestamp = OffsetDateTime.now(ZoneOffset.UTC),
-                    source = kafkaMetadata.source
-                )
-            )
+                    source = kafkaMetadata.source,
+                ),
+            ),
         )
         nlResponseProducer.send(
             NlResponseKafkaMessage(
                 kafkaMetadata = KafkaMetadata(
                     timestamp = OffsetDateTime.now(ZoneOffset.UTC),
-                    source = "syfosmaltinn"
+                    source = "syfosmaltinn",
                 ),
                 nlAvbrutt = NlAvbrutt(
                     orgnummer = event.arbeidsgiver!!.orgnummer,
                     sykmeldtFnr = kafkaMetadata.fnr,
-                    aktivTom = OffsetDateTime.now(ZoneOffset.UTC)
-                )
-            )
+                    aktivTom = OffsetDateTime.now(ZoneOffset.UTC),
+                ),
+            ),
         )
         database.insertNarmestelederCheck(kafkaMetadata.sykmeldingId, OffsetDateTime.now(ZoneOffset.UTC))
     }
 
     fun skalBeOmNyNL(
         sykmeldingStatusKafkaEventDTO: SykmeldingStatusKafkaEventDTO,
-        narmesteLeder: NarmesteLeder?
+        narmesteLeder: NarmesteLeder?,
     ): Boolean {
         val narmestelederCheck = database.hasCheckedNl(sykmeldingId = sykmeldingStatusKafkaEventDTO.sykmeldingId)
         if (narmestelederCheck) {

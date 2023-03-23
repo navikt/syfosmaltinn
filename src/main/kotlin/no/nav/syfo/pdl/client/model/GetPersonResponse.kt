@@ -3,7 +3,7 @@ package no.nav.syfo.pdl.client.model
 import java.lang.RuntimeException
 
 data class GetPersonResponse(
-    val data: ResponseData
+    val data: ResponseData,
 )
 
 private const val AKTORID_GRUPPE = "AKTORID"
@@ -29,24 +29,24 @@ fun GetPersonResponse.toPerson(): Person {
 
 data class ResponseData(
     val person: PersonResponse?,
-    val identer: IdentResponse?
+    val identer: IdentResponse?,
 )
 
 data class IdentResponse(
-    val identer: List<Ident>
+    val identer: List<Ident>,
 )
 
 data class Ident(
     val ident: String,
-    val gruppe: String
+    val gruppe: String,
 )
 
 data class PersonResponse(
-    val navn: List<Navn>?
+    val navn: List<Navn>?,
 )
 
 data class Navn(
     val fornavn: String,
     val mellomnavn: String?,
-    val etternavn: String
+    val etternavn: String,
 )

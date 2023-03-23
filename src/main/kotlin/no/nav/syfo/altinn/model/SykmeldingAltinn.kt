@@ -10,7 +10,7 @@ import no.nav.syfo.narmesteleder.model.NarmesteLeder
 class SykmeldingAltinn(
     val xmlSykmeldingArbeidsgiver: XMLSykmeldingArbeidsgiver,
     narmesteLeder: NarmesteLeder?,
-    pdf: ByteArray
+    pdf: ByteArray,
 ) {
     val sykmeldingXml: String = JAXB.marshallSykmeldingArbeidsgiver(xmlSykmeldingArbeidsgiver)
     val sykmeldingHTML: String
@@ -21,13 +21,13 @@ class SykmeldingAltinn(
 
         val sykmeldingXmlForHtml = toSykmeldingXml(
             narmesteLeder = narmesteLeder,
-            xmlSykmeldingArbeidsgiver = xmlSykmeldingArbeidsgiver
+            xmlSykmeldingArbeidsgiver = xmlSykmeldingArbeidsgiver,
         )
 
         sykmeldingHTML = toSykmeldingHtml(sykmeldingXml = sykmeldingXmlForHtml)
         sykmeldingPortableHTML = SykmeldingHTMLMapper.toPortableHTML(
             sykmeldingHTML,
-            xmlSykmeldingArbeidsgiver.sykmeldingId
+            xmlSykmeldingArbeidsgiver.sykmeldingId,
         )
     }
 }

@@ -6,7 +6,7 @@ import java.sql.Date
 import java.sql.ResultSet
 
 class NarmestelederDB(
-    private val database: DatabaseInterface
+    private val database: DatabaseInterface,
 ) {
     fun insertOrUpdate(narmesteleder: NarmestelederLeesah) {
         database.connection.use { connection ->
@@ -18,7 +18,7 @@ class NarmestelederDB(
                     telefon = EXCLUDED.telefon,
                     fom = EXCLUDED.fom,
                     arbeidsgiver_forskutterer = EXCLUDED.arbeidsgiver_forskutterer;
-            """
+            """,
             ).use { preparedStatement ->
                 // Insert
                 preparedStatement.setString(1, narmesteleder.narmesteLederId.toString())
@@ -40,7 +40,7 @@ class NarmestelederDB(
             connection.prepareStatement(
                 """
                delete from narmesteleder where narmeste_leder_id = ?;
-            """
+            """,
             ).use { ps ->
                 ps.setString(1, narmesteleder.narmesteLederId.toString())
                 ps.executeUpdate()
@@ -70,7 +70,7 @@ private fun ResultSet.toNarmestelederDbModel(): NarmestelederDbModel? {
             narmesteLederEpost = getString("epost"),
             orgnummer = getString("orgnummer"),
             aktivFom = getDate("fom").toLocalDate(),
-            arbeidsgiverForskutterer = getObject("arbeidsgiver_forskutterer") as Boolean?
+            arbeidsgiverForskutterer = getObject("arbeidsgiver_forskutterer") as Boolean?,
         )
     }
 }

@@ -40,12 +40,12 @@ class SykmeldingHTMLMapper private constructor() {
         fun toPortableHTML(sykmeldingHtml: String, sykmeldingId: String): String {
             try {
                 val css = XMLSykmeldingArbeidsgiver::class.java.getResource("/pdf/sm/css/sykmelding-portal.css").readText(
-                    Charset.defaultCharset()
+                    Charset.defaultCharset(),
                 ).replace("SYKMELDINGIDENTIFIKATOR", sykmeldingId)
 
                 var html = sykmeldingHtml.replaceFirst(
                     Regex("<link rel=\"stylesheet\" href=\"css/sykmelding.css\" media=\"print\" type=\"text/css\"/?>"),
-                    ""
+                    "",
                 )
                 html = html.replaceFirst("</html>", "<style>\n" + css + "\n</style>\n</html>")
                 return html

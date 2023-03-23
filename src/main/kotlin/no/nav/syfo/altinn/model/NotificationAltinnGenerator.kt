@@ -34,14 +34,14 @@ class NotificationAltinnGenerator private constructor() {
                 "<p>En ansatt i \$reporteeName$ (\$reporteeNumber$) har sendt inn en digital sykmelding.</p>" +
                     "<p>Logg inn på Altinn for å se sykmeldingen.</p>" +
                     "<p>Husk samtidig å melde inn hvem som er nærmeste leder for den sykmeldte hvis dette ikke er gjort tidligere.</p>" +
-                    "<p>Vennlig hilsen NAV.</p>"
+                    "<p>Vennlig hilsen NAV.</p>",
             )
         }
 
         private fun smsNotification(): Notification? {
             return createSmsNotification(
                 "En ansatt i \$reporteeName$ (\$reporteeNumber$) har sendt inn en ny sykmelding. ",
-                "Logg inn på Altinn for å se sykmeldingen. Vennlig hilsen NAV."
+                "Logg inn på Altinn for å se sykmeldingen. Vennlig hilsen NAV.",
             )
         }
 
@@ -51,29 +51,29 @@ class NotificationAltinnGenerator private constructor() {
             }
             return Notification()
                 .withLanguageCode(
-                    NORSK_BOKMAL
+                    NORSK_BOKMAL,
                 )
                 .withNotificationType(
-                    "TokenTextOnly"
+                    "TokenTextOnly",
                 )
                 .withFromAddress(
                     fromEmail?.let {
                         it
-                    }
+                    },
                 )
                 .withReceiverEndPoints(
                     ReceiverEndPointBEList()
                         .withReceiverEndPoint(
                             ReceiverEndPoint()
                                 .withTransportType(
-                                    type
-                                )
-                        )
+                                    type,
+                                ),
+                        ),
                 )
                 .withTextTokens(
                     TextTokenSubstitutionBEList().withTextToken(
-                        *textTokens
-                    )
+                        *textTokens,
+                    ),
                 )
         }
 
@@ -81,7 +81,7 @@ class NotificationAltinnGenerator private constructor() {
             val textTokens = arrayOfNulls<TextToken>(text.size)
             for (i in text.indices) {
                 textTokens[i] = TextToken().withTokenNum(i).withTokenValue(
-                    text[i]
+                    text[i],
                 )
             }
             return textTokens

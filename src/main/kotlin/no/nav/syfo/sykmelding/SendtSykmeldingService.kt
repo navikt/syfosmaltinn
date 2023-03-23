@@ -16,7 +16,7 @@ class SendtSykmeldingService(
     private val pdlClient: PdlClient,
     private val narmesteLederService: NarmesteLederService,
     private val beOmNyNLService: BeOmNyNLService,
-    private val sendtSykmeldingAivenConsumer: SendtSykmeldingAivenConsumer
+    private val sendtSykmeldingAivenConsumer: SendtSykmeldingAivenConsumer,
 ) {
     suspend fun start() {
         log.info("Starting consumer")
@@ -34,10 +34,10 @@ class SendtSykmeldingService(
     }
 
     private suspend fun handleSendtSykmelding(
-        sendSykmeldingAivenKafkaMessage: SendSykmeldingAivenKafkaMessage
+        sendSykmeldingAivenKafkaMessage: SendSykmeldingAivenKafkaMessage,
     ) {
         log.info(
-            "Mottok sendt sykmelding fra Kafka med sykmeldingId: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.sykmeldingId}, source: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.source}"
+            "Mottok sendt sykmelding fra Kafka med sykmeldingId: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.sykmeldingId}, source: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.source}",
         )
         if (sendSykmeldingAivenKafkaMessage.kafkaMetadata.source == "macgyver") {
             return
@@ -49,7 +49,7 @@ class SendtSykmeldingService(
 
         val narmesteLeder = narmesteLederService.getNarmesteLeder(
             orgnummer = arbeidsgiver.orgnummer,
-            fnr = sendSykmeldingAivenKafkaMessage.kafkaMetadata.fnr
+            fnr = sendSykmeldingAivenKafkaMessage.kafkaMetadata.fnr,
         )
         log.info("Mottok narmesteleder: ${narmesteLeder != null} for sykmeldingId: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.sykmeldingId}")
         if (beOmNyNLService.skalBeOmNyNL(sendSykmeldingAivenKafkaMessage.event, narmesteLeder)) {
@@ -58,7 +58,7 @@ class SendtSykmeldingService(
         altinnSykmeldingService.handleSendtSykmelding(
             sendSykmeldingAivenKafkaMessage,
             person,
-            narmesteLeder
+            narmesteLeder,
         )
     }
 }

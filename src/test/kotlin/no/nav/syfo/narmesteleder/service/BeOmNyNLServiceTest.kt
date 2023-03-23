@@ -44,9 +44,9 @@ class BeOmNyNLServiceTest : FunSpec({
                         "Be om ny nærmeste leder?",
                         ShortNameDTO.NY_NARMESTE_LEDER,
                         SvartypeDTO.JA_NEI,
-                        "JA"
-                    )
-                )
+                        "JA",
+                    ),
+                ),
             )
             beOmNyNLService.skalBeOmNyNL(sykmeldingStatusKafkaEvent, getNarmesteleder(true)) shouldBeEqualTo false
         }
@@ -59,9 +59,9 @@ class BeOmNyNLServiceTest : FunSpec({
                         "Be om ny nærmeste leder?",
                         ShortNameDTO.NY_NARMESTE_LEDER,
                         SvartypeDTO.JA_NEI,
-                        "JA"
-                    )
-                )
+                        "JA",
+                    ),
+                ),
             )
             beOmNyNLService.skalBeOmNyNL(sykmeldingStatusKafkaEvent, getNarmesteleder(true)) shouldBeEqualTo true
         }
@@ -73,14 +73,14 @@ class BeOmNyNLServiceTest : FunSpec({
                         "Be om ny nærmeste leder?",
                         ShortNameDTO.NY_NARMESTE_LEDER,
                         SvartypeDTO.JA_NEI,
-                        "JA"
-                    )
-                )
+                        "JA",
+                    ),
+                ),
             )
 
             beOmNyNLService.skalBeOmNyNL(
                 sykmeldingStatusKafkaEvent,
-                getNarmesteleder(forskutterer = false)
+                getNarmesteleder(forskutterer = false),
             ) shouldBeEqualTo true
         }
         test("Skal be om ny NL hvis det ikke er registrert noen NL") {
@@ -90,22 +90,22 @@ class BeOmNyNLServiceTest : FunSpec({
         }
         test("Skal be om ny NL hvis det ikke er svart på om NL forskutterer lønn") {
             val sykmeldingStatusKafkaEvent = getSykmeldingStatusKafkaEvent(
-                emptyList()
+                emptyList(),
             )
 
             beOmNyNLService.skalBeOmNyNL(
                 sykmeldingStatusKafkaEvent,
-                getNarmesteleder(forskutterer = null)
+                getNarmesteleder(forskutterer = null),
             ) shouldBeEqualTo true
         }
         test("Skal ikke be om ny NL hvis NL er registrert og har svart på forskuttering og bruker ikke har bedt om ny NL") {
             val sykmeldingStatusKafkaEvent = getSykmeldingStatusKafkaEvent(
-                emptyList()
+                emptyList(),
             )
 
             beOmNyNLService.skalBeOmNyNL(
                 sykmeldingStatusKafkaEvent,
-                getNarmesteleder(forskutterer = false)
+                getNarmesteleder(forskutterer = false),
             ) shouldBeEqualTo false
         }
         test("Skal ikke be om ny NL hvis det er svart nei på spørsmål om NL") {
@@ -115,9 +115,9 @@ class BeOmNyNLServiceTest : FunSpec({
                         "Be om ny nærmeste leder?",
                         ShortNameDTO.NY_NARMESTE_LEDER,
                         SvartypeDTO.JA_NEI,
-                        "NEI"
-                    )
-                )
+                        "NEI",
+                    ),
+                ),
             )
 
             beOmNyNLService.skalBeOmNyNL(sykmeldingStatusKafkaEvent, null) shouldBeEqualTo false
@@ -131,7 +131,7 @@ fun getSykmeldingStatusKafkaEvent(sporsmalOgSvarListe: List<SporsmalOgSvarDTO>):
         arbeidsgiver = ArbeidsgiverStatusDTO("orgnummer", "1234", "orgnavn"),
         sporsmals = sporsmalOgSvarListe,
         statusEvent = "SENDT",
-        timestamp = OffsetDateTime.now()
+        timestamp = OffsetDateTime.now(),
     )
 }
 
@@ -143,6 +143,6 @@ fun getNarmesteleder(forskutterer: Boolean?): NarmesteLeder {
         aktivFom = LocalDate.now().minusYears(2),
         arbeidsgiverForskutterer = forskutterer,
         navn = "Leder Ledersen",
-        fnr = "fnr"
+        fnr = "fnr",
     )
 }

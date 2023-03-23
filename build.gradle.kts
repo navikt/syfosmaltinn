@@ -8,12 +8,12 @@ version = "1.0.0"
 val coroutinesVersion = "1.6.4"
 val jacksonVersion = "2.14.2"
 val kluentVersion = "1.72"
-val ktorVersion = "2.2.3"
+val ktorVersion = "2.2.4"
 val logbackVersion = "1.4.5"
-val logstashEncoderVersion = "7.2"
+val logstashEncoderVersion = "7.3"
 val prometheusVersion = "0.16.0"
 val kotestVersion = "5.5.4"
-val smCommonVersion = "1.4d2de6e"
+val smCommonVersion = "1.9df1108"
 val mockkVersion = "1.13.2"
 val testContainerKafkaVersion = "1.17.6"
 val sykmeldingArbeidsgiverVersion = "1.5d21db9"
@@ -30,7 +30,6 @@ val hikariVersion = "5.0.1"
 val postgresContainerVersion = "1.17.6"
 val kotlinVersion = "1.8.10"
 val googleCloudStorageVersion = "2.15.1"
-val commonsVollectionsVersion = "3.2.2"
 val xmlschemaCoreVersion = "2.2.5"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val jaxbRuntimeVersion = "2.4.0-b180830.0438"
@@ -40,10 +39,9 @@ tasks.withType<Jar> {
 }
 
 plugins {
-    id("org.jmailen.kotlinter") version "3.12.0"
+    id("org.jmailen.kotlinter") version "3.14.0"
     kotlin("jvm") version "1.8.10"
-    id("com.diffplug.spotless") version "6.5.0"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 val githubUser: String by project
@@ -133,8 +131,6 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion") {
         exclude(group = "org.apache.velocity", module = "velocity")
     }
-    // for å overstyre sårbar versjon fra cxf-rt-ws-security
-    implementation("commons-collections:commons-collections:$commonsVollectionsVersion")
 
     implementation("org.apache.ws.xmlschema:xmlschema-core:$xmlschemaCoreVersion")
     implementation("javax.activation:activation:$javaxActivationVersion")

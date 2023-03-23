@@ -36,33 +36,33 @@ class AltinnSykmeldingMapper private constructor() {
         fun sykmeldingTilCorrespondence(
             sykmeldingAltinn: SykmeldingAltinn,
             brukernavn: String,
-            orgnummer: String
+            orgnummer: String,
         ): InsertCorrespondenceV2 {
             val insertCorrespondenceV2 = InsertCorrespondenceV2()
                 .withAllowForwarding(FALSE)
                 .withReportee(
-                    orgnummer
+                    orgnummer,
                 )
                 .withMessageSender(
-                    getFormatetUsername(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmelding.pasient, brukernavn)
+                    getFormatetUsername(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmelding.pasient, brukernavn),
                 )
                 .withServiceCode(
-                    SYKMELDING_TJENESTEKODE
+                    SYKMELDING_TJENESTEKODE,
                 )
                 .withServiceEdition(
-                    SYKMELDING_TJENESTEVERSJON
+                    SYKMELDING_TJENESTEVERSJON,
                 )
                 .withNotifications(NotificationAltinnGenerator.createNotifications())
                 .withContent(
                     ExternalContentV2()
                         .withLanguageCode(
-                            NORSK_BOKMAL
+                            NORSK_BOKMAL,
                         )
                         .withMessageTitle(
-                            createTitle(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmelding, brukernavn)
+                            createTitle(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmelding, brukernavn),
                         )
                         .withMessageBody(
-                            sykmeldingAltinn.sykmeldingPortableHTML
+                            sykmeldingAltinn.sykmeldingPortableHTML,
                         )
                         .withCustomMessageData(null)
                         .withAttachments(
@@ -74,18 +74,18 @@ class AltinnSykmeldingMapper private constructor() {
                                                 sykmeldingAltinn.sykmeldingPdf,
                                                 "sykmelding.pdf",
                                                 "sykmelding",
-                                                sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId + ".pdf"
+                                                sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId + ".pdf",
                                             ),
                                             createBinaryAttachment(
                                                 sykmeldingAltinn.sykmeldingXml.toByteArray(),
                                                 "sykmelding.xml",
                                                 "sykmelding",
-                                                sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId + ".xml"
-                                            )
+                                                sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId + ".xml",
+                                            ),
 
-                                        )
-                                )
-                        )
+                                        ),
+                                ),
+                        ),
                 ).withArchiveReference(null)
             return insertCorrespondenceV2
         }
@@ -94,23 +94,23 @@ class AltinnSykmeldingMapper private constructor() {
             fil: ByteArray,
             filnavn: String,
             navn: String,
-            sendersRef: String
+            sendersRef: String,
         ): BinaryAttachmentV2? {
             return BinaryAttachmentV2()
                 .withDestinationType(UserTypeRestriction.SHOW_TO_ALL)
                 .withFileName(
-                    filnavn
+                    filnavn,
                 )
                 .withName(
-                    navn
+                    navn,
                 )
                 .withFunctionType(AttachmentFunctionType.UNSPECIFIED)
                 .withEncrypted(false)
                 .withSendersReference(
-                    sendersRef
+                    sendersRef,
                 )
                 .withData(
-                    fil
+                    fil,
                 )
         }
 
@@ -154,7 +154,7 @@ class AltinnSykmeldingMapper private constructor() {
 
         fun toSykmeldingXml(
             narmesteLeder: NarmesteLeder?,
-            xmlSykmeldingArbeidsgiver: XMLSykmeldingArbeidsgiver
+            xmlSykmeldingArbeidsgiver: XMLSykmeldingArbeidsgiver,
         ): String {
             val sykmeldingXml = JAXB.marshallSykmeldingArbeidsgiver(xmlSykmeldingArbeidsgiver)
             if (narmesteLeder != null) {

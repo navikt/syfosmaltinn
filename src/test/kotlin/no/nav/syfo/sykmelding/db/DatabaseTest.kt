@@ -53,7 +53,7 @@ class DatabaseTest : FunSpec({
                 LocalDate.of(2021, 1, 1),
                 null,
                 null,
-                OffsetDateTime.now()
+                OffsetDateTime.now(),
             )
             nlDatabase.insertOrUpdate(narmesteleder)
             nlDatabase.getNarmesteleder("1", "orgnummer") shouldBeEqualTo NarmestelederDbModel(
@@ -63,7 +63,7 @@ class DatabaseTest : FunSpec({
                 narmesteLederEpost = "epost",
                 narmesteLederTelefonnummer = "telefon",
                 aktivFom = LocalDate.of(2021, 1, 1),
-                arbeidsgiverForskutterer = null
+                arbeidsgiverForskutterer = null,
             )
 
             nlDatabase.insertOrUpdate(
@@ -71,8 +71,8 @@ class DatabaseTest : FunSpec({
                     narmesteLederEpost = "ny-epost",
                     narmesteLederTelefonnummer = "ny-telefon",
                     aktivFom = LocalDate.of(2021, 2, 1),
-                    arbeidsgiverForskutterer = true
-                )
+                    arbeidsgiverForskutterer = true,
+                ),
             )
             nlDatabase.getNarmesteleder("1", "orgnummer") shouldBeEqualTo NarmestelederDbModel(
                 sykmeldtFnr = "1",
@@ -81,7 +81,7 @@ class DatabaseTest : FunSpec({
                 narmesteLederEpost = "ny-epost",
                 narmesteLederTelefonnummer = "ny-telefon",
                 aktivFom = LocalDate.of(2021, 2, 1),
-                arbeidsgiverForskutterer = true
+                arbeidsgiverForskutterer = true,
             )
             nlDatabase.insertOrUpdate(narmesteleder.copy(arbeidsgiverForskutterer = false))
             nlDatabase.getNarmesteleder("1", "orgnummer") shouldBeEqualTo NarmestelederDbModel(
@@ -91,7 +91,7 @@ class DatabaseTest : FunSpec({
                 narmesteLederEpost = "epost",
                 narmesteLederTelefonnummer = "telefon",
                 aktivFom = LocalDate.of(2021, 1, 1),
-                arbeidsgiverForskutterer = false
+                arbeidsgiverForskutterer = false,
             )
             nlDatabase.deleteNarmesteleder(narmesteleder)
             nlDatabase.getNarmesteleder("1", "orgnummer") shouldBeEqualTo null

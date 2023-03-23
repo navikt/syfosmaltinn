@@ -35,7 +35,7 @@ class SykmeldingArbeidsgiverMapper private constructor() {
 
         fun toAltinnXMLSykmelding(
             sendtSykmeldingKafkaMessage: SendSykmeldingAivenKafkaMessage,
-            person: Person
+            person: Person,
         ): XMLSykmeldingArbeidsgiver {
             val xmlSykmeldingArbeidsgiver = ObjectFactory().createXMLSykmeldingArbeidsgiver()
             xmlSykmeldingArbeidsgiver.juridiskOrganisasjonsnummer =
@@ -49,7 +49,7 @@ class SykmeldingArbeidsgiverMapper private constructor() {
 
         private fun toXMLSykmelding(
             sendtSykmeldingKafkaMessage: SendSykmeldingAivenKafkaMessage,
-            person: Person
+            person: Person,
         ): XMLSykmelding {
             val sendtSykmelding = sendtSykmeldingKafkaMessage.sykmelding
             val xmlSykmelding = ObjectFactory().createXMLSykmelding()
@@ -144,7 +144,7 @@ class SykmeldingArbeidsgiverMapper private constructor() {
 
         private fun getPasient(
             metadata: KafkaMetadataDTO,
-            person: Person
+            person: Person,
         ): XMLPasient? {
             val pasient = ObjectFactory().createXMLPasient()
             pasient.ident = metadata.fnr
@@ -183,14 +183,14 @@ class SykmeldingArbeidsgiverMapper private constructor() {
                     .map { s: String? ->
                         Pattern.compile(
                             "(tel|fax):(\\d+)",
-                            Pattern.CASE_INSENSITIVE
+                            Pattern.CASE_INSENSITIVE,
                         ).matcher(s)
                     }
                     .filter { obj: Matcher -> obj.matches() }
                     .filter { matcher: Matcher -> matcher.groupCount() == 2 }
                     .map { matcher: Matcher ->
                         matcher.group(
-                            2
+                            2,
                         )
                     }
                     .map { obj: String -> obj.trim { it <= ' ' } }

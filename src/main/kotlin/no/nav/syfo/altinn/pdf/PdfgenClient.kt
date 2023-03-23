@@ -11,7 +11,7 @@ import no.nav.syfo.log
 
 class PdfgenClient(
     private val url: String,
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
 ) {
     suspend fun createPdf(payload: PdfPayload): ByteArray {
         val httpResponse = httpClient.post(url) {

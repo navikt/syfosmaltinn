@@ -14,5 +14,5 @@ data class NarmestelederLeesah(
     val aktivFom: LocalDate,
     val aktivTom: LocalDate?,
     val arbeidsgiverForskutterer: Boolean?,
-    val timestamp: OffsetDateTime
+    val timestamp: OffsetDateTime,
 )

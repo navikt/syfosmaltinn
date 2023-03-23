@@ -25,14 +25,14 @@ val defaultPeriodeliste = listOf(
         "AvventendeSykmelding",
         PeriodetypeDTO.AVVENTENDE,
         null,
-        false
-    )
+        false,
+    ),
 )
 
 fun getSykmeldingKafkaMessage(
     sykmeldingId: String,
     periodeliste: List<SykmeldingsperiodeAGDTO> = defaultPeriodeliste,
-    utenlandskSykmelding: UtenlandskSykmeldingAGDTO? = null
+    utenlandskSykmelding: UtenlandskSykmeldingAGDTO? = null,
 ): SendSykmeldingAivenKafkaMessage {
     return SendSykmeldingAivenKafkaMessage(
         sykmelding = ArbeidsgiverSykmelding(
@@ -51,9 +51,9 @@ fun getSykmeldingKafkaMessage(
                         null,
                         null,
                         null,
-                        null
+                        null,
                     ),
-                    "telefon"
+                    "telefon",
                 )
             },
             behandletTidspunkt = OffsetDateTime.now(),
@@ -65,21 +65,21 @@ fun getSykmeldingKafkaMessage(
             papirsykmelding = false,
             prognose = PrognoseAGDTO(
                 arbeidsforEtterPeriode = false,
-                hensynArbeidsplassen = "BeskrivHensynArbeidsplassen"
+                hensynArbeidsplassen = "BeskrivHensynArbeidsplassen",
             ),
             syketilfelleStartDato = LocalDate.of(2016, 12, 7),
             sykmeldingsperioder = periodeliste,
             tiltakArbeidsplassen = "TiltakArbeidsplassen",
             merknader = emptyList(),
-            utenlandskSykmelding = utenlandskSykmelding
+            utenlandskSykmelding = utenlandskSykmelding,
         ),
         event = SykmeldingStatusKafkaEventDTO(
             sykmeldingId = sykmeldingId,
             arbeidsgiver = ArbeidsgiverStatusDTO("orgnummer", "1234", "orgnavn"),
             sporsmals = emptyList(),
             statusEvent = "SENDT",
-            timestamp = OffsetDateTime.now()
+            timestamp = OffsetDateTime.now(),
         ),
-        kafkaMetadata = KafkaMetadataDTO(sykmeldingId, OffsetDateTime.now(), "fnr", "user")
+        kafkaMetadata = KafkaMetadataDTO(sykmeldingId, OffsetDateTime.now(), "fnr", "user"),
     )
 }

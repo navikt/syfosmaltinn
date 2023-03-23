@@ -35,7 +35,7 @@ class AltinnSykmeldingServiceTest : FunSpec({
         altinnOrgnummerLookup,
         juridiskLoggService,
         database,
-        pdfgenClient
+        pdfgenClient,
     )
 
     beforeTest {

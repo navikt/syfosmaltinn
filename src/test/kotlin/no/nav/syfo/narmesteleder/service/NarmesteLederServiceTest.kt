@@ -32,7 +32,7 @@ class NarmesteLederServiceTest : FunSpec({
                 narmesteLederTelefonnummer = "telefon",
                 narmesteLederEpost = "epost",
                 aktivFom = LocalDate.of(2021, 1, 1),
-                arbeidsgiverForskutterer = true
+                arbeidsgiverForskutterer = true,
             )
 
             coEvery { pdlClient.getPerson("lederFnr") } returns leder
@@ -45,7 +45,7 @@ class NarmesteLederServiceTest : FunSpec({
                 LocalDate.of(2021, 1, 1),
                 true,
                 "Fornavn Mellomnavn Etternavn",
-                "lederFnr"
+                "lederFnr",
             )
         }
 

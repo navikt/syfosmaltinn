@@ -12,12 +12,12 @@ import java.time.temporal.ChronoUnit
 
 fun ArbeidsgiverSykmelding.toPdfPayload(
     pasient: Person,
-    narmesteLeder: NarmesteLeder?
+    narmesteLeder: NarmesteLeder?,
 ): PdfPayload {
     return PdfPayload(
         ansatt = Ansatt(
             fnr = pasient.fnr,
-            navn = pasient.fulltNavn()
+            navn = pasient.fulltNavn(),
         ),
         narmesteleder = narmesteLeder,
         arbeidsgiverSykmelding = ArbeidsgiverSykmeldingPdf(
@@ -31,9 +31,9 @@ fun ArbeidsgiverSykmelding.toPdfPayload(
             meldingTilArbeidsgiver = meldingTilArbeidsgiver,
             behandler = BehandlerPdf(
                 navn = behandler?.getFormattertNavn() ?: "",
-                tlf = behandler?.tlf
-            )
-        )
+                tlf = behandler?.tlf,
+            ),
+        ),
     )
 }
 
@@ -47,7 +47,7 @@ private fun SykmeldingsperiodeAGDTO.toSykmeldingsPeriodePdf(): Sykmeldingsperiod
         innspillTilArbeidsgiver = innspillTilArbeidsgiver,
         type = type,
         aktivitetIkkeMulig = aktivitetIkkeMulig,
-        reisetilskudd = reisetilskudd
+        reisetilskudd = reisetilskudd,
     )
 }
 

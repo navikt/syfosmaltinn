@@ -14,17 +14,17 @@ import java.util.zip.GZIPOutputStream
 
 class JuridiskLoggService(
     private val bucketName: String,
-    private val storage: Storage
+    private val storage: Storage,
 ) {
 
     fun sendJuridiskLogg(
         sykmeldingAltinn: SykmeldingAltinn,
-        sykmeldingId: String
+        sykmeldingId: String,
     ) {
         val mappe = "$sykmeldingId/${mappeTidspunkt()}/"
         fun lagreFil(filnavn: String, contentType: String, content: ByteArray) {
             val blobInfo = BlobInfo.newBuilder(
-                BlobId.of(bucketName, mappe + filnavn)
+                BlobId.of(bucketName, mappe + filnavn),
             ).setContentType(contentType).build()
             storage.create(blobInfo, content)
         }
@@ -32,12 +32,12 @@ class JuridiskLoggService(
         lagreFil(
             filnavn = "sykmelding.pdf",
             contentType = "application/pdf",
-            content = sykmeldingAltinn.sykmeldingPdf
+            content = sykmeldingAltinn.sykmeldingPdf,
         )
         lagreFil(
             filnavn = "sykmelding.xml",
             contentType = "application/xml",
-            content = sykmeldingAltinn.sykmeldingXml.toByteArray()
+            content = sykmeldingAltinn.sykmeldingXml.toByteArray(),
         )
 
         log.info("Lastet opp dokumenter til mappe $mappe i juridisk logg-bucket")

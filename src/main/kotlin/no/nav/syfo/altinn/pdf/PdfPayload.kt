@@ -11,12 +11,12 @@ import java.time.OffsetDateTime
 data class PdfPayload(
     val ansatt: Ansatt,
     val narmesteleder: NarmesteLeder?,
-    val arbeidsgiverSykmelding: ArbeidsgiverSykmeldingPdf
+    val arbeidsgiverSykmelding: ArbeidsgiverSykmeldingPdf,
 )
 
 data class Ansatt(
     val fnr: String,
-    val navn: String
+    val navn: String,
 )
 
 data class ArbeidsgiverSykmeldingPdf(
@@ -28,7 +28,7 @@ data class ArbeidsgiverSykmeldingPdf(
     val prognose: PrognoseAGDTO?,
     val tiltakArbeidsplassen: String?,
     val meldingTilArbeidsgiver: String?,
-    val behandler: BehandlerPdf
+    val behandler: BehandlerPdf,
 )
 
 data class SykmeldingsperiodePdf(
@@ -40,10 +40,10 @@ data class SykmeldingsperiodePdf(
     val innspillTilArbeidsgiver: String?,
     val type: PeriodetypeDTO,
     val aktivitetIkkeMulig: AktivitetIkkeMuligAGDTO?,
-    val reisetilskudd: Boolean
+    val reisetilskudd: Boolean,
 )
 
 data class BehandlerPdf(
     val navn: String,
-    val tlf: String?
+    val tlf: String?,
 )

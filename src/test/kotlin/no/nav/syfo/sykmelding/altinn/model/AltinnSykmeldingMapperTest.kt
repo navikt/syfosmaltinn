@@ -20,7 +20,7 @@ class AltinnSykmeldingMapperTest : FunSpec({
                 "PasientMellomnavn",
                 "PasientEtternavn",
                 "aktorid",
-                "fnr"
+                "fnr",
             )
             val narmesteLeder = NarmesteLeder(
                 "nl-epost",
@@ -29,18 +29,18 @@ class AltinnSykmeldingMapperTest : FunSpec({
                 LocalDate.now(),
                 null,
                 "NL Navn",
-                "fnrLeder"
+                "fnrLeder",
             )
             val sykmeldingAltinn = SykmeldingAltinn(
                 SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendtSykmeldingKafkaMessage, pasient),
                 narmesteLeder,
-                "pdf".toByteArray()
+                "pdf".toByteArray(),
             )
 
             val insertCorrespondanceV2 = AltinnSykmeldingMapper.sykmeldingTilCorrespondence(
                 sykmeldingAltinn,
                 sequenceOf(pasient.fornavn, pasient.mellomnavn, pasient.etternavn).filterNotNull().joinToString(" "),
-                sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer
+                sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer,
             )
             insertCorrespondanceV2 shouldNotBe null
         }

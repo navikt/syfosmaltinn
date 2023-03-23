@@ -7,12 +7,12 @@ import no.nav.syfo.pdl.client.model.Person
 
 class NarmesteLederService(
     private val narmestelederDB: NarmestelederDB,
-    private val pdlClient: PdlClient
+    private val pdlClient: PdlClient,
 ) {
     suspend fun getNarmesteLeder(orgnummer: String, fnr: String): NarmesteLeder? {
         return narmestelederDB.getNarmesteleder(
             sykmeldtFnr = fnr,
-            orgnummer = orgnummer
+            orgnummer = orgnummer,
         )?.let { narmesteLederRelasjon ->
 
             val lederPerson = pdlClient.getPerson(narmesteLederRelasjon.lederFnr)
@@ -24,7 +24,7 @@ class NarmesteLederService(
                 aktivFom = narmesteLederRelasjon.aktivFom,
                 arbeidsgiverForskutterer = narmesteLederRelasjon.arbeidsgiverForskutterer,
                 navn = getName(lederPerson),
-                fnr = lederPerson.fnr
+                fnr = lederPerson.fnr,
             )
         }
     }

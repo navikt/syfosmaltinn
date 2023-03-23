@@ -21,7 +21,7 @@ import javax.xml.ws.soap.SOAPFaultException
 class AltinnClient(
     private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
     private val username: String,
-    private val password: String
+    private val password: String,
 ) {
     val SYSTEM_USER_CODE = "NAV_DIGISYFO"
     val objectMapper: ObjectMapper = jacksonObjectMapper().apply {
@@ -39,15 +39,15 @@ class AltinnClient(
                 legalExceptions = arrayOf(
                     IOException::class,
                     ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage::class,
-                    SOAPFaultException::class
-                )
+                    SOAPFaultException::class,
+                ),
             ) {
                 iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
                     username,
                     password,
                     SYSTEM_USER_CODE,
                     sykmeldingId,
-                    insertCorrespondenceV2
+                    insertCorrespondenceV2,
                 )
             }
             securelog.info("receipt: ${objectMapper.writeValueAsString(receiptExternal)}")
@@ -56,7 +56,7 @@ class AltinnClient(
                     "Error fra altinn {} for sykmeldingId: {}, {}",
                     receiptExternal.receiptStatusCode,
                     sykmeldingId,
-                    receiptExternal.receiptText
+                    receiptExternal.receiptText,
                 )
                 throw RuntimeException("Error from altinn")
             }
@@ -74,8 +74,8 @@ class AltinnClient(
             legalExceptions = arrayOf(
                 IOException::class,
                 ICorrespondenceAgencyExternalBasicGetCorrespondenceStatusDetailsBasicV3AltinnFaultFaultFaultMessage::class,
-                SOAPFaultException::class
-            )
+                SOAPFaultException::class,
+            ),
         ) {
             iCorrespondenceAgencyExternalBasic.getCorrespondenceStatusDetailsBasicV3(
                 username,
@@ -84,7 +84,7 @@ class AltinnClient(
                     .withSendersReference(id)
                     .withServiceCode(AltinnSykmeldingMapper.SYKMELDING_TJENESTEKODE)
                     .withReportee(orgnummer)
-                    .withServiceEditionCode(2)
+                    .withServiceEditionCode(2),
             )
         }
         return altinnResponse.correspondenceStatusInformation.correspondenceStatusDetailsList.statusV2.any { it.sendersReference == id }

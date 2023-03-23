@@ -7,7 +7,7 @@ data class Person(
     val mellomnavn: String?,
     val etternavn: String,
     val aktorId: String,
-    val fnr: String
+    val fnr: String,
 )
 
 fun Person.fulltNavn(): String {

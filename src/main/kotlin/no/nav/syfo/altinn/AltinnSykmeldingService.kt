@@ -28,13 +28,13 @@ class AltinnSykmeldingService(
     private val altinnOrgnummerLookup: AltinnOrgnummerLookup,
     private val juridiskLoggService: JuridiskLoggService,
     private val database: DatabaseInterface,
-    private val pdfgenClient: PdfgenClient
+    private val pdfgenClient: PdfgenClient,
 ) {
 
     suspend fun handleSendtSykmelding(
         sendSykmeldingAivenKafkaMessage: SendSykmeldingAivenKafkaMessage,
         pasient: Person,
-        narmesteLeder: NarmesteLeder?
+        narmesteLeder: NarmesteLeder?,
     ) {
         val xmlSykmeldingArbeidsgiver = SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendSykmeldingAivenKafkaMessage, pasient)
         val pdf = pdfgenClient.createPdf(sendSykmeldingAivenKafkaMessage.sykmelding.toPdfPayload(pasient, narmesteLeder))
@@ -45,7 +45,7 @@ class AltinnSykmeldingService(
         val insertCorrespondenceV2 = AltinnSykmeldingMapper.sykmeldingTilCorrespondence(
             sykmeldingAltinn,
             pasient.fulltNavn(),
-            orgnummer
+            orgnummer,
         )
 
         val status = database.getStatus(sykmeldingId)
@@ -61,7 +61,7 @@ class AltinnSykmeldingService(
         status: SykmeldingStatus?,
         insertCorrespondenceV2: InsertCorrespondenceV2,
         orgnummer: String,
-        sykmeldingId: String
+        sykmeldingId: String,
     ) {
         when {
             status == null -> {
@@ -72,7 +72,7 @@ class AltinnSykmeldingService(
                 when (altinnClient.isSendt(status.sykmeldingId, orgnummer)) {
                     false -> sendToAltinn(
                         insertCorrespondenceV2,
-                        sykmeldingId
+                        sykmeldingId,
                     )
                     true -> log.info("Sykmelding already sendt to altinn")
                 }
@@ -86,7 +86,7 @@ class AltinnSykmeldingService(
 
     private suspend fun sendToAltinn(
         insertCorrespondenceV2: InsertCorrespondenceV2,
-        sykmeldingId: String
+        sykmeldingId: String,
     ) {
         log.info("Sending sykmelding with id $sykmeldingId to Altinn")
         altinnClient.sendToAltinn(insertCorrespondenceV2, sykmeldingId)
@@ -95,14 +95,14 @@ class AltinnSykmeldingService(
 
     private fun sendtToLogg(
         sykmeldingAltinn: SykmeldingAltinn,
-        status: SykmeldingStatus?
+        status: SykmeldingStatus?,
     ) {
         when (status?.loggTimestamp) {
             null -> {
                 juridiskLoggService.sendJuridiskLogg(sykmeldingAltinn, sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId)
                 database.updateSendtToLogg(
                     sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId,
-                    OffsetDateTime.now(ZoneOffset.UTC)
+                    OffsetDateTime.now(ZoneOffset.UTC),
                 )
             }
             else -> {

@@ -22,7 +22,7 @@ class PdfPayloadMapperKtTest : FunSpec({
         LocalDate.now(),
         false,
         "Leder Ledersen",
-        "fnrLeder"
+        "fnrLeder",
     )
 
     context("PdfPayloadMapper") {
@@ -37,7 +37,7 @@ class PdfPayloadMapperKtTest : FunSpec({
                     innspillTilArbeidsgiver = null,
                     type = PeriodetypeDTO.GRADERT,
                     aktivitetIkkeMulig = null,
-                    reisetilskudd = false
+                    reisetilskudd = false,
                 ),
                 SykmeldingsperiodeAGDTO(
                     fom = LocalDate.of(2022, 1, 1),
@@ -47,7 +47,7 @@ class PdfPayloadMapperKtTest : FunSpec({
                     innspillTilArbeidsgiver = null,
                     type = PeriodetypeDTO.AKTIVITET_IKKE_MULIG,
                     aktivitetIkkeMulig = AktivitetIkkeMuligAGDTO(null),
-                    reisetilskudd = false
+                    reisetilskudd = false,
                 ),
                 SykmeldingsperiodeAGDTO(
                     fom = LocalDate.of(2022, 1, 16),
@@ -57,8 +57,8 @@ class PdfPayloadMapperKtTest : FunSpec({
                     innspillTilArbeidsgiver = null,
                     type = PeriodetypeDTO.BEHANDLINGSDAGER,
                     aktivitetIkkeMulig = null,
-                    reisetilskudd = false
-                )
+                    reisetilskudd = false,
+                ),
             )
             val sykmeldingKafkaMessage = getSykmeldingKafkaMessage(sykmeldingId, perioder)
 
@@ -72,7 +72,7 @@ class PdfPayloadMapperKtTest : FunSpec({
             pdfPayload.arbeidsgiverSykmelding.meldingTilArbeidsgiver shouldBeEqualTo sykmeldingKafkaMessage.sykmelding.meldingTilArbeidsgiver
             pdfPayload.arbeidsgiverSykmelding.behandler shouldBeEqualTo BehandlerPdf(
                 "Behandlerfornavn Behandlermellomnavn Behandleretternavn",
-                "telefon"
+                "telefon",
             )
             val forstePeriode = pdfPayload.arbeidsgiverSykmelding.sykmeldingsperioder.first()
             forstePeriode.fom shouldBeEqualTo LocalDate.of(2022, 1, 1)
@@ -119,8 +119,8 @@ class PdfPayloadMapperKtTest : FunSpec({
                     innspillTilArbeidsgiver = null,
                     type = PeriodetypeDTO.AKTIVITET_IKKE_MULIG,
                     aktivitetIkkeMulig = AktivitetIkkeMuligAGDTO(null),
-                    reisetilskudd = false
-                )
+                    reisetilskudd = false,
+                ),
             )
             val sykmeldingKafkaMessage = getSykmeldingKafkaMessage(sykmeldingId, perioder)
 
@@ -134,7 +134,7 @@ class PdfPayloadMapperKtTest : FunSpec({
             pdfPayload.arbeidsgiverSykmelding.meldingTilArbeidsgiver shouldBeEqualTo sykmeldingKafkaMessage.sykmelding.meldingTilArbeidsgiver
             pdfPayload.arbeidsgiverSykmelding.behandler shouldBeEqualTo BehandlerPdf(
                 "Behandlerfornavn Behandlermellomnavn Behandleretternavn",
-                "telefon"
+                "telefon",
             )
             val sykmeldingsperiode = pdfPayload.arbeidsgiverSykmelding.sykmeldingsperioder.first()
             sykmeldingsperiode.fom shouldBeEqualTo LocalDate.of(2022, 10, 3)
@@ -159,8 +159,8 @@ class PdfPayloadMapperKtTest : FunSpec({
                     innspillTilArbeidsgiver = null,
                     type = PeriodetypeDTO.AKTIVITET_IKKE_MULIG,
                     aktivitetIkkeMulig = AktivitetIkkeMuligAGDTO(null),
-                    reisetilskudd = false
-                )
+                    reisetilskudd = false,
+                ),
             )
             val sykmeldingKafkaMessage = getSykmeldingKafkaMessage(sykmeldingId, perioder, UtenlandskSykmeldingAGDTO("POL"))
 
