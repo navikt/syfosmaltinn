@@ -30,7 +30,7 @@ val hikariVersion = "5.0.1"
 val postgresContainerVersion = "1.18.0"
 val kotlinVersion = "1.8.20"
 val googleCloudStorageVersion = "2.22.0"
-val xmlschemaCoreVersion = "2.2.5"
+val xmlschemaCoreVersion = "2.3.0"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val jaxbRuntimeVersion = "2.4.0-b180830.0438"
 
