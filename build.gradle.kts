@@ -22,7 +22,7 @@ val saxonVersion = "10.6"
 val cxfVersion = "3.5.5"
 val jaxsWsApiVersion = "2.3.1"
 val jaxwsRiVersion = "2.3.2"
-val jaxwsToolsVersion = "2.3.1"
+val jaxwsToolsVersion = "4.0.1"
 val javaxActivationVersion = "1.1.1"
 val postgresVersion = "42.5.1"
 val flywayVersion = "9.8.3"
@@ -79,7 +79,7 @@ buildscript {
         classpath("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
         classpath("org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438")
         classpath("com.sun.activation:javax.activation:1.2.0")
-        classpath("com.sun.xml.ws:jaxws-tools:2.3.1") {
+        classpath("com.sun.xml.ws:jaxws-tools:4.0.1") {
             exclude(group = "com.sun.xml.ws", module = "policy")
         }
     }
