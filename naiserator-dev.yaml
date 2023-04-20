@@ -10,16 +10,17 @@ spec:
   accessPolicy:
     outbound:
       external:
-        - host: www.altinn.no
+        - host: tt02.altinn.no
+        - host: pdl-api.dev-fss-pub.nais.io
       rules:
         - application: smarbeidsgiver-pdfgen
           namespace: teamsykmelding
-          cluster: prod-gcp
+          cluster: dev-gcp
   gcp:
     sqlInstances:
-      - type: POSTGRES_12
+      - name: syfosmaltinn-db-instance
+        type: POSTGRES_12
         diskSize: 10
-        diskAutoresize: true
         databases:
           - name: syfosmaltinn
             envVarPrefix: NAIS_DATABASE
@@ -27,25 +28,25 @@ spec:
           - name: cloudsql.logical_decoding
             value: "on"
     buckets:
-      - name: teamsykmelding-syfosmaltinn-bucket-prod
-        retentionPeriodDays: 1825
+      - name: teamsykmelding-syfosmaltinn-bucket-dev
+        retentionPeriodDays: 2
         lifecycleCondition:
-          age: 1825
+          age: 2
           withState: ANY
   replicas:
-    min: 4
-    max: 4
+    min: 1
+    max: 1
     cpuThresholdPercentage: 90
   port: 8080
   liveness:
     path: /internal/is_alive
-    initialDelay: 60
+    initialDelay: 10
     timeout: 5
     periodSeconds: 5
     failureThreshold: 30
   readiness:
     path: /internal/is_ready
-    initialDelay: 60
+    initialDelay: 30
     periodSeconds: 5
     timeout: 5
   prometheus:
@@ -53,17 +54,17 @@ spec:
     path: /internal/prometheus
   resources:
     limits:
-      cpu: 200m
-      memory: 1Gi
-    requests:
       cpu: 100m
+      memory: 700Mi
+    requests:
+      cpu: 50m
       memory: 500Mi
   kafka:
-    pool: nav-prod
+    pool: nav-dev
   azure:
     application:
       enabled: true
-      tenant: nav.no
+      tenant: trygdeetaten.no
   vault:
     enabled: false
   filesFrom:
@@ -73,12 +74,14 @@ spec:
     enabled: true
   env:
     - name: PDL_GRAPHQL_PATH
-      value: https://pdl-api.prod-fss-pub.nais.io/graphql
+      value: https://pdl-api.dev-fss-pub.nais.io/graphql
     - name: PDL_SCOPE
-      value: api://prod-fss.pdl.pdl-api/.default
+      value: api://dev-fss.pdl.pdl-api/.default
     - name: ALTINN_URL
-      value: https://www.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
+      value: https://tt02.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc
+    - name: ALTINN_PORTAL_BASEURL
+      value: https://tt02.altinn.no
     - name: KAFKA_CLIENT_ID
       value: syfosmaltinn
     - name: BUCKET_NAME
-      value: teamsykmelding-syfosmaltinn-bucket-prod
+      value: teamsykmelding-syfosmaltinn-bucket-dev
