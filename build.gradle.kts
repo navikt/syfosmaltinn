@@ -13,12 +13,11 @@ val logbackVersion = "1.4.7"
 val logstashEncoderVersion = "7.3"
 val prometheusVersion = "0.16.0"
 val kotestVersion = "5.6.1"
-val smCommonVersion = "1.9df1108"
+val smCommonVersion = "1.0.1"
 val mockkVersion = "1.13.5"
 val testContainerKafkaVersion = "1.18.0"
-val sykmeldingArbeidsgiverVersion = "1.5d21db9"
 val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
-val saxonVersion = "10.6"
+val saxonVersion = "12.2"
 val cxfVersion = "3.5.5"
 val jaxsWsApiVersion = "2.3.1"
 val jaxwsRiVersion = "2.3.2"
@@ -33,6 +32,7 @@ val googleCloudStorageVersion = "2.22.1"
 val xmlschemaCoreVersion = "2.2.5"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val jaxbRuntimeVersion = "2.4.0-b180830.0438"
+val syfoXmlCodeGen = "1.0.4"
 
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
@@ -102,7 +102,7 @@ dependencies {
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 
-    implementation("no.nav.helse.xml:sykmeldingArbeidsgiver:$sykmeldingArbeidsgiverVersion")
+    implementation("no.nav.helse.xml:sykmelding-arbeidsgiver:$syfoXmlCodeGen")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
 

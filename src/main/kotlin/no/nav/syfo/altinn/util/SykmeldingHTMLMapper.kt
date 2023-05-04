@@ -1,6 +1,6 @@
 package no.nav.syfo.altinn.util
 
-import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
+import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.syfo.log
 import java.io.ByteArrayOutputStream
 import java.io.IOException

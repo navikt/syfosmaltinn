@@ -1,6 +1,6 @@
 package no.nav.syfo.altinn.model
 
-import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
+import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.syfo.altinn.model.AltinnSykmeldingMapper.Companion.toSykmeldingXml
 import no.nav.syfo.altinn.util.JAXB
 import no.nav.syfo.altinn.util.SykmeldingHTMLMapper

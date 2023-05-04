@@ -7,10 +7,10 @@ import no.altinn.schemas.services.serviceengine.correspondence._2010._10.UserTyp
 import no.altinn.schemas.services.serviceengine.subscription._2009._10.AttachmentFunctionType
 import no.altinn.services.serviceengine.reporteeelementlist._2010._10.BinaryAttachmentExternalBEV2List
 import no.altinn.services.serviceengine.reporteeelementlist._2010._10.BinaryAttachmentV2
-import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLPasient
-import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLPeriode
-import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmelding
-import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
+import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLPasient
+import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLPeriode
+import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLSykmelding
+import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.syfo.altinn.util.JAXB
 import no.nav.syfo.altinn.util.JAXB.Companion.parseXml
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
