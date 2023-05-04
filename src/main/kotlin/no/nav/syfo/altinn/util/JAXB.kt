@@ -1,7 +1,7 @@
 package no.nav.syfo.altinn.util
 
-import no.nav.helse.xml.sykmeldingarbeidsgiver.ObjectFactory
-import no.nav.helse.xml.sykmeldingarbeidsgiver.XMLSykmeldingArbeidsgiver
+import no.nav.helse.xml.sykmelding.arbeidsgiver.ObjectFactory
+import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.syfo.log
 import org.w3c.dom.Document
 import org.xml.sax.InputSource
