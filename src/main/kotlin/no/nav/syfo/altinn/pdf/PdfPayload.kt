@@ -29,6 +29,7 @@ data class ArbeidsgiverSykmeldingPdf(
     val tiltakArbeidsplassen: String?,
     val meldingTilArbeidsgiver: String?,
     val behandler: BehandlerPdf,
+    val egenmeldingsdager: List<LocalDate>?,
 )
 
 data class SykmeldingsperiodePdf(
