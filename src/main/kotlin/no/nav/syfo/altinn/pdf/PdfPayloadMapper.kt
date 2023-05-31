@@ -13,6 +13,7 @@ import java.time.temporal.ChronoUnit
 fun ArbeidsgiverSykmelding.toPdfPayload(
     pasient: Person,
     narmesteLeder: NarmesteLeder?,
+    egenmeldingsdager: List<LocalDate>?,
 ): PdfPayload {
     return PdfPayload(
         ansatt = Ansatt(
@@ -33,6 +34,7 @@ fun ArbeidsgiverSykmelding.toPdfPayload(
                 navn = behandler?.getFormattertNavn() ?: "",
                 tlf = behandler?.tlf,
             ),
+            egenmeldingsdager = egenmeldingsdager,
         ),
     )
 }

@@ -62,7 +62,7 @@ class PdfPayloadMapperKtTest : FunSpec({
             )
             val sykmeldingKafkaMessage = getSykmeldingKafkaMessage(sykmeldingId, perioder)
 
-            val pdfPayload = sykmeldingKafkaMessage.sykmelding.toPdfPayload(person, narmesteLeder)
+            val pdfPayload = sykmeldingKafkaMessage.sykmelding.toPdfPayload(person, narmesteLeder, emptyList())
 
             pdfPayload.ansatt shouldBeEqualTo Ansatt("fnr", "Per Person")
             pdfPayload.narmesteleder shouldBeEqualTo narmesteLeder
@@ -74,6 +74,7 @@ class PdfPayloadMapperKtTest : FunSpec({
                 "Behandlerfornavn Behandlermellomnavn Behandleretternavn",
                 "telefon",
             )
+            pdfPayload.arbeidsgiverSykmelding.egenmeldingsdager?.size shouldBeEqualTo 0
             val forstePeriode = pdfPayload.arbeidsgiverSykmelding.sykmeldingsperioder.first()
             forstePeriode.fom shouldBeEqualTo LocalDate.of(2022, 1, 1)
             forstePeriode.tom shouldBeEqualTo LocalDate.of(2022, 1, 6)
@@ -124,7 +125,10 @@ class PdfPayloadMapperKtTest : FunSpec({
             )
             val sykmeldingKafkaMessage = getSykmeldingKafkaMessage(sykmeldingId, perioder)
 
-            val pdfPayload = sykmeldingKafkaMessage.sykmelding.toPdfPayload(person, narmesteLeder)
+            val pdfPayload = sykmeldingKafkaMessage.sykmelding.toPdfPayload(person, narmesteLeder, listOf(
+                LocalDate.of(2022, 10, 3),
+                LocalDate.of(2022, 10, 4),
+                ))
 
             pdfPayload.ansatt shouldBeEqualTo Ansatt("fnr", "Per Person")
             pdfPayload.narmesteleder shouldBeEqualTo narmesteLeder
@@ -136,6 +140,9 @@ class PdfPayloadMapperKtTest : FunSpec({
                 "Behandlerfornavn Behandlermellomnavn Behandleretternavn",
                 "telefon",
             )
+            pdfPayload.arbeidsgiverSykmelding.egenmeldingsdager?.size shouldBeEqualTo 2
+            pdfPayload.arbeidsgiverSykmelding.egenmeldingsdager?.get(0) shouldBeEqualTo LocalDate.of(2022, 10, 3)
+            pdfPayload.arbeidsgiverSykmelding.egenmeldingsdager?.get(1) shouldBeEqualTo LocalDate.of(2022, 10, 4)
             val sykmeldingsperiode = pdfPayload.arbeidsgiverSykmelding.sykmeldingsperioder.first()
             sykmeldingsperiode.fom shouldBeEqualTo LocalDate.of(2022, 10, 3)
             sykmeldingsperiode.tom shouldBeEqualTo LocalDate.of(2022, 11, 6)
@@ -164,7 +171,7 @@ class PdfPayloadMapperKtTest : FunSpec({
             )
             val sykmeldingKafkaMessage = getSykmeldingKafkaMessage(sykmeldingId, perioder, UtenlandskSykmeldingAGDTO("POL"))
 
-            val pdfPayload = sykmeldingKafkaMessage.sykmelding.toPdfPayload(person, narmesteLeder)
+            val pdfPayload = sykmeldingKafkaMessage.sykmelding.toPdfPayload(person, narmesteLeder, emptyList())
 
             pdfPayload.ansatt shouldBeEqualTo Ansatt("fnr", "Per Person")
             pdfPayload.narmesteleder shouldBeEqualTo narmesteLeder
@@ -173,6 +180,7 @@ class PdfPayloadMapperKtTest : FunSpec({
             pdfPayload.arbeidsgiverSykmelding.tiltakArbeidsplassen shouldBeEqualTo sykmeldingKafkaMessage.sykmelding.tiltakArbeidsplassen
             pdfPayload.arbeidsgiverSykmelding.meldingTilArbeidsgiver shouldBeEqualTo sykmeldingKafkaMessage.sykmelding.meldingTilArbeidsgiver
             pdfPayload.arbeidsgiverSykmelding.behandler shouldBeEqualTo BehandlerPdf("", null)
+            pdfPayload.arbeidsgiverSykmelding.egenmeldingsdager?.size shouldBeEqualTo 0
             val sykmeldingsperiode = pdfPayload.arbeidsgiverSykmelding.sykmeldingsperioder.first()
             sykmeldingsperiode.fom shouldBeEqualTo LocalDate.of(2022, 10, 3)
             sykmeldingsperiode.tom shouldBeEqualTo LocalDate.of(2022, 11, 6)
