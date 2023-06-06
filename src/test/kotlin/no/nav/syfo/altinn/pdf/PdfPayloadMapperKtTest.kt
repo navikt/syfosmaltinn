@@ -125,10 +125,14 @@ class PdfPayloadMapperKtTest : FunSpec({
             )
             val sykmeldingKafkaMessage = getSykmeldingKafkaMessage(sykmeldingId, perioder)
 
-            val pdfPayload = sykmeldingKafkaMessage.sykmelding.toPdfPayload(person, narmesteLeder, listOf(
-                LocalDate.of(2022, 10, 3),
-                LocalDate.of(2022, 10, 4),
-                ))
+            val pdfPayload = sykmeldingKafkaMessage.sykmelding.toPdfPayload(
+                person,
+                narmesteLeder,
+                listOf(
+                    LocalDate.of(2022, 10, 3),
+                    LocalDate.of(2022, 10, 4),
+                ),
+            )
 
             pdfPayload.ansatt shouldBeEqualTo Ansatt("fnr", "Per Person")
             pdfPayload.narmesteleder shouldBeEqualTo narmesteLeder
