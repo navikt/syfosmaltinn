@@ -33,6 +33,7 @@ val xmlschemaCoreVersion = "2.2.5"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val jaxbRuntimeVersion = "2.4.0-b180830.0438"
 val syfoXmlCodeGen = "1.0.4"
+val jsoupVersion = "1.16.1"
 
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
@@ -139,6 +140,7 @@ dependencies {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
 
+    testImplementation("org.jsoup:jsoup:$jsoupVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
     testImplementation("org.testcontainers:postgresql:$postgresContainerVersion")
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")

@@ -2,6 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema"
                 version="2.0">
     <xsl:output method="xhtml" omit-xml-declaration="yes" encoding="UTF-8" indent="yes" use-character-maps="no-control-characters"/>
+    <xsl:param name="egenmeldingsdager"/>
 
     <xsl:character-map name="no-control-characters">
         <xsl:output-character character="&#127;" string="□"/>
@@ -140,6 +141,21 @@
                                     </div>
                                 </div>
                             </xsl:for-each>
+
+                            <xsl:if test="exists($egenmeldingsdager)">
+                                <div class="sykmelding-nokkelopplysning">
+                                    <h3>Egenmeldingsdager</h3>
+                                    <ul>
+                                        <xsl:for-each select="$egenmeldingsdager">
+                                            <li>
+                                                <xsl:value-of
+                                                        select="format-dateTime(xs:dateTime(.), '[D01].[M01].[Y0001]')"/>
+                                            </li>
+                                        </xsl:for-each>
+                                    </ul>
+                                </div>
+                            </xsl:if>
+
                             <div class="sykmelding-nokkelopplysning">
                                 <h3>Diagnose</h3>
                                 <div class="luft">
@@ -236,7 +252,7 @@
                                     </div>
                                 </xsl:if>
                             </xsl:for-each>
-                            
+
                             <xsl:if test="sykmelding/tiltak/tiltakArbeidsplassen">
                                 <div class="sykmelding-seksjon">
                                     <div class="sykmelding-nokkelopplysning">

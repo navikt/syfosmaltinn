@@ -34,6 +34,7 @@ class AltinnSykmeldingMapperTest : FunSpec({
             val sykmeldingAltinn = SykmeldingAltinn(
                 SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendtSykmeldingKafkaMessage, pasient),
                 narmesteLeder,
+                emptyList(),
                 "pdf".toByteArray(),
             )
 

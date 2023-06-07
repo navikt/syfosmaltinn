@@ -44,9 +44,16 @@ class AltinnSykmeldingService(
         pasient: Person,
         narmesteLeder: NarmesteLeder?,
     ) {
+        val egenmeldingsdager = mapEgenmeldingsdager(sendSykmeldingAivenKafkaMessage.event.sporsmals)
         val xmlSykmeldingArbeidsgiver = SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendSykmeldingAivenKafkaMessage, pasient)
-        val pdf = pdfgenClient.createPdf(sendSykmeldingAivenKafkaMessage.sykmelding.toPdfPayload(pasient, narmesteLeder, mapEgenmeldingsdager(sendSykmeldingAivenKafkaMessage.event.sporsmals)))
-        val sykmeldingAltinn = SykmeldingAltinn(xmlSykmeldingArbeidsgiver, narmesteLeder, pdf)
+        val pdf = pdfgenClient.createPdf(
+            sendSykmeldingAivenKafkaMessage.sykmelding.toPdfPayload(
+                pasient,
+                narmesteLeder,
+                egenmeldingsdager,
+            ),
+        )
+        val sykmeldingAltinn = SykmeldingAltinn(xmlSykmeldingArbeidsgiver, narmesteLeder, egenmeldingsdager, pdf)
         val orgnummer = altinnOrgnummerLookup.getOrgnummer(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer)
         val sykmeldingId = xmlSykmeldingArbeidsgiver.sykmeldingId
 
@@ -76,16 +83,19 @@ class AltinnSykmeldingService(
                 sendToAltinn(insertCorrespondenceV2, sykmeldingId)
                 database.updateSendtToAlinn(sykmeldingId, OffsetDateTime.now(ZoneOffset.UTC))
             }
+
             status.altinnTimestamp == null -> {
                 when (altinnClient.isSendt(status.sykmeldingId, orgnummer)) {
                     false -> sendToAltinn(
                         insertCorrespondenceV2,
                         sykmeldingId,
                     )
+
                     true -> log.info("Sykmelding already sendt to altinn")
                 }
                 database.updateSendtToAlinn(sykmeldingId, OffsetDateTime.now(ZoneOffset.UTC))
             }
+
             else -> {
                 log.info("Sykmelding already sendt to altinn")
             }
@@ -132,4 +142,3 @@ class AltinnSykmeldingService(
             ?.map { LocalDate.parse(it) }
     }
 }
-
