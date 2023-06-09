@@ -31,7 +31,7 @@ val kotlinVersion = "1.8.22"
 val googleCloudStorageVersion = "2.22.3"
 val xmlschemaCoreVersion = "2.2.5"
 val jaxbApiVersion = "2.4.0-b180830.0359"
-val jaxbRuntimeVersion = "2.4.0-b180830.0438"
+val jaxbRuntimeVersion = "4.0.3"
 val syfoXmlCodeGen = "1.0.4"
 val jsoupVersion = "1.16.1"
 
@@ -78,7 +78,7 @@ repositories {
 buildscript {
     dependencies {
         classpath("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
-        classpath("org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438")
+        classpath("org.glassfish.jaxb:jaxb-runtime:4.0.3")
         classpath("com.sun.activation:javax.activation:1.2.0")
         classpath("com.sun.xml.ws:jaxws-tools:2.3.1") {
             exclude(group = "com.sun.xml.ws", module = "policy")
