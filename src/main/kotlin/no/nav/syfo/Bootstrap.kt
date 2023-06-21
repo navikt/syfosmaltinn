@@ -32,6 +32,7 @@ import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
 import no.nav.syfo.application.exception.ServiceUnavailableException
 import no.nav.syfo.azuread.AccessTokenClient
+import no.nav.syfo.exception.AltinnException
 import no.nav.syfo.juridisklogg.JuridiskLoggService
 import no.nav.syfo.kafka.aiven.KafkaUtils
 import no.nav.syfo.kafka.toConsumerConfig
@@ -226,6 +227,8 @@ fun main() {
     GlobalScope.launch(Dispatchers.IO) {
         try {
             sendtSykmeldingService.start()
+        } catch (e: AltinnException) {
+            log.error(e.message, e.cause)
         } catch (e: Exception) {
             log.error("Noe gikk galt: ", e)
         } finally {

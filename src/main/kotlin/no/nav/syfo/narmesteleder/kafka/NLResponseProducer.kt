@@ -1,6 +1,6 @@
 package no.nav.syfo.narmesteleder.kafka
 
-import no.nav.syfo.log
+import no.nav.syfo.exception.AltinnException
 import no.nav.syfo.narmesteleder.kafka.model.NlResponseKafkaMessage
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -21,12 +21,10 @@ class NLResponseProducer(
                 )
                 .get()
         } catch (ex: Exception) {
-            log.error(
-                "Noe gikk galt ved skriving av avbryting av NL til kafka for orgnummer {}, {}",
-                nlResponseKafkaMessage.nlAvbrutt.orgnummer,
-                ex.message
+            throw AltinnException(
+                "Noe gikk galt ved skriving av avbryting av NL til kafka for orgnummer ${nlResponseKafkaMessage.nlAvbrutt.orgnummer}",
+                ex
             )
-            throw ex
         }
     }
 }

@@ -1,6 +1,6 @@
 package no.nav.syfo.narmesteleder.kafka
 
-import no.nav.syfo.log
+import no.nav.syfo.exception.AltinnException
 import no.nav.syfo.narmesteleder.kafka.model.NlRequestKafkaMessage
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -21,12 +21,10 @@ class NLRequestProducer(
                 )
                 .get()
         } catch (ex: Exception) {
-            log.error(
-                "Noe gikk galt ved skriving av NL-forespørsel til kafka for sykmeldingid {}, {}",
-                nlRequestKafkaMessage.nlRequest.sykmeldingId,
-                ex.message
+            throw AltinnException(
+                "Noe gikk galt ved skriving av NL-forespørsel til kafka for sykmeldingid ${nlRequestKafkaMessage.nlRequest.sykmeldingId}",
+                ex
             )
-            throw ex
         }
     }
 }

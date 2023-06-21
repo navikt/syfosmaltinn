@@ -7,7 +7,6 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.HttpHeaders
 import no.nav.syfo.azuread.AccessTokenClient
-import no.nav.syfo.log
 import no.nav.syfo.pdl.client.model.GetPersonRequest
 import no.nav.syfo.pdl.client.model.GetPersonResponse
 import no.nav.syfo.pdl.client.model.GetPersonVeriables
@@ -43,8 +42,7 @@ class PdlClient(
         try {
             return pdlResponse.toPerson()
         } catch (e: Exception) {
-            log.error("Error when getting pdlResponse")
-            throw e
+            throw Exception("Error when getting pdlResponse", e)
         }
     }
 }

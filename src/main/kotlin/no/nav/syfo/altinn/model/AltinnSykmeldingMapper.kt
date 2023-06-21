@@ -20,6 +20,7 @@ import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLSykmelding
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.syfo.altinn.util.JAXB
 import no.nav.syfo.altinn.util.JAXB.Companion.parseXml
+import no.nav.syfo.exception.AltinnException
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import org.w3c.dom.Document
 import org.w3c.dom.Element
@@ -200,7 +201,7 @@ class AltinnSykmeldingMapper private constructor() {
                 transformer.transform(DOMSource(doc), StreamResult(sw))
                 sw.toString()
             } catch (ex: Exception) {
-                throw RuntimeException("Error converting to String", ex)
+                throw AltinnException("Error converting to String", ex)
             }
         }
     }

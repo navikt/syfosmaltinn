@@ -9,7 +9,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.stream.StreamResult
 import no.nav.helse.xml.sykmelding.arbeidsgiver.ObjectFactory
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLSykmeldingArbeidsgiver
-import no.nav.syfo.log
+import no.nav.syfo.exception.AltinnException
 import org.w3c.dom.Document
 import org.xml.sax.InputSource
 
@@ -29,8 +29,7 @@ class JAXB private constructor() {
                 marshaller.marshal(element, StreamResult(writer))
                 return writer.toString()
             } catch (ex: JAXBException) {
-                log.error("Error marshalling sykmelding")
-                throw ex
+                throw AltinnException("Error marshalling sykmelding", ex)
             }
         }
 
@@ -41,8 +40,7 @@ class JAXB private constructor() {
                 val documentBuilder = builderFactory.newDocumentBuilder()
                 return documentBuilder.parse(InputSource(StringReader(xml)))
             } catch (ex: Exception) {
-                log.error("Error i parsing av XML", ex)
-                throw ex
+                throw AltinnException("Error i parsing av XML", ex)
             }
         }
     }
