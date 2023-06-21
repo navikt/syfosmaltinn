@@ -9,6 +9,7 @@ import javax.xml.transform.TransformerFactory
 import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.stream.StreamSource
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLSykmeldingArbeidsgiver
+import no.nav.syfo.exception.AltinnException
 import no.nav.syfo.log
 
 class SykmeldingHTMLMapper private constructor() {
@@ -36,8 +37,7 @@ class SykmeldingHTMLMapper private constructor() {
                 transformer.transform(xmlDocInputStream, StreamResult(byteArrayOutputStream))
                 return byteArrayOutputStream.toString(Charsets.UTF_8.name())
             } catch (ex: Exception) {
-                log.error("Error generating HTML for sykmelding")
-                throw ex
+                throw AltinnException("Error generating HTML for sykmelding", ex)
             }
         }
 
@@ -68,8 +68,7 @@ class SykmeldingHTMLMapper private constructor() {
                 html = html.replaceFirst("</html>", "<style>\n" + css + "\n</style>\n</html>")
                 return html
             } catch (exception: IOException) {
-                log.error("Feil ved oppretting av HTML")
-                throw exception
+                throw AltinnException("Feil ved oppretting av HTML", exception)
             }
         }
     }

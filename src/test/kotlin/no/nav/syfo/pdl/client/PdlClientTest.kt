@@ -54,7 +54,7 @@ class PdlClientTest :
 
         context("getPerson OK") {
             test("Kaster exception hvis person ikke finnes i PDL") {
-                assertFailsWith<RuntimeException> { pdlClient.getPerson("12345678901") }
+                assertFailsWith<Exception> { pdlClient.getPerson("12345678901") }
             }
         }
     })

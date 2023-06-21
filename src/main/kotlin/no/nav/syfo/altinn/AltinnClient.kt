@@ -14,6 +14,7 @@ import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondence
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicGetCorrespondenceStatusDetailsBasicV3AltinnFaultFaultFaultMessage
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
 import no.nav.syfo.altinn.model.AltinnSykmeldingMapper
+import no.nav.syfo.exception.AltinnException
 import no.nav.syfo.helpers.retry
 import no.nav.syfo.log
 import no.nav.syfo.securelog
@@ -67,12 +68,11 @@ class AltinnClient(
                     sykmeldingId,
                     receiptExternal.receiptText,
                 )
-                throw RuntimeException("Error from altinn")
+                throw AltinnException("Error from altinn")
             }
             return receiptExternal.receiptId
         } catch (ex: Exception) {
-            log.error("Error sending sykmeldign to altinn", ex)
-            throw ex
+            throw AltinnException("Error sending sykmeldign to altinn", ex)
         }
     }
 
