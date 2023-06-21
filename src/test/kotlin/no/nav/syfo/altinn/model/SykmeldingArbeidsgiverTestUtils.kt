@@ -1,5 +1,8 @@
 package no.nav.syfo.altinn.model
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+import javax.xml.bind.JAXBElement
 import no.nav.helse.xml.sykmelding.arbeidsgiver.ObjectFactory
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLAktivitet
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLArbeidsgiver
@@ -13,9 +16,6 @@ import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLPrognose
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLSykmelding
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLTiltak
-import java.time.LocalDate
-import java.time.LocalDateTime
-import javax.xml.bind.JAXBElement
 
 class SykmeldingArbeidsgiverTestUtils {
 

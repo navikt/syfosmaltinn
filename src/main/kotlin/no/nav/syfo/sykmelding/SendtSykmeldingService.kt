@@ -43,17 +43,27 @@ class SendtSykmeldingService(
             return
         }
         val person = pdlClient.getPerson(ident = sendSykmeldingAivenKafkaMessage.kafkaMetadata.fnr)
-        log.info("Mottok svar fra PDL for sykmeldingId: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.sykmeldingId}")
-        val arbeidsgiver = sendSykmeldingAivenKafkaMessage.event.arbeidsgiver
-            ?: throw ArbeidsgiverNotFoundException(sendSykmeldingAivenKafkaMessage.event)
-
-        val narmesteLeder = narmesteLederService.getNarmesteLeder(
-            orgnummer = arbeidsgiver.orgnummer,
-            fnr = sendSykmeldingAivenKafkaMessage.kafkaMetadata.fnr,
+        log.info(
+            "Mottok svar fra PDL for sykmeldingId: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.sykmeldingId}"
         )
-        log.info("Mottok narmesteleder: ${narmesteLeder != null} for sykmeldingId: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.sykmeldingId}")
+        val arbeidsgiver =
+            sendSykmeldingAivenKafkaMessage.event.arbeidsgiver
+                ?: throw ArbeidsgiverNotFoundException(sendSykmeldingAivenKafkaMessage.event)
+
+        val narmesteLeder =
+            narmesteLederService.getNarmesteLeder(
+                orgnummer = arbeidsgiver.orgnummer,
+                fnr = sendSykmeldingAivenKafkaMessage.kafkaMetadata.fnr,
+            )
+        log.info(
+            "Mottok narmesteleder: ${narmesteLeder != null} for sykmeldingId: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.sykmeldingId}"
+        )
         if (beOmNyNLService.skalBeOmNyNL(sendSykmeldingAivenKafkaMessage.event, narmesteLeder)) {
-            beOmNyNLService.beOmNyNL(sendSykmeldingAivenKafkaMessage.kafkaMetadata, sendSykmeldingAivenKafkaMessage.event, person)
+            beOmNyNLService.beOmNyNL(
+                sendSykmeldingAivenKafkaMessage.kafkaMetadata,
+                sendSykmeldingAivenKafkaMessage.event,
+                person
+            )
         }
         altinnSykmeldingService.handleSendtSykmelding(
             sendSykmeldingAivenKafkaMessage,

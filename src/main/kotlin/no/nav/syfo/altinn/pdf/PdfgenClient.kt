@@ -14,15 +14,18 @@ class PdfgenClient(
     private val httpClient: HttpClient,
 ) {
     suspend fun createPdf(payload: PdfPayload): ByteArray {
-        val httpResponse = httpClient.post(url) {
-            contentType(ContentType.Application.Json)
-            setBody(payload)
-        }
+        val httpResponse =
+            httpClient.post(url) {
+                contentType(ContentType.Application.Json)
+                setBody(payload)
+            }
         if (httpResponse.status == HttpStatusCode.OK) {
             return httpResponse.call.response.body()
         } else {
             log.error("Mottok feilkode fra smarbeidsgiver-pdfgen: {}", httpResponse.status)
-            throw RuntimeException("Mottok feilkode fra smarbeidsgiver-pdfgen: ${httpResponse.status}")
+            throw RuntimeException(
+                "Mottok feilkode fra smarbeidsgiver-pdfgen: ${httpResponse.status}"
+            )
         }
     }
 }

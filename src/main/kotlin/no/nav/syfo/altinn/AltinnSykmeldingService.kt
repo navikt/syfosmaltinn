@@ -6,6 +6,9 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
 import no.nav.syfo.altinn.model.AltinnSykmeldingMapper
 import no.nav.syfo.altinn.model.SykmeldingAltinn
@@ -27,9 +30,6 @@ import no.nav.syfo.sykmelding.db.insertStatus
 import no.nav.syfo.sykmelding.db.updateSendtToAlinn
 import no.nav.syfo.sykmelding.db.updateSendtToLogg
 import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
-import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
 
 class AltinnSykmeldingService(
     private val altinnClient: AltinnClient,
@@ -44,24 +44,35 @@ class AltinnSykmeldingService(
         pasient: Person,
         narmesteLeder: NarmesteLeder?,
     ) {
-        val egenmeldingsdager = mapEgenmeldingsdager(sendSykmeldingAivenKafkaMessage.event.sporsmals)
-        val xmlSykmeldingArbeidsgiver = SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(sendSykmeldingAivenKafkaMessage, pasient)
-        val pdf = pdfgenClient.createPdf(
-            sendSykmeldingAivenKafkaMessage.sykmelding.toPdfPayload(
-                pasient,
-                narmesteLeder,
-                egenmeldingsdager,
-            ),
-        )
-        val sykmeldingAltinn = SykmeldingAltinn(xmlSykmeldingArbeidsgiver, narmesteLeder, egenmeldingsdager, pdf)
-        val orgnummer = altinnOrgnummerLookup.getOrgnummer(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer)
+        val egenmeldingsdager =
+            mapEgenmeldingsdager(sendSykmeldingAivenKafkaMessage.event.sporsmals)
+        val xmlSykmeldingArbeidsgiver =
+            SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(
+                sendSykmeldingAivenKafkaMessage,
+                pasient
+            )
+        val pdf =
+            pdfgenClient.createPdf(
+                sendSykmeldingAivenKafkaMessage.sykmelding.toPdfPayload(
+                    pasient,
+                    narmesteLeder,
+                    egenmeldingsdager,
+                ),
+            )
+        val sykmeldingAltinn =
+            SykmeldingAltinn(xmlSykmeldingArbeidsgiver, narmesteLeder, egenmeldingsdager, pdf)
+        val orgnummer =
+            altinnOrgnummerLookup.getOrgnummer(
+                sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer
+            )
         val sykmeldingId = xmlSykmeldingArbeidsgiver.sykmeldingId
 
-        val insertCorrespondenceV2 = AltinnSykmeldingMapper.sykmeldingTilCorrespondence(
-            sykmeldingAltinn,
-            pasient.fulltNavn(),
-            orgnummer,
-        )
+        val insertCorrespondenceV2 =
+            AltinnSykmeldingMapper.sykmeldingTilCorrespondence(
+                sykmeldingAltinn,
+                pasient.fulltNavn(),
+                orgnummer,
+            )
 
         val status = database.getStatus(sykmeldingId)
 
@@ -83,19 +94,17 @@ class AltinnSykmeldingService(
                 sendToAltinn(insertCorrespondenceV2, sykmeldingId)
                 database.updateSendtToAlinn(sykmeldingId, OffsetDateTime.now(ZoneOffset.UTC))
             }
-
             status.altinnTimestamp == null -> {
                 when (altinnClient.isSendt(status.sykmeldingId, orgnummer)) {
-                    false -> sendToAltinn(
-                        insertCorrespondenceV2,
-                        sykmeldingId,
-                    )
-
+                    false ->
+                        sendToAltinn(
+                            insertCorrespondenceV2,
+                            sykmeldingId,
+                        )
                     true -> log.info("Sykmelding already sendt to altinn")
                 }
                 database.updateSendtToAlinn(sykmeldingId, OffsetDateTime.now(ZoneOffset.UTC))
             }
-
             else -> {
                 log.info("Sykmelding already sendt to altinn")
             }
@@ -117,26 +126,36 @@ class AltinnSykmeldingService(
     ) {
         when (status?.loggTimestamp) {
             null -> {
-                juridiskLoggService.sendJuridiskLogg(sykmeldingAltinn, sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId)
+                juridiskLoggService.sendJuridiskLogg(
+                    sykmeldingAltinn,
+                    sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId
+                )
                 database.updateSendtToLogg(
                     sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId,
                     OffsetDateTime.now(ZoneOffset.UTC),
                 )
             }
             else -> {
-                log.info("Sykmelding ${sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId} already sendt to juridisk logg")
+                log.info(
+                    "Sykmelding ${sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId} already sendt to juridisk logg"
+                )
             }
         }
     }
-    private fun mapEgenmeldingsdager(sporsmals: List<no.nav.syfo.model.sykmeldingstatus.SporsmalOgSvarDTO>?): List<LocalDate>? {
-        val objectMapper: ObjectMapper = ObjectMapper().apply {
-            registerKotlinModule()
-            registerModule(JavaTimeModule())
-            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-        }
 
-        return sporsmals?.find { it.shortName == ShortNameDTO.EGENMELDINGSDAGER }
+    private fun mapEgenmeldingsdager(
+        sporsmals: List<no.nav.syfo.model.sykmeldingstatus.SporsmalOgSvarDTO>?
+    ): List<LocalDate>? {
+        val objectMapper: ObjectMapper =
+            ObjectMapper().apply {
+                registerKotlinModule()
+                registerModule(JavaTimeModule())
+                configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+            }
+
+        return sporsmals
+            ?.find { it.shortName == ShortNameDTO.EGENMELDINGSDAGER }
             ?.svar
             ?.let { objectMapper.readValue(it) as List<String> }
             ?.map { LocalDate.parse(it) }

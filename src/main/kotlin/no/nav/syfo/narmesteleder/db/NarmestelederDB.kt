@@ -1,17 +1,18 @@
 package no.nav.syfo.narmesteleder.db
 
-import no.nav.syfo.narmesteleder.kafka.model.NarmestelederLeesah
-import no.nav.syfo.sykmelding.db.DatabaseInterface
 import java.sql.Date
 import java.sql.ResultSet
+import no.nav.syfo.narmesteleder.kafka.model.NarmestelederLeesah
+import no.nav.syfo.sykmelding.db.DatabaseInterface
 
 class NarmestelederDB(
     private val database: DatabaseInterface,
 ) {
     fun insertOrUpdate(narmesteleder: NarmestelederLeesah) {
         database.connection.use { connection ->
-            connection.prepareStatement(
-                """
+            connection
+                .prepareStatement(
+                    """
                insert into narmesteleder(narmeste_leder_id, pasient_fnr, leder_fnr, orgnummer, epost, telefon, fom, arbeidsgiver_forskutterer) 
                values (?, ?, ?, ?, ?, ?, ?, ?) on conflict (narmeste_leder_id) do update 
                 set epost = EXCLUDED.epost,
@@ -19,43 +20,50 @@ class NarmestelederDB(
                     fom = EXCLUDED.fom,
                     arbeidsgiver_forskutterer = EXCLUDED.arbeidsgiver_forskutterer;
             """,
-            ).use { preparedStatement ->
-                // Insert
-                preparedStatement.setString(1, narmesteleder.narmesteLederId.toString())
-                preparedStatement.setString(2, narmesteleder.fnr)
-                preparedStatement.setString(3, narmesteleder.narmesteLederFnr)
-                preparedStatement.setString(4, narmesteleder.orgnummer)
-                preparedStatement.setString(5, narmesteleder.narmesteLederEpost)
-                preparedStatement.setString(6, narmesteleder.narmesteLederTelefonnummer)
-                preparedStatement.setDate(7, Date.valueOf(narmesteleder.aktivFom))
-                preparedStatement.setObject(8, narmesteleder.arbeidsgiverForskutterer)
-                preparedStatement.executeUpdate()
-            }
+                )
+                .use { preparedStatement ->
+                    // Insert
+                    preparedStatement.setString(1, narmesteleder.narmesteLederId.toString())
+                    preparedStatement.setString(2, narmesteleder.fnr)
+                    preparedStatement.setString(3, narmesteleder.narmesteLederFnr)
+                    preparedStatement.setString(4, narmesteleder.orgnummer)
+                    preparedStatement.setString(5, narmesteleder.narmesteLederEpost)
+                    preparedStatement.setString(6, narmesteleder.narmesteLederTelefonnummer)
+                    preparedStatement.setDate(7, Date.valueOf(narmesteleder.aktivFom))
+                    preparedStatement.setObject(8, narmesteleder.arbeidsgiverForskutterer)
+                    preparedStatement.executeUpdate()
+                }
             connection.commit()
         }
     }
 
     fun deleteNarmesteleder(narmesteleder: NarmestelederLeesah) {
         database.connection.use { connection ->
-            connection.prepareStatement(
-                """
+            connection
+                .prepareStatement(
+                    """
                delete from narmesteleder where narmeste_leder_id = ?;
             """,
-            ).use { ps ->
-                ps.setString(1, narmesteleder.narmesteLederId.toString())
-                ps.executeUpdate()
-            }
+                )
+                .use { ps ->
+                    ps.setString(1, narmesteleder.narmesteLederId.toString())
+                    ps.executeUpdate()
+                }
             connection.commit()
         }
     }
 
     fun getNarmesteleder(sykmeldtFnr: String, orgnummer: String): NarmestelederDbModel? {
         return database.connection.use { connection ->
-            connection.prepareStatement("""select * from narmesteleder where pasient_fnr = ? and orgnummer = ?;""").use { ps ->
-                ps.setString(1, sykmeldtFnr)
-                ps.setString(2, orgnummer)
-                ps.executeQuery().toNarmestelederDbModel()
-            }
+            connection
+                .prepareStatement(
+                    """select * from narmesteleder where pasient_fnr = ? and orgnummer = ?;"""
+                )
+                .use { ps ->
+                    ps.setString(1, sykmeldtFnr)
+                    ps.setString(2, orgnummer)
+                    ps.executeQuery().toNarmestelederDbModel()
+                }
         }
     }
 }
@@ -63,14 +71,15 @@ class NarmestelederDB(
 private fun ResultSet.toNarmestelederDbModel(): NarmestelederDbModel? {
     return when (next()) {
         false -> null
-        else -> NarmestelederDbModel(
-            sykmeldtFnr = getString("pasient_fnr"),
-            lederFnr = getString("leder_fnr"),
-            narmesteLederTelefonnummer = getString("telefon"),
-            narmesteLederEpost = getString("epost"),
-            orgnummer = getString("orgnummer"),
-            aktivFom = getDate("fom").toLocalDate(),
-            arbeidsgiverForskutterer = getObject("arbeidsgiver_forskutterer") as Boolean?,
-        )
+        else ->
+            NarmestelederDbModel(
+                sykmeldtFnr = getString("pasient_fnr"),
+                lederFnr = getString("leder_fnr"),
+                narmesteLederTelefonnummer = getString("telefon"),
+                narmesteLederEpost = getString("epost"),
+                orgnummer = getString("orgnummer"),
+                aktivFom = getDate("fom").toLocalDate(),
+                arbeidsgiverForskutterer = getObject("arbeidsgiver_forskutterer") as Boolean?,
+            )
     }
 }

@@ -1,5 +1,7 @@
 package no.nav.syfo.altinn.pdf
 
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import no.nav.syfo.model.sykmelding.arbeidsgiver.ArbeidsgiverSykmelding
 import no.nav.syfo.model.sykmelding.arbeidsgiver.BehandlerAGDTO
 import no.nav.syfo.model.sykmelding.arbeidsgiver.SykmeldingsperiodeAGDTO
@@ -7,8 +9,6 @@ import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.pdl.client.model.capitalizeFirstLetter
 import no.nav.syfo.pdl.client.model.fulltNavn
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 
 fun ArbeidsgiverSykmelding.toPdfPayload(
     pasient: Person,
@@ -16,26 +16,30 @@ fun ArbeidsgiverSykmelding.toPdfPayload(
     egenmeldingsdager: List<LocalDate>?,
 ): PdfPayload {
     return PdfPayload(
-        ansatt = Ansatt(
-            fnr = pasient.fnr,
-            navn = pasient.fulltNavn(),
-        ),
-        narmesteleder = narmesteLeder,
-        arbeidsgiverSykmelding = ArbeidsgiverSykmeldingPdf(
-            id = id,
-            syketilfelleStartDato = syketilfelleStartDato,
-            behandletTidspunkt = behandletTidspunkt,
-            arbeidsgiverNavn = arbeidsgiver.navn,
-            sykmeldingsperioder = sykmeldingsperioder.map { it.toSykmeldingsPeriodePdf() }.sortedBy { it.fom },
-            prognose = prognose,
-            tiltakArbeidsplassen = tiltakArbeidsplassen,
-            meldingTilArbeidsgiver = meldingTilArbeidsgiver,
-            behandler = BehandlerPdf(
-                navn = behandler?.getFormattertNavn() ?: "",
-                tlf = behandler?.tlf,
+        ansatt =
+            Ansatt(
+                fnr = pasient.fnr,
+                navn = pasient.fulltNavn(),
             ),
-            egenmeldingsdager = egenmeldingsdager,
-        ),
+        narmesteleder = narmesteLeder,
+        arbeidsgiverSykmelding =
+            ArbeidsgiverSykmeldingPdf(
+                id = id,
+                syketilfelleStartDato = syketilfelleStartDato,
+                behandletTidspunkt = behandletTidspunkt,
+                arbeidsgiverNavn = arbeidsgiver.navn,
+                sykmeldingsperioder =
+                    sykmeldingsperioder.map { it.toSykmeldingsPeriodePdf() }.sortedBy { it.fom },
+                prognose = prognose,
+                tiltakArbeidsplassen = tiltakArbeidsplassen,
+                meldingTilArbeidsgiver = meldingTilArbeidsgiver,
+                behandler =
+                    BehandlerPdf(
+                        navn = behandler?.getFormattertNavn() ?: "",
+                        tlf = behandler?.tlf,
+                    ),
+                egenmeldingsdager = egenmeldingsdager,
+            ),
     )
 }
 

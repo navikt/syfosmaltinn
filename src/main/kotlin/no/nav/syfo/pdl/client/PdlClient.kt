@@ -26,13 +26,20 @@ class PdlClient(
     private val tema = "SYM"
 
     suspend fun getPerson(ident: String): Person {
-        val getPersonRequest = GetPersonRequest(query = graphQlQuery, variables = GetPersonVeriables(ident = ident))
-        val pdlResponse = httpClient.post(basePath) {
-            setBody(getPersonRequest)
-            header(HttpHeaders.Authorization, "Bearer ${accessTokenClient.getAccessToken(pdlScope)}")
-            header(temaHeader, tema)
-            header(HttpHeaders.ContentType, "application/json")
-        }.body<GetPersonResponse>()
+        val getPersonRequest =
+            GetPersonRequest(query = graphQlQuery, variables = GetPersonVeriables(ident = ident))
+        val pdlResponse =
+            httpClient
+                .post(basePath) {
+                    setBody(getPersonRequest)
+                    header(
+                        HttpHeaders.Authorization,
+                        "Bearer ${accessTokenClient.getAccessToken(pdlScope)}"
+                    )
+                    header(temaHeader, tema)
+                    header(HttpHeaders.ContentType, "application/json")
+                }
+                .body<GetPersonResponse>()
         try {
             return pdlResponse.toPerson()
         } catch (e: Exception) {

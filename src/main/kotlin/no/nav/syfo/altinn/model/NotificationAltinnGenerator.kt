@@ -16,8 +16,7 @@ class NotificationAltinnGenerator private constructor() {
         private const val FRA_EPOST_ALTINN = "noreply@altinn.no"
 
         fun createNotifications(): NotificationBEList {
-            return NotificationBEList()
-                .withNotification(epostNotification(), smsNotification())
+            return NotificationBEList().withNotification(epostNotification(), smsNotification())
         }
 
         fun createEmailNotification(vararg text: String): Notification {
@@ -45,9 +44,15 @@ class NotificationAltinnGenerator private constructor() {
             )
         }
 
-        fun createNotification(fromEmail: String?, type: TransportType, textTokens: Array<TextToken?>): Notification {
+        fun createNotification(
+            fromEmail: String?,
+            type: TransportType,
+            textTokens: Array<TextToken?>
+        ): Notification {
             if (textTokens.size != 2) {
-                throw IllegalArgumentException("Antall textTokens må være 2. Var ${textTokens.size}")
+                throw IllegalArgumentException(
+                    "Antall textTokens må være 2. Var ${textTokens.size}"
+                )
             }
             return Notification()
                 .withLanguageCode(
@@ -57,9 +62,7 @@ class NotificationAltinnGenerator private constructor() {
                     "TokenTextOnly",
                 )
                 .withFromAddress(
-                    fromEmail?.let {
-                        it
-                    },
+                    fromEmail?.let { it },
                 )
                 .withReceiverEndPoints(
                     ReceiverEndPointBEList()
@@ -71,18 +74,22 @@ class NotificationAltinnGenerator private constructor() {
                         ),
                 )
                 .withTextTokens(
-                    TextTokenSubstitutionBEList().withTextToken(
-                        *textTokens,
-                    ),
+                    TextTokenSubstitutionBEList()
+                        .withTextToken(
+                            *textTokens,
+                        ),
                 )
         }
 
         private fun convertToTextTokens(vararg text: String): Array<TextToken?> {
             val textTokens = arrayOfNulls<TextToken>(text.size)
             for (i in text.indices) {
-                textTokens[i] = TextToken().withTokenNum(i).withTokenValue(
-                    text[i],
-                )
+                textTokens[i] =
+                    TextToken()
+                        .withTokenNum(i)
+                        .withTokenValue(
+                            text[i],
+                        )
             }
             return textTokens
         }

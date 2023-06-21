@@ -1,12 +1,12 @@
 package no.nav.syfo.altinn.pdf
 
+import java.time.LocalDate
+import java.time.OffsetDateTime
 import no.nav.syfo.model.sykmelding.arbeidsgiver.AktivitetIkkeMuligAGDTO
 import no.nav.syfo.model.sykmelding.arbeidsgiver.PrognoseAGDTO
 import no.nav.syfo.model.sykmelding.model.GradertDTO
 import no.nav.syfo.model.sykmelding.model.PeriodetypeDTO
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
-import java.time.LocalDate
-import java.time.OffsetDateTime
 
 data class PdfPayload(
     val ansatt: Ansatt,

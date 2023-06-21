@@ -4,8 +4,10 @@ import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondence
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean
 
 fun createPort(serviceUrl: String): ICorrespondenceAgencyExternalBasic {
-    return JaxWsProxyFactoryBean().apply {
-        address = serviceUrl
-        serviceClass = ICorrespondenceAgencyExternalBasic::class.java
-    }.create(ICorrespondenceAgencyExternalBasic::class.java)
+    return JaxWsProxyFactoryBean()
+        .apply {
+            address = serviceUrl
+            serviceClass = ICorrespondenceAgencyExternalBasic::class.java
+        }
+        .create(ICorrespondenceAgencyExternalBasic::class.java)
 }

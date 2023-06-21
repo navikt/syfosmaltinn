@@ -1,5 +1,12 @@
 package no.nav.syfo.altinn.model
 
+import java.io.StringWriter
+import java.lang.Boolean.FALSE
+import java.time.format.DateTimeFormatter
+import javax.xml.transform.OutputKeys
+import javax.xml.transform.TransformerFactory
+import javax.xml.transform.dom.DOMSource
+import javax.xml.transform.stream.StreamResult
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.AttachmentsV2
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.ExternalContentV2
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
@@ -16,18 +23,12 @@ import no.nav.syfo.altinn.util.JAXB.Companion.parseXml
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import org.w3c.dom.Document
 import org.w3c.dom.Element
-import java.io.StringWriter
-import java.lang.Boolean.FALSE
-import java.time.format.DateTimeFormatter
-import javax.xml.transform.OutputKeys
-import javax.xml.transform.TransformerFactory
-import javax.xml.transform.dom.DOMSource
-import javax.xml.transform.stream.StreamResult
 
 class AltinnSykmeldingMapper private constructor() {
     companion object {
         const val SYKMELDING_TJENESTEKODE =
-            "4503" // OBS! VIKTIG! Denne må ikke endres, da kan feil personer få tilgang til sykmelding i Altinn!
+            "4503" // OBS! VIKTIG! Denne må ikke endres, da kan feil personer få tilgang til
+        // sykmelding i Altinn!
         private const val SYKMELDING_TJENESTEVERSJON = "2"
         private const val NORSK_BOKMAL = "1044"
 
@@ -38,55 +39,64 @@ class AltinnSykmeldingMapper private constructor() {
             brukernavn: String,
             orgnummer: String,
         ): InsertCorrespondenceV2 {
-            val insertCorrespondenceV2 = InsertCorrespondenceV2()
-                .withAllowForwarding(FALSE)
-                .withReportee(
-                    orgnummer,
-                )
-                .withMessageSender(
-                    getFormatetUsername(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmelding.pasient, brukernavn),
-                )
-                .withServiceCode(
-                    SYKMELDING_TJENESTEKODE,
-                )
-                .withServiceEdition(
-                    SYKMELDING_TJENESTEVERSJON,
-                )
-                .withNotifications(NotificationAltinnGenerator.createNotifications())
-                .withContent(
-                    ExternalContentV2()
-                        .withLanguageCode(
-                            NORSK_BOKMAL,
-                        )
-                        .withMessageTitle(
-                            createTitle(sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmelding, brukernavn),
-                        )
-                        .withMessageBody(
-                            sykmeldingAltinn.sykmeldingPortableHTML,
-                        )
-                        .withCustomMessageData(null)
-                        .withAttachments(
-                            AttachmentsV2()
-                                .withBinaryAttachments(
-                                    BinaryAttachmentExternalBEV2List()
-                                        .withBinaryAttachmentV2(
-                                            createBinaryAttachment(
-                                                sykmeldingAltinn.sykmeldingPdf,
-                                                "sykmelding.pdf",
-                                                "sykmelding",
-                                                sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId + ".pdf",
-                                            ),
-                                            createBinaryAttachment(
-                                                sykmeldingAltinn.sykmeldingXml.toByteArray(),
-                                                "sykmelding.xml",
-                                                "sykmelding",
-                                                sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId + ".xml",
-                                            ),
-
-                                        ),
-                                ),
+            val insertCorrespondenceV2 =
+                InsertCorrespondenceV2()
+                    .withAllowForwarding(FALSE)
+                    .withReportee(
+                        orgnummer,
+                    )
+                    .withMessageSender(
+                        getFormatetUsername(
+                            sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmelding.pasient,
+                            brukernavn
                         ),
-                ).withArchiveReference(null)
+                    )
+                    .withServiceCode(
+                        SYKMELDING_TJENESTEKODE,
+                    )
+                    .withServiceEdition(
+                        SYKMELDING_TJENESTEVERSJON,
+                    )
+                    .withNotifications(NotificationAltinnGenerator.createNotifications())
+                    .withContent(
+                        ExternalContentV2()
+                            .withLanguageCode(
+                                NORSK_BOKMAL,
+                            )
+                            .withMessageTitle(
+                                createTitle(
+                                    sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmelding,
+                                    brukernavn
+                                ),
+                            )
+                            .withMessageBody(
+                                sykmeldingAltinn.sykmeldingPortableHTML,
+                            )
+                            .withCustomMessageData(null)
+                            .withAttachments(
+                                AttachmentsV2()
+                                    .withBinaryAttachments(
+                                        BinaryAttachmentExternalBEV2List()
+                                            .withBinaryAttachmentV2(
+                                                createBinaryAttachment(
+                                                    sykmeldingAltinn.sykmeldingPdf,
+                                                    "sykmelding.pdf",
+                                                    "sykmelding",
+                                                    sykmeldingAltinn.xmlSykmeldingArbeidsgiver
+                                                        .sykmeldingId + ".pdf",
+                                                ),
+                                                createBinaryAttachment(
+                                                    sykmeldingAltinn.sykmeldingXml.toByteArray(),
+                                                    "sykmelding.xml",
+                                                    "sykmelding",
+                                                    sykmeldingAltinn.xmlSykmeldingArbeidsgiver
+                                                        .sykmeldingId + ".xml",
+                                                ),
+                                            ),
+                                    ),
+                            ),
+                    )
+                    .withArchiveReference(null)
             return insertCorrespondenceV2
         }
 
@@ -121,9 +131,11 @@ class AltinnSykmeldingMapper private constructor() {
 
         private fun periodeAsText(perioder: List<XMLPeriode>): String {
             val firstFom =
-                perioder.minByOrNull { it.fom }?.fom ?: throw RuntimeException("Sykmelding mangler perioder!")
+                perioder.minByOrNull { it.fom }?.fom
+                    ?: throw RuntimeException("Sykmelding mangler perioder!")
             val lastTom =
-                perioder.maxByOrNull { it.tom }?.tom ?: throw RuntimeException("Sykmelding mangler perioder!")
+                perioder.maxByOrNull { it.tom }?.tom
+                    ?: throw RuntimeException("Sykmelding mangler perioder!")
 
             val dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
             return "${dateTimeFormatter.format(firstFom)}-${dateTimeFormatter.format(lastTom)}"
@@ -141,7 +153,12 @@ class AltinnSykmeldingMapper private constructor() {
             appendElement(document, element, narmesteLeder.fnr, "fnr")
             appendElement(document, element, narmesteLeder.telefonnummer, "mobil")
             appendElement(document, element, narmesteLeder.epost, "epost")
-            appendElement(document, element, narmesteLeder.aktivFom.format(DateTimeFormatter.ISO_LOCAL_DATE), "fom")
+            appendElement(
+                document,
+                element,
+                narmesteLeder.aktivFom.format(DateTimeFormatter.ISO_LOCAL_DATE),
+                "fom"
+            )
 
             document.firstChild.appendChild(element)
         }

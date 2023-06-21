@@ -1,12 +1,12 @@
 package no.nav.syfo.altinn.model
 
+import java.time.LocalDate
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.syfo.altinn.model.AltinnSykmeldingMapper.Companion.toSykmeldingXml
 import no.nav.syfo.altinn.util.JAXB
 import no.nav.syfo.altinn.util.SykmeldingHTMLMapper
 import no.nav.syfo.altinn.util.SykmeldingHTMLMapper.Companion.toSykmeldingHtml
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
-import java.time.LocalDate
 
 class SykmeldingAltinn(
     val xmlSykmeldingArbeidsgiver: XMLSykmeldingArbeidsgiver,
@@ -21,18 +21,21 @@ class SykmeldingAltinn(
 
     init {
 
-        val sykmeldingXmlForHtml = toSykmeldingXml(
-            narmesteLeder = narmesteLeder,
-            xmlSykmeldingArbeidsgiver = xmlSykmeldingArbeidsgiver,
-        )
+        val sykmeldingXmlForHtml =
+            toSykmeldingXml(
+                narmesteLeder = narmesteLeder,
+                xmlSykmeldingArbeidsgiver = xmlSykmeldingArbeidsgiver,
+            )
 
-        sykmeldingHTML = toSykmeldingHtml(
-            sykmeldingXml = sykmeldingXmlForHtml,
-            egenmeldingsdager = egenmeldingsdager,
-        )
-        sykmeldingPortableHTML = SykmeldingHTMLMapper.toPortableHTML(
-            sykmeldingHTML,
-            xmlSykmeldingArbeidsgiver.sykmeldingId,
-        )
+        sykmeldingHTML =
+            toSykmeldingHtml(
+                sykmeldingXml = sykmeldingXmlForHtml,
+                egenmeldingsdager = egenmeldingsdager,
+            )
+        sykmeldingPortableHTML =
+            SykmeldingHTMLMapper.toPortableHTML(
+                sykmeldingHTML,
+                xmlSykmeldingArbeidsgiver.sykmeldingId,
+            )
     }
 }

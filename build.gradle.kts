@@ -34,13 +34,14 @@ val jaxbApiVersion = "2.4.0-b180830.0359"
 val jaxbRuntimeVersion = "2.4.0-b180830.0438"
 val syfoXmlCodeGen = "1.0.4"
 val jsoupVersion = "1.16.1"
+val ktfmtVersion = "0.44"
 
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
 }
 
 plugins {
-    id("org.jmailen.kotlinter") version "3.15.0"
+    id("com.diffplug.spotless") version "6.19.0"
     kotlin("jvm") version "1.8.22"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("org.cyclonedx.bom") version "1.7.4"
@@ -185,7 +186,10 @@ tasks {
         }
     }
 
-    "check" {
-        dependsOn("formatKotlin")
+    spotless {
+        kotlin { ktfmt(ktfmtVersion).kotlinlangStyle() }
+        check {
+            dependsOn("spotlessApply")
+        }
     }
 }

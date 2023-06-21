@@ -69,33 +69,43 @@ fun main() {
     val env = Environment()
     DefaultExports.initialize()
     val applicationState = ApplicationState()
-    val applicationEngine = createApplicationEngine(
-        env,
-        applicationState,
-    )
+    val applicationEngine =
+        createApplicationEngine(
+            env,
+            applicationState,
+        )
     val applicationServer = ApplicationServer(applicationEngine, applicationState)
     val database = Database(env)
 
-    val kafkaProducer = KafkaProducer<String, NlRequestKafkaMessage>(
-        KafkaUtils
-            .getAivenKafkaConfig()
-            .toProducerConfig("${env.applicationName}-producer", JacksonKafkaSerializer::class, StringSerializer::class),
-    )
-    val kafkaProducerNlResponse = KafkaProducer<String, NlResponseKafkaMessage>(
-        KafkaUtils
-            .getAivenKafkaConfig()
-            .toProducerConfig("${env.applicationName}-producer", JacksonKafkaSerializer::class, StringSerializer::class),
-    )
+    val kafkaProducer =
+        KafkaProducer<String, NlRequestKafkaMessage>(
+            KafkaUtils.getAivenKafkaConfig()
+                .toProducerConfig(
+                    "${env.applicationName}-producer",
+                    JacksonKafkaSerializer::class,
+                    StringSerializer::class
+                ),
+        )
+    val kafkaProducerNlResponse =
+        KafkaProducer<String, NlResponseKafkaMessage>(
+            KafkaUtils.getAivenKafkaConfig()
+                .toProducerConfig(
+                    "${env.applicationName}-producer",
+                    JacksonKafkaSerializer::class,
+                    StringSerializer::class
+                ),
+        )
     val nlRequestProducer = NLRequestProducer(kafkaProducer, env.beOmNLKafkaTopic)
     val nlResponseProducer = NLResponseProducer(kafkaProducerNlResponse, env.brytNLKafkaTopic)
     val beOmNyNLService = BeOmNyNLService(nlRequestProducer, nlResponseProducer, database)
 
     val iCorrespondenceAgencyExternalBasic = createPort(env.altinnUrl)
-    val altinnClient = AltinnClient(
-        username = env.altinnUsername,
-        password = env.altinnPassword,
-        iCorrespondenceAgencyExternalBasic = iCorrespondenceAgencyExternalBasic,
-    )
+    val altinnClient =
+        AltinnClient(
+            username = env.altinnUsername,
+            password = env.altinnPassword,
+            iCorrespondenceAgencyExternalBasic = iCorrespondenceAgencyExternalBasic,
+        )
     val altinnOrgnummerLookup = AltinnOrgnummerLookupFacotry.getOrgnummerResolver(env.cluster)
 
     val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
@@ -111,7 +121,8 @@ fun main() {
         HttpResponseValidator {
             handleResponseExceptionWithRequest { exception, _ ->
                 when (exception) {
-                    is SocketTimeoutException -> throw ServiceUnavailableException(exception.message)
+                    is SocketTimeoutException ->
+                        throw ServiceUnavailableException(exception.message)
                 }
             }
         }
@@ -123,7 +134,9 @@ fun main() {
             }
             retryIf(maxRetries) { request, response ->
                 if (response.status.value.let { it in 500..599 }) {
-                    log.warn("Retrying for statuscode ${response.status.value}, for url ${request.url}")
+                    log.warn(
+                        "Retrying for statuscode ${response.status.value}, for url ${request.url}"
+                    )
                     true
                 } else {
                     false
@@ -138,55 +151,77 @@ fun main() {
     }
 
     val httpClient = HttpClient(Apache, config)
-    val accessTokenClient = AccessTokenClient(
-        aadAccessTokenUrl = env.aadAccessTokenUrl,
-        clientId = env.clientId,
-        clientSecret = env.clientSecret,
-        httpClient = httpClient,
-    )
-    val pdlClient = PdlClient(
-        httpClient,
-        env.pdlBasePath,
-        PdlClient::class.java.getResource("/graphql/getPerson.graphql").readText(),
-        accessTokenClient,
-        env.pdlScope,
-    )
+    val accessTokenClient =
+        AccessTokenClient(
+            aadAccessTokenUrl = env.aadAccessTokenUrl,
+            clientId = env.clientId,
+            clientSecret = env.clientSecret,
+            httpClient = httpClient,
+        )
+    val pdlClient =
+        PdlClient(
+            httpClient,
+            env.pdlBasePath,
+            PdlClient::class.java.getResource("/graphql/getPerson.graphql").readText(),
+            accessTokenClient,
+            env.pdlScope,
+        )
     val narmestelederDb = NarmestelederDB(database)
     val narmesteLederService = NarmesteLederService(narmestelederDb, pdlClient)
 
-    val retrySettings = RetrySettings.newBuilder()
-        .setTotalTimeout(Duration.ofMillis(3000))
-        .setMaxAttempts(3)
-        .build()
-    val juridiskloggStorage: Storage = StorageOptions.newBuilder().setRetrySettings(retrySettings).build().service
+    val retrySettings =
+        RetrySettings.newBuilder()
+            .setTotalTimeout(Duration.ofMillis(3000))
+            .setMaxAttempts(3)
+            .build()
+    val juridiskloggStorage: Storage =
+        StorageOptions.newBuilder().setRetrySettings(retrySettings).build().service
     val juridiskLoggService = JuridiskLoggService(env.juridiskloggBucketName, juridiskloggStorage)
 
     val pdfgenClient = PdfgenClient(env.pdfgenUrl, httpClient)
 
-    val altinnSendtSykmeldingService = AltinnSykmeldingService(
-        altinnClient,
-        altinnOrgnummerLookup,
-        juridiskLoggService,
-        database,
-        pdfgenClient,
-    )
+    val altinnSendtSykmeldingService =
+        AltinnSykmeldingService(
+            altinnClient,
+            altinnOrgnummerLookup,
+            juridiskLoggService,
+            database,
+            pdfgenClient,
+        )
 
-    val aivenKafkaSykmeldingConsumer: KafkaConsumer<String, SendSykmeldingAivenKafkaMessage> = getKafkaConsumer(env = env, resetConfig = "none")
-    val aivenKafkaNarmestelederConsumer: KafkaConsumer<String, NarmestelederLeesah> = getKafkaConsumer(env = env, resetConfig = "none", consumerGroup = env.applicationName + "-nl-consumer")
+    val aivenKafkaSykmeldingConsumer: KafkaConsumer<String, SendSykmeldingAivenKafkaMessage> =
+        getKafkaConsumer(env = env, resetConfig = "none")
+    val aivenKafkaNarmestelederConsumer: KafkaConsumer<String, NarmestelederLeesah> =
+        getKafkaConsumer(
+            env = env,
+            resetConfig = "none",
+            consumerGroup = env.applicationName + "-nl-consumer"
+        )
 
-    val narmestelederConsumer = NarmestelederConsumer(narmestelederDb, aivenKafkaNarmestelederConsumer, env.narmestelederLeesahTopic, applicationState)
+    val narmestelederConsumer =
+        NarmestelederConsumer(
+            narmestelederDb,
+            aivenKafkaNarmestelederConsumer,
+            env.narmestelederLeesahTopic,
+            applicationState
+        )
 
     narmestelederConsumer.startConsumer()
 
-    val sendtSykmeldingAivenConsumer = SendtSykmeldingAivenConsumer(aivenKafkaSykmeldingConsumer, env.sendtSykmeldingAivenKafkaTopic)
-    val sendtSykmeldingService = SendtSykmeldingService(
-        applicationState,
-        altinnSendtSykmeldingService,
-        pdlClient,
-        narmesteLederService,
-        beOmNyNLService,
-        sendtSykmeldingAivenConsumer,
-    )
+    val sendtSykmeldingAivenConsumer =
+        SendtSykmeldingAivenConsumer(
+            aivenKafkaSykmeldingConsumer,
+            env.sendtSykmeldingAivenKafkaTopic
+        )
+    val sendtSykmeldingService =
+        SendtSykmeldingService(
+            applicationState,
+            altinnSendtSykmeldingService,
+            pdlClient,
+            narmesteLederService,
+            beOmNyNLService,
+            sendtSykmeldingAivenConsumer,
+        )
 
     GlobalScope.launch(Dispatchers.IO) {
         try {
@@ -202,11 +237,18 @@ fun main() {
     applicationServer.start()
 }
 
-private inline fun <reified T : Any> getKafkaConsumer(env: Environment, resetConfig: String = "none", consumerGroup: String = env.applicationName + "-consumer") = KafkaConsumer(
-    KafkaUtils.getAivenKafkaConfig().also {
-        it[ConsumerConfig.MAX_POLL_RECORDS_CONFIG] = "100"
-        it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = resetConfig
-    }.toConsumerConfig(consumerGroup, JacksonKafkaDeserializer::class),
-    StringDeserializer(),
-    JacksonKafkaDeserializer(T::class),
-)
+private inline fun <reified T : Any> getKafkaConsumer(
+    env: Environment,
+    resetConfig: String = "none",
+    consumerGroup: String = env.applicationName + "-consumer"
+) =
+    KafkaConsumer(
+        KafkaUtils.getAivenKafkaConfig()
+            .also {
+                it[ConsumerConfig.MAX_POLL_RECORDS_CONFIG] = "100"
+                it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = resetConfig
+            }
+            .toConsumerConfig(consumerGroup, JacksonKafkaDeserializer::class),
+        StringDeserializer(),
+        JacksonKafkaDeserializer(T::class),
+    )

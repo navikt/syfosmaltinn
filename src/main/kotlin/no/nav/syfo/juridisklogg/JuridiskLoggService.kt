@@ -3,14 +3,14 @@ package no.nav.syfo.juridisklogg
 import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.Storage
-import no.nav.syfo.altinn.model.SykmeldingAltinn
-import no.nav.syfo.application.metrics.JURIDISK_LOGG_COUNTER
-import no.nav.syfo.log
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets.UTF_8
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.zip.GZIPOutputStream
+import no.nav.syfo.altinn.model.SykmeldingAltinn
+import no.nav.syfo.application.metrics.JURIDISK_LOGG_COUNTER
+import no.nav.syfo.log
 
 class JuridiskLoggService(
     private val bucketName: String,
@@ -23,9 +23,12 @@ class JuridiskLoggService(
     ) {
         val mappe = "$sykmeldingId/${mappeTidspunkt()}/"
         fun lagreFil(filnavn: String, contentType: String, content: ByteArray) {
-            val blobInfo = BlobInfo.newBuilder(
-                BlobId.of(bucketName, mappe + filnavn),
-            ).setContentType(contentType).build()
+            val blobInfo =
+                BlobInfo.newBuilder(
+                        BlobId.of(bucketName, mappe + filnavn),
+                    )
+                    .setContentType(contentType)
+                    .build()
             storage.create(blobInfo, content)
         }
 

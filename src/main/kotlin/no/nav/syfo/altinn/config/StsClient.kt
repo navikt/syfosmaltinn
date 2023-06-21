@@ -15,7 +15,8 @@ import org.apache.neethi.Policy
 
 val STS_CLIENT_AUTHENTICATION_POLICY = "classpath:policy/untPolicy.xml"
 val STS_SAML_POLICY = "classpath:policy/requestSamlPolicy.xml"
-val STS_SAML_POLICY_NO_TRANSPORT_BINDING = "classpath:policy/requestSamlPolicyNoTransportBinding.xml"
+val STS_SAML_POLICY_NO_TRANSPORT_BINDING =
+    "classpath:policy/requestSamlPolicyNoTransportBinding.xml"
 
 fun stsClient(stsUrl: String, credentials: Pair<String, String>): STSClient {
     val bus = BusFactory.getDefaultBus()
@@ -23,10 +24,11 @@ fun stsClient(stsUrl: String, credentials: Pair<String, String>): STSClient {
         isEnableAppliesTo = false
         isAllowRenewing = false
         location = stsUrl
-        properties = mapOf(
-            SecurityConstants.USERNAME to credentials.first,
-            SecurityConstants.PASSWORD to credentials.second,
-        )
+        properties =
+            mapOf(
+                SecurityConstants.USERNAME to credentials.first,
+                SecurityConstants.PASSWORD to credentials.second,
+            )
         setPolicy(bus.resolvePolicy(STS_CLIENT_AUTHENTICATION_POLICY))
     }
 }
@@ -60,7 +62,10 @@ private fun Client.setClientEndpointPolicy(policy: Policy) {
     val policyEngine: PolicyEngine = bus.getExtension(PolicyEngine::class.java)
     val message = SoapMessage(Soap12.getInstance())
     val endpointPolicy = policyEngine.getClientEndpointPolicy(endpoint.endpointInfo, null, message)
-    policyEngine.setClientEndpointPolicy(endpoint.endpointInfo, endpointPolicy.updatePolicy(policy, message))
+    policyEngine.setClientEndpointPolicy(
+        endpoint.endpointInfo,
+        endpointPolicy.updatePolicy(policy, message)
+    )
 }
 
 class Sts

@@ -26,7 +26,11 @@ data class Environment(
     val clientId: String = getEnvVar("AZURE_APP_CLIENT_ID"),
     val clientSecret: String = getEnvVar("AZURE_APP_CLIENT_SECRET"),
     val juridiskloggBucketName: String = getEnvVar("BUCKET_NAME"),
-    val pdfgenUrl: String = getEnvVar("PDF_GEN_URL", "http://smarbeidsgiver-pdfgen/api/v1/genpdf/smarbeidsgiver/smarbeidsgiver"),
+    val pdfgenUrl: String =
+        getEnvVar(
+            "PDF_GEN_URL",
+            "http://smarbeidsgiver-pdfgen/api/v1/genpdf/smarbeidsgiver/smarbeidsgiver"
+        ),
 ) {
     fun jdbcUrl(): String {
         return "jdbc:postgresql://$dbHost:$dbPort/$dbName"
@@ -34,6 +38,8 @@ data class Environment(
 }
 
 fun getEnvVar(varName: String, defaultValue: String? = null) =
-    System.getenv(varName) ?: defaultValue ?: throw RuntimeException("Missing required variable \"$varName\"")
+    System.getenv(varName)
+        ?: defaultValue ?: throw RuntimeException("Missing required variable \"$varName\"")
 
-fun getFileAsString(filePath: String) = String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8)
+fun getFileAsString(filePath: String) =
+    String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8)

@@ -24,7 +24,13 @@ fun GetPersonResponse.toPerson(): Person {
         throw RuntimeException("Fant ikke fnr i PDL")
     }
 
-    return Person(fornavn = navn.fornavn, mellomnavn = navn.mellomnavn, etternavn = navn.etternavn, aktorId = aktorId, fnr = fnr)
+    return Person(
+        fornavn = navn.fornavn,
+        mellomnavn = navn.mellomnavn,
+        etternavn = navn.etternavn,
+        aktorId = aktorId,
+        fnr = fnr
+    )
 }
 
 data class ResponseData(

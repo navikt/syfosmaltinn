@@ -10,23 +10,24 @@ class NarmesteLederService(
     private val pdlClient: PdlClient,
 ) {
     suspend fun getNarmesteLeder(orgnummer: String, fnr: String): NarmesteLeder? {
-        return narmestelederDB.getNarmesteleder(
-            sykmeldtFnr = fnr,
-            orgnummer = orgnummer,
-        )?.let { narmesteLederRelasjon ->
-
-            val lederPerson = pdlClient.getPerson(narmesteLederRelasjon.lederFnr)
-
-            NarmesteLeder(
-                epost = narmesteLederRelasjon.narmesteLederEpost,
-                orgnummer = narmesteLederRelasjon.orgnummer,
-                telefonnummer = narmesteLederRelasjon.narmesteLederTelefonnummer,
-                aktivFom = narmesteLederRelasjon.aktivFom,
-                arbeidsgiverForskutterer = narmesteLederRelasjon.arbeidsgiverForskutterer,
-                navn = getName(lederPerson),
-                fnr = lederPerson.fnr,
+        return narmestelederDB
+            .getNarmesteleder(
+                sykmeldtFnr = fnr,
+                orgnummer = orgnummer,
             )
-        }
+            ?.let { narmesteLederRelasjon ->
+                val lederPerson = pdlClient.getPerson(narmesteLederRelasjon.lederFnr)
+
+                NarmesteLeder(
+                    epost = narmesteLederRelasjon.narmesteLederEpost,
+                    orgnummer = narmesteLederRelasjon.orgnummer,
+                    telefonnummer = narmesteLederRelasjon.narmesteLederTelefonnummer,
+                    aktivFom = narmesteLederRelasjon.aktivFom,
+                    arbeidsgiverForskutterer = narmesteLederRelasjon.arbeidsgiverForskutterer,
+                    navn = getName(lederPerson),
+                    fnr = lederPerson.fnr,
+                )
+            }
     }
 
     fun getName(person: Person): String {

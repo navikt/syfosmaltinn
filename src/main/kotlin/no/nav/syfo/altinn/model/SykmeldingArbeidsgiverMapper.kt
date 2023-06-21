@@ -1,5 +1,10 @@
 package no.nav.syfo.altinn.model
 
+import java.time.OffsetDateTime
+import java.util.Optional.ofNullable
+import java.util.function.Function
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import no.nav.helse.xml.sykmelding.arbeidsgiver.ObjectFactory
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLAktivitet
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLAktivitetIkkeMulig
@@ -24,11 +29,6 @@ import no.nav.syfo.model.sykmelding.model.GradertDTO
 import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
-import java.time.OffsetDateTime
-import java.util.Optional.ofNullable
-import java.util.function.Function
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 class SykmeldingArbeidsgiverMapper private constructor() {
     companion object {
@@ -40,10 +40,13 @@ class SykmeldingArbeidsgiverMapper private constructor() {
             val xmlSykmeldingArbeidsgiver = ObjectFactory().createXMLSykmeldingArbeidsgiver()
             xmlSykmeldingArbeidsgiver.juridiskOrganisasjonsnummer =
                 sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.juridiskOrgnummer
-            xmlSykmeldingArbeidsgiver.mottattidspunkt = sendtSykmeldingKafkaMessage.sykmelding.mottattTidspunkt.toLocalDateTime()
+            xmlSykmeldingArbeidsgiver.mottattidspunkt =
+                sendtSykmeldingKafkaMessage.sykmelding.mottattTidspunkt.toLocalDateTime()
             xmlSykmeldingArbeidsgiver.sykmeldingId = sendtSykmeldingKafkaMessage.sykmelding.id
-            xmlSykmeldingArbeidsgiver.virksomhetsnummer = sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.orgnummer
-            xmlSykmeldingArbeidsgiver.sykmelding = toXMLSykmelding(sendtSykmeldingKafkaMessage, person)
+            xmlSykmeldingArbeidsgiver.virksomhetsnummer =
+                sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.orgnummer
+            xmlSykmeldingArbeidsgiver.sykmelding =
+                toXMLSykmelding(sendtSykmeldingKafkaMessage, person)
             return xmlSykmeldingArbeidsgiver
         }
 
@@ -55,8 +58,10 @@ class SykmeldingArbeidsgiverMapper private constructor() {
             val xmlSykmelding = ObjectFactory().createXMLSykmelding()
             xmlSykmelding.arbeidsgiver = getArbeidsgiver(sendtSykmelding.arbeidsgiver)
             xmlSykmelding.behandler = getBehandler(sendtSykmelding.behandler)
-            xmlSykmelding.kontaktMedPasient = getKontaktMedPasient(sendtSykmelding.behandletTidspunkt)
-            xmlSykmelding.meldingTilArbeidsgiver = getMeldingTilArbeidsgiver(sendtSykmelding.meldingTilArbeidsgiver)
+            xmlSykmelding.kontaktMedPasient =
+                getKontaktMedPasient(sendtSykmelding.behandletTidspunkt)
+            xmlSykmelding.meldingTilArbeidsgiver =
+                getMeldingTilArbeidsgiver(sendtSykmelding.meldingTilArbeidsgiver)
             xmlSykmelding.pasient = getPasient(sendtSykmeldingKafkaMessage.kafkaMetadata, person)
             xmlSykmelding.perioder.addAll(getPerioderAG(sendtSykmelding.sykmeldingsperioder))
             xmlSykmelding.prognose = getPrognose(sendtSykmelding.prognose)
@@ -88,7 +93,9 @@ class SykmeldingArbeidsgiverMapper private constructor() {
             }
         }
 
-        private fun getPerioderAG(sykmeldingsperioder: List<SykmeldingsperiodeAGDTO>): List<XMLPeriode> {
+        private fun getPerioderAG(
+            sykmeldingsperioder: List<SykmeldingsperiodeAGDTO>
+        ): List<XMLPeriode> {
             return sykmeldingsperioder.map {
                 val periode = XMLPeriode()
                 periode.fom = it.fom
@@ -103,31 +110,39 @@ class SykmeldingArbeidsgiverMapper private constructor() {
             xmlAktivitet.avventendeSykmelding = it.innspillTilArbeidsgiver
             xmlAktivitet.gradertSykmelding = getGradertAktivitet(it.gradert)
             xmlAktivitet.aktivitetIkkeMulig = getAktivitetIkkeMulig(it.aktivitetIkkeMulig)
-            xmlAktivitet.isHarReisetilskudd = it.reisetilskudd.let {
-                when (it) {
-                    true -> true else -> null
+            xmlAktivitet.isHarReisetilskudd =
+                it.reisetilskudd.let {
+                    when (it) {
+                        true -> true
+                        else -> null
+                    }
                 }
-            }
             xmlAktivitet.antallBehandlingsdagerUke = it.behandlingsdager
             return xmlAktivitet
         }
 
-        private fun getAktivitetIkkeMulig(aktivitetIkkeMulig: AktivitetIkkeMuligAGDTO?): XMLAktivitetIkkeMulig? {
+        private fun getAktivitetIkkeMulig(
+            aktivitetIkkeMulig: AktivitetIkkeMuligAGDTO?
+        ): XMLAktivitetIkkeMulig? {
             return when (aktivitetIkkeMulig) {
                 null -> null
                 else -> {
                     val xmlAktivitetIkkeMulig = ObjectFactory().createXMLAktivitetIkkeMulig()
                     xmlAktivitetIkkeMulig.isManglendeTilretteleggingPaaArbeidsplassen =
                         isMangledneTilrettelegging(aktivitetIkkeMulig)
-                    xmlAktivitetIkkeMulig.beskrivelse = aktivitetIkkeMulig.arbeidsrelatertArsak?.beskrivelse
+                    xmlAktivitetIkkeMulig.beskrivelse =
+                        aktivitetIkkeMulig.arbeidsrelatertArsak?.beskrivelse
                     xmlAktivitetIkkeMulig
                 }
             }
         }
 
-        private fun isMangledneTilrettelegging(aktivitetIkkeMulig: AktivitetIkkeMuligAGDTO): Boolean? {
-            return aktivitetIkkeMulig.arbeidsrelatertArsak?.arsak?.stream()
-                ?.anyMatch { it == ArbeidsrelatertArsakTypeDTO.MANGLENDE_TILRETTELEGGING }
+        private fun isMangledneTilrettelegging(
+            aktivitetIkkeMulig: AktivitetIkkeMuligAGDTO
+        ): Boolean? {
+            return aktivitetIkkeMulig.arbeidsrelatertArsak?.arsak?.stream()?.anyMatch {
+                it == ArbeidsrelatertArsakTypeDTO.MANGLENDE_TILRETTELEGGING
+            }
         }
 
         private fun getGradertAktivitet(gradert: GradertDTO?): XMLGradertSykmelding? {
@@ -182,9 +197,10 @@ class SykmeldingArbeidsgiverMapper private constructor() {
                 ofNullable(kontaktinfo)
                     .map { s: String? ->
                         Pattern.compile(
-                            "(tel|fax):(\\d+)",
-                            Pattern.CASE_INSENSITIVE,
-                        ).matcher(s)
+                                "(tel|fax):(\\d+)",
+                                Pattern.CASE_INSENSITIVE,
+                            )
+                            .matcher(s)
                     }
                     .filter { obj: Matcher -> obj.matches() }
                     .filter { matcher: Matcher -> matcher.groupCount() == 2 }

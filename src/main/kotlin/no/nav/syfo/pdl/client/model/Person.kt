@@ -19,14 +19,19 @@ fun Person.fulltNavn(): String {
 }
 
 fun capitalizeFirstLetter(string: String): String {
-    return string.lowercase(Locale.getDefault())
+    return string
+        .lowercase(Locale.getDefault())
         .split(" ")
         .joinToString(" ") { it ->
-            it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            it.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+            }
         }
         .split("-")
         .joinToString("-") { it ->
-            it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            it.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+            }
         }
         .trimEnd()
 }
