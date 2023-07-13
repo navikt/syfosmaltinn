@@ -76,6 +76,7 @@ fun getSykmeldingKafkaMessage(
                 tiltakArbeidsplassen = "TiltakArbeidsplassen",
                 merknader = emptyList(),
                 utenlandskSykmelding = utenlandskSykmelding,
+                signaturDato = OffsetDateTime.now(),
             ),
         event =
             SykmeldingStatusKafkaEventDTO(
