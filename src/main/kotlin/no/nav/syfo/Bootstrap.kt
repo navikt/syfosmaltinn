@@ -80,7 +80,7 @@ fun main() {
 
     val kafkaProducer =
         KafkaProducer<String, NlRequestKafkaMessage>(
-            KafkaUtils.getAivenKafkaConfig()
+            KafkaUtils.getAivenKafkaConfig("nl-request-producer")
                 .toProducerConfig(
                     "${env.applicationName}-producer",
                     JacksonKafkaSerializer::class,
@@ -89,7 +89,7 @@ fun main() {
         )
     val kafkaProducerNlResponse =
         KafkaProducer<String, NlResponseKafkaMessage>(
-            KafkaUtils.getAivenKafkaConfig()
+            KafkaUtils.getAivenKafkaConfig("nl-resposne-producer")
                 .toProducerConfig(
                     "${env.applicationName}-producer",
                     JacksonKafkaSerializer::class,
@@ -246,7 +246,7 @@ private inline fun <reified T : Any> getKafkaConsumer(
     consumerGroup: String = env.applicationName + "-consumer"
 ) =
     KafkaConsumer(
-        KafkaUtils.getAivenKafkaConfig()
+        KafkaUtils.getAivenKafkaConfig("nl-consumer")
             .also {
                 it[ConsumerConfig.MAX_POLL_RECORDS_CONFIG] = "100"
                 it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = resetConfig

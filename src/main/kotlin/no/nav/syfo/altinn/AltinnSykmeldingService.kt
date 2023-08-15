@@ -49,7 +49,8 @@ class AltinnSykmeldingService(
         val xmlSykmeldingArbeidsgiver =
             SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(
                 sendSykmeldingAivenKafkaMessage,
-                pasient
+                pasient,
+                egenmeldingsdager
             )
         val pdf =
             pdfgenClient.createPdf(

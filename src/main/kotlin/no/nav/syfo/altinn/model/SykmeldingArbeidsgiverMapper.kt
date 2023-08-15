@@ -1,5 +1,6 @@
 package no.nav.syfo.altinn.model
 
+import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.Optional.ofNullable
 import java.util.function.Function
@@ -10,6 +11,7 @@ import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLAktivitet
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLAktivitetIkkeMulig
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLArbeidsgiver
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLBehandler
+import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLEgenmeldingsdager
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLGradertSykmelding
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLKontaktMedPasient
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLNavn
@@ -36,6 +38,7 @@ class SykmeldingArbeidsgiverMapper private constructor() {
         fun toAltinnXMLSykmelding(
             sendtSykmeldingKafkaMessage: SendSykmeldingAivenKafkaMessage,
             person: Person,
+            egenmeldingsdager: List<LocalDate>?,
         ): XMLSykmeldingArbeidsgiver {
             val xmlSykmeldingArbeidsgiver = ObjectFactory().createXMLSykmeldingArbeidsgiver()
             xmlSykmeldingArbeidsgiver.juridiskOrganisasjonsnummer =
@@ -46,13 +49,14 @@ class SykmeldingArbeidsgiverMapper private constructor() {
             xmlSykmeldingArbeidsgiver.virksomhetsnummer =
                 sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.orgnummer
             xmlSykmeldingArbeidsgiver.sykmelding =
-                toXMLSykmelding(sendtSykmeldingKafkaMessage, person)
+                toXMLSykmelding(sendtSykmeldingKafkaMessage, person, egenmeldingsdager)
             return xmlSykmeldingArbeidsgiver
         }
 
         private fun toXMLSykmelding(
             sendtSykmeldingKafkaMessage: SendSykmeldingAivenKafkaMessage,
             person: Person,
+            egenmeldingsdager: List<LocalDate>?,
         ): XMLSykmelding {
             val sendtSykmelding = sendtSykmeldingKafkaMessage.sykmelding
             val xmlSykmelding = ObjectFactory().createXMLSykmelding()
@@ -67,7 +71,22 @@ class SykmeldingArbeidsgiverMapper private constructor() {
             xmlSykmelding.prognose = getPrognose(sendtSykmelding.prognose)
             xmlSykmelding.syketilfelleFom = sendtSykmelding.syketilfelleStartDato
             xmlSykmelding.tiltak = getTiltak(sendtSykmelding.tiltakArbeidsplassen)
+            xmlSykmelding.egenmeldingsdager = getEgenmeldingsdager(egenmeldingsdager)
             return xmlSykmelding
+        }
+
+        private fun getEgenmeldingsdager(
+            egenmeldingsdager: List<LocalDate>?
+        ): XMLEgenmeldingsdager? {
+            return if (egenmeldingsdager.isNullOrEmpty()) {
+                null
+            } else {
+                val xmlEgenmeldingsdager = ObjectFactory().createXMLEgenmeldingsdager()
+
+                egenmeldingsdager.map { xmlEgenmeldingsdager.dager.add(it) }
+
+                xmlEgenmeldingsdager
+            }
         }
 
         private fun getTiltak(tiltakArbeidsplassen: String?): XMLTiltak? {

@@ -34,11 +34,15 @@ class AltinnSykmeldingMapperTest :
                         "NL Navn",
                         "fnrLeder",
                     )
+                val egenmeldingsdager =
+                    listOf<LocalDate>(LocalDate.parse("2021-01-01"), LocalDate.parse("2021-01-06"))
+
                 val sykmeldingAltinn =
                     SykmeldingAltinn(
                         SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(
                             sendtSykmeldingKafkaMessage,
-                            pasient
+                            pasient,
+                            egenmeldingsdager
                         ),
                         narmesteLeder,
                         emptyList(),
