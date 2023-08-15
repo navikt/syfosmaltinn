@@ -180,8 +180,7 @@ class AltinnSykmeldingMapperTest :
                         "NL Navn",
                         "fnrLeder",
                     )
-                val egenmeldingsdager =
-                    listOf<LocalDate>(LocalDate.parse("2021-01-01"), LocalDate.parse("2021-01-06"))
+                val egenmeldingsdager = null
 
                 val sykmeldingAltinn =
                     SykmeldingAltinn(
