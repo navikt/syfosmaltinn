@@ -32,7 +32,7 @@ val googleCloudStorageVersion = "2.26.0"
 val xmlschemaCoreVersion = "2.2.5"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val jaxbRuntimeVersion = "2.4.0-b180830.0438"
-val syfoXmlCodeGen = "1.0.8"
+val syfoXmlCodeGen = "1.0.10"
 val jsoupVersion = "1.16.1"
 val ktfmtVersion = "0.44"
 
