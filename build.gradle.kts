@@ -12,26 +12,26 @@ val ktorVersion = "2.3.4"
 val logbackVersion = "1.4.11"
 val logstashEncoderVersion = "7.4"
 val prometheusVersion = "0.16.0"
-val kotestVersion = "5.6.2"
+val kotestVersion = "5.7.2"
 val smCommonVersion = "1.0.19"
 val mockkVersion = "1.13.7"
-val testContainerKafkaVersion = "1.18.3"
+val testContainerKafkaVersion = "1.19.0"
 val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
 val saxonVersion = "12.3"
-val cxfVersion = "3.5.5"
+val cxfVersion = "4.0.3"
 val jaxsWsApiVersion = "2.3.1"
 val jaxwsRiVersion = "2.3.2"
-val jaxwsToolsVersion = "2.3.1"
+val jaxwsToolsVersion = "4.0.1"
 val javaxActivationVersion = "1.1.1"
 val postgresVersion = "42.6.0"
-val flywayVersion = "9.21.1"
+val flywayVersion = "9.22.1"
 val hikariVersion = "5.0.1"
-val postgresContainerVersion = "1.18.3"
+val postgresContainerVersion = "1.19.0"
 val kotlinVersion = "1.9.10"
-val googleCloudStorageVersion = "2.26.1"
-val xmlschemaCoreVersion = "2.2.5"
+val googleCloudStorageVersion = "2.27.0"
+val xmlschemaCoreVersion = "2.3.1"
 val jaxbApiVersion = "2.4.0-b180830.0359"
-val jaxbRuntimeVersion = "2.4.0-b180830.0438"
+val jaxbRuntimeVersion = "4.0.3"
 val syfoXmlCodeGen = "1.0.10"
 val jsoupVersion = "1.16.1"
 val ktfmtVersion = "0.44"
@@ -81,9 +81,9 @@ repositories {
 buildscript {
     dependencies {
         classpath("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
-        classpath("org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438")
+        classpath("org.glassfish.jaxb:jaxb-runtime:4.0.3")
         classpath("com.sun.activation:javax.activation:1.2.0")
-        classpath("com.sun.xml.ws:jaxws-tools:2.3.1") {
+        classpath("com.sun.xml.ws:jaxws-tools:4.0.1") {
             exclude(group = "com.sun.xml.ws", module = "policy")
         }
     }
