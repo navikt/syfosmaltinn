@@ -54,8 +54,7 @@ spec:
     path: /internal/prometheus
   resources:
     limits:
-      cpu: 100m
-      memory: 700Mi
+      memory: 900Mi
     requests:
       cpu: 50m
       memory: 500Mi
@@ -65,11 +64,8 @@ spec:
     application:
       enabled: true
       tenant: trygdeetaten.no
-  vault:
-    enabled: false
   filesFrom:
     - secret: syfosmaltinn-secrets
-  webproxy: false
   secureLogs:
     enabled: true
   env:

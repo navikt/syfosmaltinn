@@ -64,11 +64,8 @@ spec:
     application:
       enabled: true
       tenant: nav.no
-  vault:
-    enabled: false
   filesFrom:
     - secret: syfosmaltinn-secrets
-  webproxy: false
   secureLogs:
     enabled: true
   env:

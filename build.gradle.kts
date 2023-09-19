@@ -8,12 +8,12 @@ version = "1.0.0"
 val coroutinesVersion = "1.7.3"
 val jacksonVersion = "2.15.2"
 val kluentVersion = "1.73"
-val ktorVersion = "2.3.3"
+val ktorVersion = "2.3.4"
 val logbackVersion = "1.4.11"
 val logstashEncoderVersion = "7.4"
 val prometheusVersion = "0.16.0"
 val kotestVersion = "5.6.2"
-val smCommonVersion = "1.0.14"
+val smCommonVersion = "1.0.19"
 val mockkVersion = "1.13.7"
 val testContainerKafkaVersion = "1.18.3"
 val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
@@ -27,7 +27,7 @@ val postgresVersion = "42.6.0"
 val flywayVersion = "9.21.1"
 val hikariVersion = "5.0.1"
 val postgresContainerVersion = "1.18.3"
-val kotlinVersion = "1.9.0"
+val kotlinVersion = "1.9.10"
 val googleCloudStorageVersion = "2.26.1"
 val xmlschemaCoreVersion = "2.2.5"
 val jaxbApiVersion = "2.4.0-b180830.0359"
@@ -36,15 +36,16 @@ val syfoXmlCodeGen = "1.0.10"
 val jsoupVersion = "1.16.1"
 val ktfmtVersion = "0.44"
 
-tasks.withType<Jar> {
-    manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
-}
 
 plugins {
-    id("com.diffplug.spotless") version "6.20.0"
-    kotlin("jvm") version "1.9.0"
+    id("application")
+    id("com.diffplug.spotless") version "6.21.0"
+    kotlin("jvm") version "1.9.10"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("org.cyclonedx.bom") version "1.7.4"
+}
+
+application {
+    mainClass.set("no.nav.syfo.BootstrapKt")
 }
 
 val githubUser: String by project
@@ -160,23 +161,24 @@ dependencies {
 
 tasks {
 
-    create("printVersion") {
-        println(project.version)
-    }
-
-    withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "17"
-    }
-
-    withType<ShadowJar> {
-        isZip64 = true
+    shadowJar {
         transform(ServiceFileTransformer::class.java) {
             setPath("META-INF/cxf")
             include("bus-extensions.txt")
         }
+        archiveBaseName.set("app")
+        archiveClassifier.set("")
+        isZip64 = true
+        manifest {
+            attributes(
+                mapOf(
+                    "Main-Class" to "no.nav.syfo.BootstrapKt",
+                ),
+            )
+        }
     }
 
-    withType<Test> {
+    test {
         useJUnitPlatform {
         }
         testLogging {
