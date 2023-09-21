@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 15
-    1ignore:
+    ignore:
       - dependency-name: "org.glassfish.jaxb:jaxb-runtime"
         update-types: ["version-update:semver-major"]
       - dependency-name: "com.sun.xml.ws:jaxws-tools"
