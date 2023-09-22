@@ -1,6 +1,4 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "no.nav.syfo"
 version = "1.0.0"
@@ -13,12 +11,12 @@ val logbackVersion = "1.4.11"
 val logstashEncoderVersion = "7.4"
 val prometheusVersion = "0.16.0"
 val kotestVersion = "5.7.2"
-val smCommonVersion = "1.0.19"
+val smCommonVersion = "2.0.0"
 val mockkVersion = "1.13.7"
 val testContainerKafkaVersion = "1.19.0"
 val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
 val saxonVersion = "12.3"
-val cxfVersion = "3.5.5"
+val cxfVersion = "3.6.1"
 val jaxsWsApiVersion = "2.3.1"
 val jaxwsRiVersion = "2.3.2"
 val jaxwsToolsVersion = "2.3.1"
@@ -32,10 +30,11 @@ val googleCloudStorageVersion = "2.27.0"
 val xmlschemaCoreVersion = "2.2.5"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val jaxbRuntimeVersion = "2.4.0-b180830.0438"
-val syfoXmlCodeGen = "1.0.10"
+val syfoXmlCodeGen = "2.0.1"
 val jsoupVersion = "1.16.1"
 val ktfmtVersion = "0.44"
-
+val bcprovJdk15onVersion = "1.70"
+val commonsCollectionsVersion = "3.2.2"
 
 plugins {
     id("application")
@@ -55,25 +54,7 @@ repositories {
     mavenCentral()
     maven(url = "https://packages.confluent.io/maven/")
     maven {
-        url = uri("https://maven.pkg.github.com/navikt/syfosm-common")
-        credentials {
-            username = githubUser
-            password = githubPassword
-        }
-    }
-    maven {
-        url = uri("https://maven.pkg.github.com/navikt/maven-release")
-        credentials {
-            username = githubUser
-            password = githubPassword
-        }
-    }
-    maven {
-        url = uri("https://maven.pkg.github.com/navikt/syfo-xml-codegen")
-        credentials {
-            username = githubUser
-            password = githubPassword
-        }
+        url = uri("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
     }
 }
 
@@ -132,8 +113,18 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion") {
+    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion"){
         exclude(group = "org.apache.velocity", module = "velocity")
+    }
+    constraints {
+        implementation("org.bouncycastle:bcprov-jdk15on:$bcprovJdk15onVersion"){
+            because("override transient from org.apache.cxf:cxf-rt-ws-security")
+        }
+    }
+    constraints {
+        implementation("commons-collections:commons-collections:$commonsCollectionsVersion") {
+            because("override transient from org.apache.cxf:cxf-rt-ws-security")
+        }
     }
 
     implementation("org.apache.ws.xmlschema:xmlschema-core:$xmlschemaCoreVersion")
@@ -156,6 +147,7 @@ dependencies {
         exclude(group = "org.eclipse.jetty")
     }
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 
