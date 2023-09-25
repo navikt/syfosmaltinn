@@ -13,6 +13,7 @@ updates:
       - dependency-name: "org.apache.cxf:cxf-rt-transports-http"
       - dependency-name: "org.apache.cxf:cxf-rt-ws-security"
       - dependency-name: "org.apache.ws.xmlschema:xmlschema-core"
+      - dependency-name: "no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic"
     groups:
       dependencies:
         patterns:
