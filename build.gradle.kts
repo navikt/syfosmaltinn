@@ -47,9 +47,6 @@ application {
     mainClass.set("no.nav.syfo.BootstrapKt")
 }
 
-val githubUser: String by project
-val githubPassword: String by project
-
 repositories {
     mavenCentral()
     maven(url = "https://packages.confluent.io/maven/")
