@@ -35,6 +35,7 @@ val jsoupVersion = "1.16.1"
 val ktfmtVersion = "0.44"
 val bcprovJdk15onVersion = "1.70"
 val commonsCollectionsVersion = "3.2.2"
+val snappyJavaVersion = "1.1.10.5"
 
 plugins {
     id("application")
@@ -93,6 +94,11 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("no.nav.helse:syfosm-common-kafka:$smCommonVersion")
+    constraints {
+        implementation("org.xerial.snappy:snappy-java:$snappyJavaVersion") {
+            because("override transient from org.apache.kafka:kafka_2.12")
+        }
+    }
     implementation("no.nav.helse:syfosm-common-models:$smCommonVersion")
     implementation("no.nav.helse:syfosm-common-networking:$smCommonVersion")
 
