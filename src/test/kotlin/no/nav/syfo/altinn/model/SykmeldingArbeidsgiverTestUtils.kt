@@ -117,7 +117,7 @@ class SykmeldingArbeidsgiverTestUtils {
             return navn
         }
 
-        fun xmlSykmeldingArbeidsgiverAsString(): String? {
+        fun xmlSykmeldingArbeidsgiverAsString(): String {
             return """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:sykmeldingArbeidsgiver xmlns:ns2="http://nav.no/melding/virksomhet/sykmeldingArbeidsgiver/v1/sykmeldingArbeidsgiver">
     <sykmelding>

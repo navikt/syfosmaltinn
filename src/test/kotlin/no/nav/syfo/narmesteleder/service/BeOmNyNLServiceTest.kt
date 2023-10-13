@@ -1,6 +1,5 @@
 package no.nav.syfo.narmesteleder.service
 
-import io.kotest.core.spec.style.FunSpec
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -18,125 +17,151 @@ import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.sykmelding.db.DatabaseInterface
 import no.nav.syfo.sykmelding.db.hasCheckedNl
 import org.amshove.kluent.shouldBeEqualTo
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 
-class BeOmNyNLServiceTest :
-    FunSpec({
-        val nlRequestProducer = mockk<NLRequestProducer>(relaxed = true)
-        val nlResponseProducer = mockk<NLResponseProducer>(relaxed = true)
-        val database = mockk<DatabaseInterface>()
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+internal class BeOmNyNLServiceTest {
+    private val nlRequestProducer = mockk<NLRequestProducer>(relaxed = true)
+    private val nlResponseProducer = mockk<NLResponseProducer>(relaxed = true)
+    private val database = mockk<DatabaseInterface>()
+    private val beOmNyNLService = BeOmNyNLService(nlRequestProducer, nlResponseProducer, database)
+
+    @AfterEach
+    fun afterTest() {
         mockkStatic("no.nav.syfo.sykmelding.db.DatabaseQueriesKt")
-        val beOmNyNLService = BeOmNyNLService(nlRequestProducer, nlResponseProducer, database)
+        clearMocks(database)
+    }
 
-        afterTest {
-            mockkStatic("no.nav.syfo.sykmelding.db.DatabaseQueriesKt")
-            clearMocks(database)
-        }
+    @BeforeAll
+    fun beforeAll() {
+        mockkStatic("no.nav.syfo.sykmelding.db.DatabaseQueriesKt")
+    }
 
-        beforeTest { every { database.hasCheckedNl(any()) } returns false }
+    @BeforeEach
+    fun beforeTest() {
+        every { database.hasCheckedNl(any()) } returns false
+    }
 
-        context("BeOmNyNLService") {
-            test("Skal ikke be om ny NL om det er gjort") {
-                every { database.hasCheckedNl(any()) } returns true
-                val sykmeldingStatusKafkaEvent =
-                    getSykmeldingStatusKafkaEvent(
-                        listOf(
-                            SporsmalOgSvarDTO(
-                                "Be om ny nærmeste leder?",
-                                ShortNameDTO.NY_NARMESTE_LEDER,
-                                SvartypeDTO.JA_NEI,
-                                "JA",
-                            ),
-                        ),
-                    )
-                beOmNyNLService.skalBeOmNyNL(
-                    sykmeldingStatusKafkaEvent,
-                    getNarmesteleder(true)
-                ) shouldBeEqualTo false
-            }
+    @Test
+    internal fun `Skal ikke be om ny NL om det er gjort`() {
+        every { database.hasCheckedNl(any()) } returns true
+        val sykmeldingStatusKafkaEvent =
+            getSykmeldingStatusKafkaEvent(
+                listOf(
+                    SporsmalOgSvarDTO(
+                        "Be om ny nærmeste leder?",
+                        ShortNameDTO.NY_NARMESTE_LEDER,
+                        SvartypeDTO.JA_NEI,
+                        "JA",
+                    ),
+                ),
+            )
+        beOmNyNLService.skalBeOmNyNL(
+            sykmeldingStatusKafkaEvent,
+            getNarmesteleder(true),
+        ) shouldBeEqualTo false
+    }
 
-            test("Skal ikke be om ny NL om det ikke er gjort") {
-                every { database.hasCheckedNl(any()) } returns false
-                val sykmeldingStatusKafkaEvent =
-                    getSykmeldingStatusKafkaEvent(
-                        listOf(
-                            SporsmalOgSvarDTO(
-                                "Be om ny nærmeste leder?",
-                                ShortNameDTO.NY_NARMESTE_LEDER,
-                                SvartypeDTO.JA_NEI,
-                                "JA",
-                            ),
-                        ),
-                    )
-                beOmNyNLService.skalBeOmNyNL(
-                    sykmeldingStatusKafkaEvent,
-                    getNarmesteleder(true)
-                ) shouldBeEqualTo true
-            }
+    @Test
+    internal fun `Skal ikke be om ny NL om det ikke er gjort`() {
+        every { database.hasCheckedNl(any()) } returns false
+        val sykmeldingStatusKafkaEvent =
+            getSykmeldingStatusKafkaEvent(
+                listOf(
+                    SporsmalOgSvarDTO(
+                        "Be om ny nærmeste leder?",
+                        ShortNameDTO.NY_NARMESTE_LEDER,
+                        SvartypeDTO.JA_NEI,
+                        "JA",
+                    ),
+                ),
+            )
+        beOmNyNLService.skalBeOmNyNL(
+            sykmeldingStatusKafkaEvent,
+            getNarmesteleder(true),
+        ) shouldBeEqualTo true
+    }
 
-            test("Skal be om ny NL hvis det er svart ja på spørsmål om NL") {
-                val sykmeldingStatusKafkaEvent =
-                    getSykmeldingStatusKafkaEvent(
-                        listOf(
-                            SporsmalOgSvarDTO(
-                                "Be om ny nærmeste leder?",
-                                ShortNameDTO.NY_NARMESTE_LEDER,
-                                SvartypeDTO.JA_NEI,
-                                "JA",
-                            ),
-                        ),
-                    )
+    @Test
+    internal fun `Skal be om ny NL hvis det er svart ja på spørsmål om NL`() {
+        val sykmeldingStatusKafkaEvent =
+            getSykmeldingStatusKafkaEvent(
+                listOf(
+                    SporsmalOgSvarDTO(
+                        "Be om ny nærmeste leder?",
+                        ShortNameDTO.NY_NARMESTE_LEDER,
+                        SvartypeDTO.JA_NEI,
+                        "JA",
+                    ),
+                ),
+            )
 
-                beOmNyNLService.skalBeOmNyNL(
-                    sykmeldingStatusKafkaEvent,
-                    getNarmesteleder(forskutterer = false),
-                ) shouldBeEqualTo true
-            }
-            test("Skal be om ny NL hvis det ikke er registrert noen NL") {
-                val sykmeldingStatusKafkaEvent = getSykmeldingStatusKafkaEvent(emptyList())
+        beOmNyNLService.skalBeOmNyNL(
+            sykmeldingStatusKafkaEvent,
+            getNarmesteleder(forskutterer = false),
+        ) shouldBeEqualTo true
+    }
 
-                beOmNyNLService.skalBeOmNyNL(sykmeldingStatusKafkaEvent, null) shouldBeEqualTo true
-            }
-            test("Skal be om ny NL hvis det ikke er svart på om NL forskutterer lønn") {
-                val sykmeldingStatusKafkaEvent =
-                    getSykmeldingStatusKafkaEvent(
-                        emptyList(),
-                    )
+    @Test
+    internal fun `Skal be om ny NL hvis det ikke er registrert noen NL`() {
+        val sykmeldingStatusKafkaEvent = getSykmeldingStatusKafkaEvent(emptyList())
 
-                beOmNyNLService.skalBeOmNyNL(
-                    sykmeldingStatusKafkaEvent,
-                    getNarmesteleder(forskutterer = null),
-                ) shouldBeEqualTo true
-            }
-            test(
-                "Skal ikke be om ny NL hvis NL er registrert og har svart på forskuttering og bruker ikke har bedt om ny NL"
-            ) {
-                val sykmeldingStatusKafkaEvent =
-                    getSykmeldingStatusKafkaEvent(
-                        emptyList(),
-                    )
+        beOmNyNLService.skalBeOmNyNL(
+            sykmeldingStatusKafkaEvent,
+            null,
+        ) shouldBeEqualTo true
+    }
 
-                beOmNyNLService.skalBeOmNyNL(
-                    sykmeldingStatusKafkaEvent,
-                    getNarmesteleder(forskutterer = false),
-                ) shouldBeEqualTo false
-            }
-            test("Skal ikke be om ny NL hvis det er svart nei på spørsmål om NL") {
-                val sykmeldingStatusKafkaEvent =
-                    getSykmeldingStatusKafkaEvent(
-                        listOf(
-                            SporsmalOgSvarDTO(
-                                "Be om ny nærmeste leder?",
-                                ShortNameDTO.NY_NARMESTE_LEDER,
-                                SvartypeDTO.JA_NEI,
-                                "NEI",
-                            ),
-                        ),
-                    )
+    @Test
+    internal fun `Skal be om ny NL hvis det ikke er svart på om NL forskutterer lønn`() {
+        val sykmeldingStatusKafkaEvent =
+            getSykmeldingStatusKafkaEvent(
+                emptyList(),
+            )
 
-                beOmNyNLService.skalBeOmNyNL(sykmeldingStatusKafkaEvent, null) shouldBeEqualTo false
-            }
-        }
-    })
+        beOmNyNLService.skalBeOmNyNL(
+            sykmeldingStatusKafkaEvent,
+            getNarmesteleder(forskutterer = null),
+        ) shouldBeEqualTo true
+    }
+
+    @Test
+    internal fun `Skal ikke be om ny NL hvis NL er registrert og har svart på forskuttering og bruker ikke har bedt om ny NL`() {
+        val sykmeldingStatusKafkaEvent =
+            getSykmeldingStatusKafkaEvent(
+                emptyList(),
+            )
+
+        beOmNyNLService.skalBeOmNyNL(
+            sykmeldingStatusKafkaEvent,
+            getNarmesteleder(forskutterer = false),
+        ) shouldBeEqualTo false
+    }
+
+    @Test
+    internal fun `Skal ikke be om ny NL hvis det er svart nei på spørsmål om NL`() {
+        val sykmeldingStatusKafkaEvent =
+            getSykmeldingStatusKafkaEvent(
+                listOf(
+                    SporsmalOgSvarDTO(
+                        "Be om ny nærmeste leder?",
+                        ShortNameDTO.NY_NARMESTE_LEDER,
+                        SvartypeDTO.JA_NEI,
+                        "NEI",
+                    ),
+                ),
+            )
+
+        beOmNyNLService.skalBeOmNyNL(
+            sykmeldingStatusKafkaEvent,
+            null,
+        ) shouldBeEqualTo false
+    }
+}
 
 fun getSykmeldingStatusKafkaEvent(
     sporsmalOgSvarListe: List<SporsmalOgSvarDTO>

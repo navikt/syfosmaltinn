@@ -7,7 +7,7 @@ This project contains the application code and infrastructure for syfosmaltinn
 * Kotlin
 * Ktor
 * Gradle
-* Kotest
+* Junit
 
 ## Requirements
 * JDK 17
