@@ -16,6 +16,7 @@ spec:
         - application: smarbeidsgiver-pdfgen
           namespace: teamsykmelding
           cluster: dev-gcp
+        - application: narmesteleder
   gcp:
     sqlInstances:
       - name: syfosmaltinn-db-instance
