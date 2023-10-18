@@ -16,7 +16,6 @@ spec:
         - application: smarbeidsgiver-pdfgen
           namespace: teamsykmelding
           cluster: prod-gcp
-        - application: narmesteleder
   gcp:
     sqlInstances:
       - type: POSTGRES_12
