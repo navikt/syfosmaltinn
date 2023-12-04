@@ -39,7 +39,7 @@ val junitJupiterVersion="5.10.1"
 
 plugins {
     id("application")
-    id("com.diffplug.spotless") version "6.23.0"
+    id("com.diffplug.spotless") version "6.23.2"
     kotlin("jvm") version "1.9.21"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
@@ -104,7 +104,8 @@ dependencies {
 
     implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("com.zaxxer:HikariCP:$hikariVersion")
-    implementation("org.flywaydb:flyway-core:$flywayVersion")
+    compileOnly("org.flywaydb:flyway-core:$flywayVersion")
+    implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 
     implementation("com.google.cloud:google-cloud-storage:$googleCloudStorageVersion")
 
