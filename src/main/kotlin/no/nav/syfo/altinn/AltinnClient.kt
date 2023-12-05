@@ -38,9 +38,6 @@ class AltinnClient(
         sykmeldingId: String
     ): Int {
         try {
-            securelog.info(
-                "insertCorrespondenceV2: ${objectMapper.writeValueAsString(insertCorrespondenceV2)}"
-            )
             val receiptExternal =
                 retry(
                     callName = "insertCorrespondenceBasicV2",
@@ -60,7 +57,7 @@ class AltinnClient(
                         insertCorrespondenceV2,
                     )
                 }
-            securelog.info("receipt: ${objectMapper.writeValueAsString(receiptExternal)}")
+            securelog.info("receiptStatusCode: ${objectMapper.writeValueAsString(receiptExternal.receiptStatusCode )}")
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
                 log.error(
                     "Error fra altinn {} for sykmeldingId: {}, {}",
