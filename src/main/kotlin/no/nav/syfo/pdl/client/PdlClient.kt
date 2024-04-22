@@ -36,6 +36,7 @@ class PdlClient(
                         "Bearer ${accessTokenClient.getAccessToken(pdlScope)}"
                     )
                     header(temaHeader, tema)
+                    header("Behandlingsnummer", "B229")
                     header(HttpHeaders.ContentType, "application/json")
                 }
                 .body<GetPersonResponse>()
