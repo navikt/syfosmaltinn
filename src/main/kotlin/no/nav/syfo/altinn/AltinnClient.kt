@@ -57,7 +57,9 @@ class AltinnClient(
                         insertCorrespondenceV2,
                     )
                 }
-            securelog.info("receiptStatusCode: ${objectMapper.writeValueAsString(receiptExternal.receiptStatusCode )}")
+            securelog.info(
+                "receiptStatusCode: ${objectMapper.writeValueAsString(receiptExternal.receiptStatusCode )}"
+            )
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
                 log.error(
                     "Error fra altinn {} for sykmeldingId: {}, {}",
