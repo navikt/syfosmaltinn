@@ -58,7 +58,7 @@ spec:
       runtime: java
   resources:
     limits:
-      memory: 1512Mi
+      memory: 3000Mi
     requests:
       cpu: 100m
       memory: 700Mi
