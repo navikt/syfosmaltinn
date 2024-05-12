@@ -23,6 +23,7 @@ class AltinnClient(
     private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
     private val username: String,
     private val password: String,
+    private val cluster: String,
 ) {
     val SYSTEM_USER_CODE = "NAV_DIGISYFO"
     val objectMapper: ObjectMapper =
@@ -67,7 +68,17 @@ class AltinnClient(
                     sykmeldingId,
                     receiptExternal.receiptText,
                 )
-                throw AltinnException("Error from altinn")
+                if (cluster == "dev-gcp") {
+                    log.error(
+                    "Skip due error fra altinn due to dev {} for sykmeldingId: {}, {}",
+                    receiptExternal.receiptStatusCode,
+                    sykmeldingId,
+                    receiptExternal.receiptText
+                )
+                }
+else {
+
+                throw AltinnException("Error from altinn")}
             }
             return receiptExternal.receiptId
         } catch (ex: Exception) {
