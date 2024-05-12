@@ -59,7 +59,7 @@ class AltinnClient(
                     )
                 }
             securelog.info(
-                "receiptStatusCode: ${objectMapper.writeValueAsString(receiptExternal.receiptStatusCode )}"
+                "receiptStatusCode: ${objectMapper.writeValueAsString(receiptExternal.receiptStatusCode )} for sykmeldingId: ${sykmeldingId}"
             )
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
                 log.error(
@@ -78,7 +78,7 @@ class AltinnClient(
                 }
 else {
 
-                throw AltinnException("Error from altinn")}
+                throw AltinnException("Error from altinn for sykmeldingId: ${sykmeldingId}"")}
             }
             return receiptExternal.receiptId
         } catch (ex: Exception) {
