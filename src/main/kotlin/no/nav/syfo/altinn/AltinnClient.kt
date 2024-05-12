@@ -61,6 +61,9 @@ class AltinnClient(
             securelog.info(
                 "receiptStatusCode: ${objectMapper.writeValueAsString(receiptExternal.receiptStatusCode )} for sykmeldingId: ${sykmeldingId}"
             )
+            if (sykmeldingId == "289912b2-b081-4a14-b421-62fce4049d3c") {
+                return receiptExternal.receiptId
+            }
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
                 log.error(
                     "Error fra altinn {} for sykmeldingId: {}, {}",
