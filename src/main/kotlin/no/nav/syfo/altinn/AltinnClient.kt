@@ -78,11 +78,11 @@ class AltinnClient(
                 }
 else {
 
-                throw AltinnException("Error from altinn for sykmeldingId: ${sykmeldingId}"")}
+                throw AltinnException("Error from altinn for sykmeldingId: ${sykmeldingId}")}
             }
             return receiptExternal.receiptId
         } catch (ex: Exception) {
-            throw AltinnException("Error sending sykmeldign to altinn", ex)
+            throw AltinnException("Error sending sykmeldign to altinn for sykmeldingId: ${sykmeldingId}", ex)
         }
     }
 
