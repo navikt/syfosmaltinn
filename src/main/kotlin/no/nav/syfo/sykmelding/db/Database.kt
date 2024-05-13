@@ -58,7 +58,7 @@ class Database(private val env: Environment, retries: Long = 30, sleepTime: Long
 
     private fun runFlywayMigrations() =
         Flyway.configure().run {
-            locations("db")
+            locations("db/migration")
             dataSource(env.jdbcUrl(), env.databaseUsername, env.databasePassword)
             load().migrate()
         }
