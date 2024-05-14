@@ -71,11 +71,14 @@ class AltinnClient(
             }
             return receiptExternal.receiptId
         } catch (ex: Exception) {
-            throw AltinnException("Error sending sykmeldign to altinn", ex)
+            throw AltinnException("Error sending sykmelding to altinn", ex)
         }
     }
 
     suspend fun isSendt(id: String, orgnummer: String): Boolean {
+        log.info(
+            "checking if sykmelding is sendt to altinn sykmeldingId: $id: orgnummer: $orgnummer"
+        )
         val altinnResponse =
             retry(
                 callName = "getCorrespondenceStatusDetailsBasicV3",
@@ -97,6 +100,9 @@ class AltinnClient(
                         .withServiceEditionCode(2),
                 )
             }
+        securelog.info(
+            "altinnResponse: ${objectMapper.writeValueAsString(altinnResponse)}"
+        )
         return altinnResponse.correspondenceStatusInformation.correspondenceStatusDetailsList
             .statusV2
             .any { it.sendersReference == id }
