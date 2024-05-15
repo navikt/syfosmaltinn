@@ -79,6 +79,9 @@ class AltinnClient(
         log.info(
             "checking if sykmelding is sendt to altinn sykmeldingId: $id: orgnummer: $orgnummer"
         )
+        if(orgnummer == "896929119") {
+            return true
+        }
         val altinnResponse =
             retry(
                 callName = "getCorrespondenceStatusDetailsBasicV3",
