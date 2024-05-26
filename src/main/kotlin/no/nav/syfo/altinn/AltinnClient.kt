@@ -104,9 +104,6 @@ class AltinnClient(
                         .withServiceEditionCode(2),
                 )
             }
-        securelog.info(
-            "altinnResponse: ${objectMapper.writeValueAsString(altinnResponse)}"
-        )
         return altinnResponse.correspondenceStatusInformation.correspondenceStatusDetailsList
             .statusV2
             .any { it.sendersReference == id }
