@@ -23,6 +23,7 @@ class AltinnClient(
     private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
     private val username: String,
     private val password: String,
+    private val cluster: String,
 ) {
     val SYSTEM_USER_CODE = "NAV_DIGISYFO"
     val objectMapper: ObjectMapper =
@@ -71,11 +72,17 @@ class AltinnClient(
             }
             return receiptExternal.receiptId
         } catch (ex: Exception) {
-            throw AltinnException("Error sending sykmeldign to altinn", ex)
+            throw AltinnException("Error sending sykmelding to altinn", ex)
         }
     }
 
     suspend fun isSendt(id: String, orgnummer: String): Boolean {
+        log.info(
+            "checking if sykmelding is sendt to altinn sykmeldingId: $id: orgnummer: $orgnummer"
+        )
+        if(cluster == "dev-gcp" && orgnummer == "896929119") {
+            return true
+        }
         val altinnResponse =
             retry(
                 callName = "getCorrespondenceStatusDetailsBasicV3",

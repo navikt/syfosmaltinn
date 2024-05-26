@@ -106,6 +106,7 @@ fun main() {
             username = env.altinnUsername,
             password = env.altinnPassword,
             iCorrespondenceAgencyExternalBasic = iCorrespondenceAgencyExternalBasic,
+            cluster = env.cluster,
         )
     val altinnOrgnummerLookup = AltinnOrgnummerLookupFacotry.getOrgnummerResolver(env.cluster)
 
