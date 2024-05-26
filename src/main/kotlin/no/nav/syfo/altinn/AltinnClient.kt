@@ -23,6 +23,7 @@ class AltinnClient(
     private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
     private val username: String,
     private val password: String,
+    private val cluster: String,
 ) {
     val SYSTEM_USER_CODE = "NAV_DIGISYFO"
     val objectMapper: ObjectMapper =
