@@ -24,8 +24,8 @@ val postgresVersion = "42.7.3"
 val flywayVersion = "10.13.0"
 val hikariVersion = "5.1.0"
 val postgresContainerVersion = "1.19.8"
-val kotlinVersion = "1.9.24"
-val googleCloudStorageVersion = "2.38.0"
+val kotlinVersion = "2.0.0"
+val googleCloudStorageVersion = "2.39.0"
 val xmlschemaCoreVersion = "2.2.5"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val jaxbRuntimeVersion = "2.4.0-b180830.0438"
@@ -40,7 +40,7 @@ val junitJupiterVersion="5.10.2"
 plugins {
     id("application")
     id("com.diffplug.spotless") version "6.25.0"
-    kotlin("jvm") version "1.9.24"
+    kotlin("jvm") version "2.0.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
