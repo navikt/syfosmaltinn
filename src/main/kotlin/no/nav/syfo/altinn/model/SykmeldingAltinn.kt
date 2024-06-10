@@ -13,6 +13,7 @@ class SykmeldingAltinn(
     narmesteLeder: NarmesteLeder?,
     egenmeldingsdager: List<LocalDate>?,
     pdf: ByteArray,
+    sykmeldingId: String,
 ) {
     val sykmeldingXml: String = JAXB.marshallSykmeldingArbeidsgiver(xmlSykmeldingArbeidsgiver)
     val sykmeldingHTML: String
@@ -31,6 +32,7 @@ class SykmeldingAltinn(
             toSykmeldingHtml(
                 sykmeldingXml = sykmeldingXmlForHtml,
                 egenmeldingsdager = egenmeldingsdager,
+                sykmeldingId = sykmeldingId,
             )
         sykmeldingPortableHTML =
             SykmeldingHTMLMapper.toPortableHTML(

@@ -46,6 +46,7 @@ internal class AltinnSykmeldingMapperTest {
                 narmesteLeder,
                 emptyList(),
                 "pdf".toByteArray(),
+                "123123",
             )
 
         val insertCorrespondanceV2 =

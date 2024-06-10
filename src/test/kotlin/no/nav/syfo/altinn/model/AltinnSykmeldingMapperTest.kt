@@ -63,6 +63,7 @@ internal class AltinnSykmeldingMapperTest {
                 narmesteLeder,
                 emptyList(),
                 "pdf".toByteArray(),
+                "123123",
             )
 
         val insertCorrespondanceV2 =
@@ -144,6 +145,7 @@ internal class AltinnSykmeldingMapperTest {
                 narmesteLeder,
                 listOf(LocalDate.parse("2021-01-01"), LocalDate.parse("2021-01-06")),
                 "pdf".toByteArray(),
+                "123123",
             )
 
         val dom = Jsoup.parse(sykmeldingAltinn.sykmeldingHTML)
@@ -192,6 +194,7 @@ internal class AltinnSykmeldingMapperTest {
                 narmesteLeder,
                 null,
                 "pdf".toByteArray(),
+                "123123",
             )
 
         val dom = Jsoup.parse(sykmeldingAltinn.sykmeldingHTML)
