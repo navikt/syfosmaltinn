@@ -50,7 +50,7 @@ class AltinnSykmeldingService(
             SykmeldingArbeidsgiverMapper.toAltinnXMLSykmelding(
                 sendSykmeldingAivenKafkaMessage,
                 pasient,
-                egenmeldingsdager
+                egenmeldingsdager,
             )
         val pdf =
             pdfgenClient.createPdf(
@@ -61,10 +61,16 @@ class AltinnSykmeldingService(
                 ),
             )
         val sykmeldingAltinn =
-            SykmeldingAltinn(xmlSykmeldingArbeidsgiver, narmesteLeder, egenmeldingsdager, pdf)
+            SykmeldingAltinn(
+                xmlSykmeldingArbeidsgiver,
+                narmesteLeder,
+                egenmeldingsdager,
+                pdf,
+                sendSykmeldingAivenKafkaMessage.sykmelding.id,
+            )
         val orgnummer =
             altinnOrgnummerLookup.getOrgnummer(
-                sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer
+                sykmeldingAltinn.xmlSykmeldingArbeidsgiver.virksomhetsnummer,
             )
         val sykmeldingId = xmlSykmeldingArbeidsgiver.sykmeldingId
 
@@ -102,12 +108,13 @@ class AltinnSykmeldingService(
                             insertCorrespondenceV2,
                             sykmeldingId,
                         )
-                    true -> log.info("Sykmelding already sendt to altinn")
+                    true ->
+                        log.info("Sykmelding already sendt to altinn, sykmeldingId $sykmeldingId")
                 }
                 database.updateSendtToAlinn(sykmeldingId, OffsetDateTime.now(ZoneOffset.UTC))
             }
             else -> {
-                log.info("Sykmelding already sendt to altinn")
+                log.info("Sykmelding already sendt to altinn, sykmeldingId $sykmeldingId")
             }
         }
     }
@@ -129,7 +136,7 @@ class AltinnSykmeldingService(
             null -> {
                 juridiskLoggService.sendJuridiskLogg(
                     sykmeldingAltinn,
-                    sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId
+                    sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId,
                 )
                 database.updateSendtToLogg(
                     sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId,
@@ -138,7 +145,7 @@ class AltinnSykmeldingService(
             }
             else -> {
                 log.info(
-                    "Sykmelding ${sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId} already sendt to juridisk logg"
+                    "Sykmelding ${sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId} already sendt to juridisk logg",
                 )
             }
         }

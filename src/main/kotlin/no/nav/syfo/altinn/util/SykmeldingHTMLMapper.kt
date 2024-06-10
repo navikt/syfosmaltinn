@@ -15,8 +15,12 @@ import no.nav.syfo.log
 class SykmeldingHTMLMapper private constructor() {
     companion object {
 
-        fun toSykmeldingHtml(sykmeldingXml: String, egenmeldingsdager: List<LocalDate>?): String {
-            containsInvalidCharacters(sykmeldingXml)
+        fun toSykmeldingHtml(
+            sykmeldingXml: String,
+            egenmeldingsdager: List<LocalDate>?,
+            sykmeldingId: String
+        ): String {
+            containsInvalidCharacters(sykmeldingXml, sykmeldingId)
             try {
                 val sykmeldingXsl =
                     SykmeldingHTMLMapper::class
@@ -41,9 +45,9 @@ class SykmeldingHTMLMapper private constructor() {
             }
         }
 
-        fun containsInvalidCharacters(sykmeldingXml: String) {
+        private fun containsInvalidCharacters(sykmeldingXml: String, sykmeldingId: String) {
             if (sykmeldingXml.contains("&#x")) {
-                log.warn("SykmeldingXml contains invalid characters")
+                log.warn("SykmeldingXml contains invalid characters, sykmeldingId $sykmeldingId")
             }
         }
 
