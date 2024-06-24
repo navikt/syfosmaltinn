@@ -36,6 +36,7 @@ val bcprovJdk15onVersion = "1.70"
 val commonsCollectionsVersion = "3.2.2"
 val snappyJavaVersion = "1.1.10.5"
 val junitJupiterVersion="5.10.2"
+val commonsCompressVersion = "1.26.2"
 
 plugins {
     id("application")
@@ -141,6 +142,11 @@ dependencies {
     testImplementation("org.jsoup:jsoup:$jsoupVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
     testImplementation("org.testcontainers:postgresql:$postgresContainerVersion")
+    constraints {
+        implementation("org.apache.commons:commons-compress:$commonsCompressVersion") {
+            because("Due to vulnerabilities, see CVE-2024-26308")
+        }
+    }
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("org.testcontainers:kafka:$testContainerKafkaVersion") {
