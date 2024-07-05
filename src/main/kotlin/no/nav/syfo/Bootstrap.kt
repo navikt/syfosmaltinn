@@ -70,11 +70,17 @@ fun main() {
     val env = Environment()
     DefaultExports.initialize()
     val applicationState = ApplicationState()
-    val applicationEngine =
-        createApplicationEngine(
-            env,
-            applicationState,
+
+    val iCorrespondenceAgencyExternalBasic = createPort(env.altinnUrl)
+    val altinnClient =
+        AltinnClient(
+            username = env.altinnUsername,
+            password = env.altinnPassword,
+            iCorrespondenceAgencyExternalBasic = iCorrespondenceAgencyExternalBasic,
+            cluster = env.cluster,
         )
+
+    val applicationEngine = createApplicationEngine(env, applicationState, altinnClient)
     val applicationServer = ApplicationServer(applicationEngine, applicationState)
     val database = Database(env)
 
@@ -100,14 +106,6 @@ fun main() {
     val nlResponseProducer = NLResponseProducer(kafkaProducerNlResponse, env.brytNLKafkaTopic)
     val beOmNyNLService = BeOmNyNLService(nlRequestProducer, nlResponseProducer, database)
 
-    val iCorrespondenceAgencyExternalBasic = createPort(env.altinnUrl)
-    val altinnClient =
-        AltinnClient(
-            username = env.altinnUsername,
-            password = env.altinnPassword,
-            iCorrespondenceAgencyExternalBasic = iCorrespondenceAgencyExternalBasic,
-            cluster = env.cluster,
-        )
     val altinnOrgnummerLookup = AltinnOrgnummerLookupFacotry.getOrgnummerResolver(env.cluster)
 
     val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {

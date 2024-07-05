@@ -10,6 +10,7 @@ import javax.xml.ws.soap.SOAPFaultException
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
 import no.altinn.schemas.services.serviceengine.correspondence._2016._02.CorrespondenceStatusFilterV3
+import no.altinn.schemas.services.serviceengine.correspondence._2016._02.CorrespondenceStatusResultV3
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicGetCorrespondenceStatusDetailsBasicV3AltinnFaultFaultFaultMessage
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
@@ -74,6 +75,21 @@ class AltinnClient(
         } catch (ex: Exception) {
             throw AltinnException("Error sending sykmelding to altinn", ex)
         }
+    }
+
+    suspend fun getAltinnStatus(id: String, orgnummer: String): CorrespondenceStatusResultV3? {
+        val altinnResponse =
+            iCorrespondenceAgencyExternalBasic.getCorrespondenceStatusDetailsBasicV3(
+                username,
+                password,
+                CorrespondenceStatusFilterV3()
+                    .withSendersReference(id)
+                    .withServiceCode(AltinnSykmeldingMapper.SYKMELDING_TJENESTEKODE)
+                    .withReportee(orgnummer)
+                    .withServiceEditionCode(2)
+            )
+
+        return altinnResponse
     }
 
     suspend fun isSendt(id: String, orgnummer: String): Boolean {

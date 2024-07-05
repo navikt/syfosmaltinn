@@ -19,6 +19,8 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import java.util.UUID
 import no.nav.syfo.Environment
+import no.nav.syfo.altinn.AltinnClient
+import no.nav.syfo.altinn.api.registerAltinnApi
 import no.nav.syfo.application.api.registerNaisApi
 import no.nav.syfo.application.metrics.monitorHttpRequests
 import no.nav.syfo.log
@@ -26,6 +28,7 @@ import no.nav.syfo.log
 fun createApplicationEngine(
     env: Environment,
     applicationState: ApplicationState,
+    altinnClient: AltinnClient,
 ): ApplicationEngine =
     embeddedServer(Netty, env.applicationPort) {
         install(ContentNegotiation) {
@@ -49,6 +52,9 @@ fun createApplicationEngine(
             }
         }
 
-        routing { registerNaisApi(applicationState) }
+        routing {
+            registerNaisApi(applicationState)
+            registerAltinnApi(altinnClient)
+        }
         intercept(ApplicationCallPipeline.Monitoring, monitorHttpRequests())
     }
