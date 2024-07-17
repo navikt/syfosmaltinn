@@ -16,6 +16,11 @@ spec:
         - application: smarbeidsgiver-pdfgen
           namespace: teamsykmelding
           cluster: dev-gcp
+      inbound:
+        rules:
+          - application: macgyver
+            namespace: teamsykmelding
+            cluster: dev-gcp
   gcp:
     sqlInstances:
       - name: syfosmaltinn-db-instance
