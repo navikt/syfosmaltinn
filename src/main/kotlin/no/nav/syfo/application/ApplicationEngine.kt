@@ -1,5 +1,6 @@
 package no.nav.syfo.application
 
+import com.auth0.jwk.JwkProvider
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -9,6 +10,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.ApplicationCallPipeline
 import io.ktor.server.application.install
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.engine.ApplicationEngine
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -16,7 +19,7 @@ import io.ktor.server.plugins.callid.CallId
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respond
-import io.ktor.server.routing.routing
+import io.ktor.server.routing.*
 import java.util.UUID
 import no.nav.syfo.Environment
 import no.nav.syfo.altinn.AltinnClient
@@ -29,6 +32,7 @@ fun createApplicationEngine(
     env: Environment,
     applicationState: ApplicationState,
     altinnClient: AltinnClient,
+    jwkProviderAadV2: JwkProvider,
 ): ApplicationEngine =
     embeddedServer(Netty, env.applicationPort) {
         install(ContentNegotiation) {
@@ -51,10 +55,17 @@ fun createApplicationEngine(
                 call.respond(HttpStatusCode.InternalServerError, cause.message ?: "Unknown error")
             }
         }
-
+        install(Authentication) {
+            jwt {
+                this@embeddedServer.setupAuth(
+                    jwkProviderAadV2 = jwkProviderAadV2,
+                    environment = env,
+                )
+            }
+        }
         routing {
             registerNaisApi(applicationState)
-            registerAltinnApi(altinnClient)
+            authenticate { this@routing.registerAltinnApi(altinnClient) }
         }
         intercept(ApplicationCallPipeline.Monitoring, monitorHttpRequests())
     }

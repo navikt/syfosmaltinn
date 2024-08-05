@@ -1,5 +1,6 @@
 package no.nav.syfo
 
+import com.auth0.jwk.JwkProviderBuilder
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -17,7 +18,10 @@ import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.network.sockets.SocketTimeoutException
 import io.ktor.serialization.jackson.jackson
+import io.ktor.server.application.*
 import io.prometheus.client.hotspot.DefaultExports
+import java.net.URI
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -80,7 +84,14 @@ fun main() {
             cluster = env.cluster,
         )
 
-    val applicationEngine = createApplicationEngine(env, applicationState, altinnClient)
+    val jwkProviderAadV2 =
+        JwkProviderBuilder(URI.create(env.jwkKeysUrlV2).toURL())
+            .cached(10, java.time.Duration.ofHours(24))
+            .rateLimited(10, 1, TimeUnit.MINUTES)
+            .build()
+
+    val applicationEngine =
+        createApplicationEngine(env, applicationState, altinnClient, jwkProviderAadV2)
     val applicationServer = ApplicationServer(applicationEngine, applicationState)
     val database = Database(env)
 
@@ -149,7 +160,6 @@ fun main() {
             requestTimeoutMillis = 20_000
         }
     }
-
     val httpClient = HttpClient(Apache, config)
     val accessTokenClient =
         AccessTokenClient(
