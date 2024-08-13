@@ -10,7 +10,6 @@ val ktorVersion = "2.3.12"
 val logbackVersion = "1.5.6"
 val logstashEncoderVersion = "8.0"
 val prometheusVersion = "0.16.0"
-val smCommonVersion = "2.0.8"
 val mockkVersion = "1.13.12"
 val testContainerKafkaVersion = "1.20.1"
 val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
@@ -37,6 +36,7 @@ val commonsCollectionsVersion = "3.2.2"
 val snappyJavaVersion = "1.1.10.5"
 val junitJupiterVersion="5.10.3"
 val commonsCompressVersion = "1.26.2"
+val kafkaVersion = "3.8.0"
 
 plugins {
     id("application")
@@ -94,14 +94,9 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    implementation("no.nav.helse:syfosm-common-kafka:$smCommonVersion")
-    constraints {
-        implementation("org.xerial.snappy:snappy-java:$snappyJavaVersion") {
-            because("override transient from org.apache.kafka:kafka_2.12")
-        }
-    }
-    implementation("no.nav.helse:syfosm-common-models:$smCommonVersion")
-    implementation("no.nav.helse:syfosm-common-networking:$smCommonVersion")
+
+    implementation("org.apache.kafka:kafka_2.12:$kafkaVersion")
+    implementation("org.apache.kafka:kafka-streams:$kafkaVersion")
 
     implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("com.zaxxer:HikariCP:$hikariVersion")
