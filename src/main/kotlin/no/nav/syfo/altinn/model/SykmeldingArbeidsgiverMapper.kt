@@ -235,7 +235,7 @@ class SykmeldingArbeidsgiverMapper private constructor() {
         private fun getNavn(behandler: BehandlerAGDTO?): XMLNavn? {
             val xmlNavn = ObjectFactory().createXMLNavn()
             xmlNavn.fornavn = behandler?.fornavn ?: ""
-            xmlNavn.etternavn = behandler?.etternavn
+            xmlNavn.etternavn = behandler?.etternavn ?: ""
             xmlNavn.mellomnavn = behandler?.mellomnavn ?: ""
             return xmlNavn
         }
