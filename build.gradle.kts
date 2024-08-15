@@ -4,39 +4,39 @@ group = "no.nav.syfo"
 version = "1.0.0"
 
 val coroutinesVersion = "1.8.1"
-val jacksonVersion = "2.17.1"
+val jacksonVersion = "2.17.2"
 val kluentVersion = "1.73"
 val ktorVersion = "2.3.12"
 val logbackVersion = "1.5.6"
-val logstashEncoderVersion = "7.4"
+val logstashEncoderVersion = "8.0"
 val prometheusVersion = "0.16.0"
-val smCommonVersion = "2.0.8"
-val mockkVersion = "1.13.11"
-val testContainerKafkaVersion = "1.19.8"
+val mockkVersion = "1.13.12"
+val testContainerKafkaVersion = "1.20.1"
 val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
-val saxonVersion = "12.4"
+val saxonVersion = "12.5"
 val cxfVersion = "3.6.1"
 val jaxsWsApiVersion = "2.3.1"
 val jaxwsRiVersion = "2.3.2"
 val jaxwsToolsVersion = "2.3.1"
 val javaxActivationVersion = "1.1.1"
 val postgresVersion = "42.7.3"
-val flywayVersion = "10.15.0"
+val flywayVersion = "10.17.0"
 val hikariVersion = "5.1.0"
-val postgresContainerVersion = "1.19.8"
+val postgresContainerVersion = "1.20.1"
 val kotlinVersion = "2.0.0"
-val googleCloudStorageVersion = "2.40.0"
+val googleCloudStorageVersion = "2.41.0"
 val xmlschemaCoreVersion = "2.2.5"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val jaxbRuntimeVersion = "2.4.0-b180830.0438"
 val syfoXmlCodeGen = "2.0.1"
-val jsoupVersion = "1.17.2"
+val jsoupVersion = "1.18.1"
 val ktfmtVersion = "0.44"
 val bcprovJdk15onVersion = "1.70"
 val commonsCollectionsVersion = "3.2.2"
 val snappyJavaVersion = "1.1.10.5"
-val junitJupiterVersion="5.10.2"
+val junitJupiterVersion="5.10.3"
 val commonsCompressVersion = "1.26.2"
+val kafkaVersion = "3.8.0"
 
 plugins {
     id("application")
@@ -96,14 +96,9 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    implementation("no.nav.helse:syfosm-common-kafka:$smCommonVersion")
-    constraints {
-        implementation("org.xerial.snappy:snappy-java:$snappyJavaVersion") {
-            because("override transient from org.apache.kafka:kafka_2.12")
-        }
-    }
-    implementation("no.nav.helse:syfosm-common-models:$smCommonVersion")
-    implementation("no.nav.helse:syfosm-common-networking:$smCommonVersion")
+
+    implementation("org.apache.kafka:kafka_2.12:$kafkaVersion")
+    implementation("org.apache.kafka:kafka-streams:$kafkaVersion")
 
     implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("com.zaxxer:HikariCP:$hikariVersion")
