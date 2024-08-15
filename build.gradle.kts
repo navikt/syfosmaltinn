@@ -14,7 +14,7 @@ val mockkVersion = "1.13.12"
 val testContainerKafkaVersion = "1.20.1"
 val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
 val saxonVersion = "12.5"
-val cxfVersion = "3.6.1"
+val cxfVersion = "3.6.4"
 val jaxsWsApiVersion = "2.3.1"
 val jaxwsRiVersion = "2.3.2"
 val jaxwsToolsVersion = "2.3.1"
@@ -23,7 +23,7 @@ val postgresVersion = "42.7.3"
 val flywayVersion = "10.17.0"
 val hikariVersion = "5.1.0"
 val postgresContainerVersion = "1.20.1"
-val kotlinVersion = "2.0.0"
+val kotlinVersion = "2.0.10"
 val googleCloudStorageVersion = "2.41.0"
 val xmlschemaCoreVersion = "2.2.5"
 val jaxbApiVersion = "2.4.0-b180830.0359"
@@ -41,8 +41,8 @@ val kafkaVersion = "3.8.0"
 plugins {
     id("application")
     id("com.diffplug.spotless") version "6.25.0"
-    kotlin("jvm") version "2.0.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    kotlin("jvm") version "2.0.10"
+    id("com.gradleup.shadow") version "8.3.0"
 }
 
 application {
