@@ -48,7 +48,7 @@ class AltinnSykmeldingServiceTest {
         clearAllMocks()
         mockkStatic("no.nav.syfo.sykmelding.db.DatabaseQueriesKt")
         every { env.cluster } returns "dev-gcp"
-        coEvery { pdfgenClient.createPdf(any()) } returns "pdf".toByteArray()
+        coEvery { pdfgenClient.createPdf(any(), any()) } returns "pdf".toByteArray()
     }
 
     @Test

@@ -59,6 +59,7 @@ class AltinnSykmeldingService(
                     narmesteLeder,
                     egenmeldingsdager,
                 ),
+                sendSykmeldingAivenKafkaMessage.sykmelding.id,
             )
         val sykmeldingAltinn =
             SykmeldingAltinn(
