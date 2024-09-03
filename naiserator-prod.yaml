@@ -27,6 +27,7 @@ spec:
         flags:
           - name: cloudsql.logical_decoding
             value: "on"
+        tier: db-f1-micro
     buckets:
       - name: teamsykmelding-syfosmaltinn-bucket-prod
         retentionPeriodDays: 1825
