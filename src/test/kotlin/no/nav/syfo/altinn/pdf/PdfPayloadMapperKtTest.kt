@@ -231,4 +231,61 @@ internal class PdfPayloadMapperKtTest {
         sykmeldingsperiode.aktivitetIkkeMulig shouldBeEqualTo AktivitetIkkeMuligAGDTO(null)
         sykmeldingsperiode.reisetilskudd shouldBeEqualTo false
     }
+
+    @Test
+    internal fun `Mapper sykmelding riktig med ugyldigetegn i tiltakArbeidsplassen`() {
+        val sykmeldingId = UUID.randomUUID().toString()
+        val perioder =
+            listOf(
+                SykmeldingsperiodeAGDTO(
+                    fom = LocalDate.of(2022, 10, 3),
+                    tom = LocalDate.of(2022, 11, 6),
+                    gradert = null,
+                    behandlingsdager = null,
+                    innspillTilArbeidsgiver = null,
+                    type = PeriodetypeDTO.AKTIVITET_IKKE_MULIG,
+                    aktivitetIkkeMulig = AktivitetIkkeMuligAGDTO(null),
+                    reisetilskudd = false,
+                ),
+            )
+        val sykmeldingKafkaMessage =
+            getSykmeldingKafkaMessage(
+                sykmeldingId,
+                perioder,
+                UtenlandskSykmeldingAGDTO("POL"),
+                "pål\n" +
+                    "\uFEFF\n" +
+                    "\\"
+            )
+
+        val pdfPayload =
+            sykmeldingKafkaMessage.sykmelding.toPdfPayload(
+                person,
+                narmesteLeder,
+                emptyList(),
+            )
+
+        pdfPayload.ansatt shouldBeEqualTo Ansatt("fnr", "Per Person")
+        pdfPayload.narmesteleder shouldBeEqualTo narmesteLeder
+        pdfPayload.arbeidsgiverSykmelding.arbeidsgiverNavn shouldBeEqualTo "ArbeidsgiverNavn"
+        pdfPayload.arbeidsgiverSykmelding.prognose shouldBeEqualTo
+            sykmeldingKafkaMessage.sykmelding.prognose
+        pdfPayload.arbeidsgiverSykmelding.tiltakArbeidsplassen shouldBeEqualTo
+            "pål\\"
+        pdfPayload.arbeidsgiverSykmelding.meldingTilArbeidsgiver shouldBeEqualTo
+            sykmeldingKafkaMessage.sykmelding.meldingTilArbeidsgiver
+        pdfPayload.arbeidsgiverSykmelding.behandler shouldBeEqualTo BehandlerPdf("", null)
+        pdfPayload.arbeidsgiverSykmelding.egenmeldingsdager?.size shouldBeEqualTo 0
+        val sykmeldingsperiode = pdfPayload.arbeidsgiverSykmelding.sykmeldingsperioder.first()
+        sykmeldingsperiode.fom shouldBeEqualTo LocalDate.of(2022, 10, 3)
+        sykmeldingsperiode.tom shouldBeEqualTo LocalDate.of(2022, 11, 6)
+        sykmeldingsperiode.varighet shouldBeEqualTo 35
+        sykmeldingsperiode.gradert shouldBeEqualTo null
+        sykmeldingsperiode.behandlingsdager shouldBeEqualTo null
+        sykmeldingsperiode.innspillTilArbeidsgiver shouldBeEqualTo null
+        sykmeldingsperiode.type shouldBeEqualTo PeriodetypeDTO.AKTIVITET_IKKE_MULIG
+        sykmeldingsperiode.aktivitetIkkeMulig shouldBeEqualTo AktivitetIkkeMuligAGDTO(null)
+        sykmeldingsperiode.reisetilskudd shouldBeEqualTo false
+    }
+
 }
