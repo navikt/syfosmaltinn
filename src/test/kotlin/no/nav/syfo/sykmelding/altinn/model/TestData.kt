@@ -34,6 +34,7 @@ fun getSykmeldingKafkaMessage(
     sykmeldingId: String,
     periodeliste: List<SykmeldingsperiodeAGDTO> = defaultPeriodeliste,
     utenlandskSykmelding: UtenlandskSykmeldingAGDTO? = null,
+    tiltakArbeidsplassen:String ? = "TiltakArbeidsplassen" ,
 ): SendSykmeldingAivenKafkaMessage {
     return SendSykmeldingAivenKafkaMessage(
         sykmelding =
@@ -73,7 +74,7 @@ fun getSykmeldingKafkaMessage(
                     ),
                 syketilfelleStartDato = LocalDate.of(2016, 12, 7),
                 sykmeldingsperioder = periodeliste,
-                tiltakArbeidsplassen = "TiltakArbeidsplassen",
+                tiltakArbeidsplassen = tiltakArbeidsplassen,
                 merknader = emptyList(),
                 utenlandskSykmelding = utenlandskSykmelding,
                 signaturDato = OffsetDateTime.now(),

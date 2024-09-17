@@ -32,6 +32,7 @@ spec:
         flags:
           - name: cloudsql.logical_decoding
             value: "on"
+        tier: db-custom-2-5120
     buckets:
       - name: teamsykmelding-syfosmaltinn-bucket-prod
         retentionPeriodDays: 1825
