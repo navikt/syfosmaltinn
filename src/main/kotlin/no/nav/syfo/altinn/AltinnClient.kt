@@ -77,7 +77,7 @@ class AltinnClient(
         }
     }
 
-    suspend fun getAltinnStatus(id: String, orgnummer: String): CorrespondenceStatusResultV3? {
+    fun getAltinnStatus(id: String, orgnummer: String): CorrespondenceStatusResultV3? {
         val altinnResponse =
             iCorrespondenceAgencyExternalBasic.getCorrespondenceStatusDetailsBasicV3(
                 username,
