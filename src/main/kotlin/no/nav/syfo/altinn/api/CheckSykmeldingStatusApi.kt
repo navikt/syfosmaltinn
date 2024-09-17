@@ -2,8 +2,7 @@ package no.nav.syfo.altinn.api
 
 import io.ktor.server.application.call
 import io.ktor.server.response.*
-import io.ktor.server.routing.Routing
-import io.ktor.server.routing.get
+import io.ktor.server.routing.*
 import java.io.StringReader
 import java.io.StringWriter
 import javax.xml.bind.JAXBContext
@@ -22,7 +21,7 @@ fun serializeToXml(obj: CorrespondenceStatusResultV3): String {
     val jaxbContext =
         JAXBContext.newInstance(
             no.altinn.schemas.services.serviceengine.correspondence._2016._02.ObjectFactory::class
-                .java
+                .java,
         )
     val marshaller: Marshaller = jaxbContext.createMarshaller()
     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
@@ -53,28 +52,29 @@ fun mapXmlToObject(xml: String): AltinnStatus {
         createdDate = statusV2?.createdDate?.toString() ?: "",
         orgnummer = statusV2?.reportee ?: "",
         sendersReference = statusV2?.sendersReference ?: "",
-        statusChanges = statusChanges
+        statusChanges = statusChanges,
     )
 }
 
-fun Routing.registerAltinnApi(altinnClient: AltinnClient) {
+fun Route.registerAltinnApi(altinnClient: AltinnClient) {
+    route("/internal") {
+        get("/altinn/{sykmeldingId}/{orgnummer}") {
+            val altinnResult =
+                altinnClient.getAltinnStatus(
+                    call.parameters["sykmeldingId"]!!,
+                    call.parameters["orgnummer"]!!,
+                )
+            if (altinnResult == null) {
+                call.respondText("No result found")
+                return@get
+            } else {
+                val response = serializeToXml(altinnResult)
+                val altinnStatus = mapXmlToObject(response)
 
-    get("/internal/altinn/{sykmeldingId}/{orgnummer}") {
-        val altinnResult =
-            altinnClient.getAltinnStatus(
-                call.parameters["sykmeldingId"]!!,
-                call.parameters["orgnummer"]!!
-            )
-        if (altinnResult == null) {
-            call.respondText("No result found")
-            return@get
-        } else {
-            val response = serializeToXml(altinnResult)
-            val altinnStatus = mapXmlToObject(response)
-
-            securelog.info("Response from altinn: $response")
-            securelog.info("Mapped response: $altinnStatus")
-            call.respond(altinnStatus)
+                securelog.info("Response from altinn: $response")
+                securelog.info("Mapped response: $altinnStatus")
+                call.respond(altinnStatus)
+            }
         }
     }
 }

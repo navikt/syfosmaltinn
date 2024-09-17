@@ -3,7 +3,7 @@ package no.nav.syfo.narmesteleder.service
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import no.nav.syfo.model.sykmeldingstatus.KafkaMetadataDTO
 import no.nav.syfo.model.sykmeldingstatus.ShortNameDTO
 import no.nav.syfo.model.sykmeldingstatus.SykmeldingStatusKafkaEventDTO
@@ -32,7 +32,7 @@ class BeOmNyNLService(
         event: SykmeldingStatusKafkaEventDTO,
         person: Person
     ) {
-        log.info(
+        logger.info(
             "Ber om ny nærmeste leder og bryter eksisterende kobling for sykmeldingid {}",
             kafkaMetadata.sykmeldingId,
         )
@@ -44,7 +44,7 @@ class BeOmNyNLService(
                             try {
                                 UUID.fromString(kafkaMetadata.sykmeldingId)
                             } catch (e: Exception) {
-                                log.warn(
+                                logger.warn(
                                     "Sykmeldingid ${kafkaMetadata.sykmeldingId} er ikke uuid, genererer ny id"
                                 )
                                 UUID.randomUUID()
@@ -89,7 +89,9 @@ class BeOmNyNLService(
         val narmestelederCheck =
             database.hasCheckedNl(sykmeldingId = sykmeldingStatusKafkaEventDTO.sykmeldingId)
         if (narmestelederCheck) {
-            log.info("Har allerede bedt om ny NL for ${sykmeldingStatusKafkaEventDTO.sykmeldingId}")
+            logger.info(
+                "Har allerede bedt om ny NL for ${sykmeldingStatusKafkaEventDTO.sykmeldingId}"
+            )
             return false
         }
         val nlSporsmal =

@@ -46,7 +46,7 @@ plugins {
 }
 
 application {
-    mainClass.set("no.nav.syfo.BootstrapKt")
+    mainClass.set("no.nav.syfo.ApplicationKt")
 }
 
 repositories {
@@ -174,7 +174,7 @@ tasks {
         manifest {
             attributes(
                 mapOf(
-                    "Main-Class" to "no.nav.syfo.BootstrapKt",
+                    "Main-Class" to "no.nav.syfo.ApplicationKt",
                 ),
             )
         }

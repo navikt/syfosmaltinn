@@ -10,7 +10,7 @@ import java.time.temporal.ChronoUnit
 import java.util.zip.GZIPOutputStream
 import no.nav.syfo.altinn.model.SykmeldingAltinn
 import no.nav.syfo.application.metrics.JURIDISK_LOGG_COUNTER
-import no.nav.syfo.log
+import no.nav.syfo.logger
 
 class JuridiskLoggService(
     private val bucketName: String,
@@ -43,7 +43,7 @@ class JuridiskLoggService(
             content = sykmeldingAltinn.sykmeldingXml.toByteArray(),
         )
 
-        log.info("Lastet opp dokumenter til mappe $mappe i juridisk logg-bucket")
+        logger.info("Lastet opp dokumenter til mappe $mappe i juridisk logg-bucket")
         JURIDISK_LOGG_COUNTER.inc()
     }
 

@@ -7,7 +7,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import no.nav.syfo.log
+import no.nav.syfo.logger
 
 class PdfgenClient(
     private val url: String,
@@ -22,7 +22,7 @@ class PdfgenClient(
         if (httpResponse.status == HttpStatusCode.OK) {
             return httpResponse.call.response.body()
         } else {
-            log.error("Mottok feilkode fra smarbeidsgiver-pdfgen: {}", httpResponse.status)
+            logger.error("Mottok feilkode fra smarbeidsgiver-pdfgen: {}", httpResponse.status)
             throw RuntimeException(
                 "Mottok feilkode fra smarbeidsgiver-pdfgen: ${httpResponse.status}"
             )
