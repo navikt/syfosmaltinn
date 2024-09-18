@@ -34,7 +34,7 @@ fun getSykmeldingKafkaMessage(
     sykmeldingId: String,
     periodeliste: List<SykmeldingsperiodeAGDTO> = defaultPeriodeliste,
     utenlandskSykmelding: UtenlandskSykmeldingAGDTO? = null,
-    tiltakArbeidsplassen:String ? = "TiltakArbeidsplassen" ,
+    tiltakArbeidsplassen: String? = "TiltakArbeidsplassen",
 ): SendSykmeldingAivenKafkaMessage {
     return SendSykmeldingAivenKafkaMessage(
         sykmelding =

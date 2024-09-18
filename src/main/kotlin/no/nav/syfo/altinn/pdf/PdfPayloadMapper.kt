@@ -31,7 +31,8 @@ fun ArbeidsgiverSykmelding.toPdfPayload(
                 sykmeldingsperioder =
                     sykmeldingsperioder.map { it.toSykmeldingsPeriodePdf() }.sortedBy { it.fom },
                 prognose = prognose,
-                tiltakArbeidsplassen = tiltakArbeidsplassenWithoutIllegalCharacters(tiltakArbeidsplassen),
+                tiltakArbeidsplassen =
+                    tiltakArbeidsplassenWithoutIllegalCharacters(tiltakArbeidsplassen),
                 meldingTilArbeidsgiver = meldingTilArbeidsgiver,
                 behandler =
                     BehandlerPdf(
@@ -43,12 +44,10 @@ fun ArbeidsgiverSykmelding.toPdfPayload(
     )
 }
 
-
 private fun tiltakArbeidsplassenWithoutIllegalCharacters(tiltakArbeidsplassen: String?): String? {
     return if (tiltakArbeidsplassen.isNullOrEmpty()) {
         tiltakArbeidsplassen
-    }
-    else {
+    } else {
         tiltakArbeidsplassen.replace(regex = Regex("\\p{C}"), "")
     }
 }

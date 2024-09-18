@@ -4,10 +4,6 @@ import io.ktor.http.*
 import io.ktor.server.application.call
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import java.io.StringReader
-import java.io.StringWriter
-import javax.xml.bind.JAXBContext
-import javax.xml.bind.Marshaller
 import no.altinn.schemas.services.serviceengine.correspondence._2016._02.CorrespondenceStatusResultV3
 import no.nav.syfo.altinn.AltinnClient
 import no.nav.syfo.altinn.model.AltinnStatus
@@ -15,31 +11,11 @@ import no.nav.syfo.altinn.model.StatusChanges
 import no.nav.syfo.logger
 import no.nav.syfo.securelog
 
-fun serializeToXml(obj: CorrespondenceStatusResultV3): String {
-    val objectFactory =
-        no.altinn.schemas.services.serviceengine.correspondence._2016._02.ObjectFactory()
-    val jaxbElement = objectFactory.createCorrespondenceStatusResultV3(obj)
 
-    val jaxbContext =
-        JAXBContext.newInstance(
-            no.altinn.schemas.services.serviceengine.correspondence._2016._02.ObjectFactory::class
-                .java,
-        )
-    val marshaller: Marshaller = jaxbContext.createMarshaller()
-    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
-    val stringWriter = StringWriter()
-    marshaller.marshal(jaxbElement, stringWriter)
-    return stringWriter.toString()
-}
-
-fun mapXmlToObject(xml: String): AltinnStatus {
-    val jaxbContext = JAXBContext.newInstance(CorrespondenceStatusResultV3::class.java)
-    val unmarshaller = jaxbContext.createUnmarshaller()
-    val xmlReader = StringReader(xml)
-    val result = unmarshaller.unmarshal(xmlReader) as CorrespondenceStatusResultV3
+fun mapToAltinnStatus(correspondenceStatusResultV3: CorrespondenceStatusResultV3): AltinnStatus {
 
     val statusV2 =
-        result.correspondenceStatusInformation.correspondenceStatusDetailsList.statusV2
+        correspondenceStatusResultV3.correspondenceStatusInformation.correspondenceStatusDetailsList.statusV2
             .firstOrNull()
     val statusChanges =
         statusV2
@@ -71,10 +47,8 @@ fun Route.registerAltinnApi(altinnClient: AltinnClient) {
             } else {
                 logger.info("Got altinnResult for sykmeldingid: $sykmeldingId, orgnummer: $orgnummer")
 
-                val response = serializeToXml(altinnResult)
-                val altinnStatus = mapXmlToObject(response)
+                val altinnStatus = mapToAltinnStatus(altinnResult)
 
-                securelog.info("Response from altinn: $response")
                 securelog.info("Mapped response: $altinnStatus")
                 call.respond(altinnStatus)
             }

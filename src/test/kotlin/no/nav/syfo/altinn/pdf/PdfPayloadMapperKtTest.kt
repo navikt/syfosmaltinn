@@ -253,9 +253,7 @@ internal class PdfPayloadMapperKtTest {
                 sykmeldingId,
                 perioder,
                 UtenlandskSykmeldingAGDTO("POL"),
-                "pål\n" +
-                    "\uFEFF\n" +
-                    "\\"
+                "pål\n" + "\uFEFF\n" + "\\"
             )
 
         val pdfPayload =
@@ -270,8 +268,7 @@ internal class PdfPayloadMapperKtTest {
         pdfPayload.arbeidsgiverSykmelding.arbeidsgiverNavn shouldBeEqualTo "ArbeidsgiverNavn"
         pdfPayload.arbeidsgiverSykmelding.prognose shouldBeEqualTo
             sykmeldingKafkaMessage.sykmelding.prognose
-        pdfPayload.arbeidsgiverSykmelding.tiltakArbeidsplassen shouldBeEqualTo
-            "pål\\"
+        pdfPayload.arbeidsgiverSykmelding.tiltakArbeidsplassen shouldBeEqualTo "pål\\"
         pdfPayload.arbeidsgiverSykmelding.meldingTilArbeidsgiver shouldBeEqualTo
             sykmeldingKafkaMessage.sykmelding.meldingTilArbeidsgiver
         pdfPayload.arbeidsgiverSykmelding.behandler shouldBeEqualTo BehandlerPdf("", null)
@@ -287,5 +284,4 @@ internal class PdfPayloadMapperKtTest {
         sykmeldingsperiode.aktivitetIkkeMulig shouldBeEqualTo AktivitetIkkeMuligAGDTO(null)
         sykmeldingsperiode.reisetilskudd shouldBeEqualTo false
     }
-
 }

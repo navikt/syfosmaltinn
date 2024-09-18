@@ -88,7 +88,6 @@ class AltinnClient(
                     .withReportee(orgnummer)
                     .withServiceEditionCode(2)
             )
-        securelog.info("altinnResponse: ${objectMapper.writeValueAsString(altinnResponse)}")
         return altinnResponse
     }
 
