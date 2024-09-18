@@ -6,7 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import no.nav.syfo.application.ApplicationState
+import no.nav.syfo.ApplicationState
 import no.nav.syfo.narmesteleder.db.NarmestelederDB
 import no.nav.syfo.narmesteleder.kafka.model.NarmestelederLeesah
 import org.apache.kafka.clients.consumer.KafkaConsumer

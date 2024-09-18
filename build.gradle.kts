@@ -46,7 +46,7 @@ plugins {
 }
 
 application {
-    mainClass.set("no.nav.syfo.BootstrapKt")
+    mainClass.set("no.nav.syfo.ApplicationKt")
 }
 
 repositories {
@@ -76,6 +76,8 @@ dependencies {
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
 
+    implementation("io.ktor:ktor-server-auth:$ktorVersion")
+    implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
@@ -172,7 +174,7 @@ tasks {
         manifest {
             attributes(
                 mapOf(
-                    "Main-Class" to "no.nav.syfo.BootstrapKt",
+                    "Main-Class" to "no.nav.syfo.ApplicationKt",
                 ),
             )
         }

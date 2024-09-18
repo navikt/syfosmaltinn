@@ -1,8 +1,8 @@
 package no.nav.syfo.sykmelding
 
+import no.nav.syfo.ApplicationState
 import no.nav.syfo.altinn.AltinnSykmeldingService
-import no.nav.syfo.application.ApplicationState
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import no.nav.syfo.narmesteleder.service.BeOmNyNLService
 import no.nav.syfo.narmesteleder.service.NarmesteLederService
 import no.nav.syfo.pdl.client.PdlClient
@@ -19,7 +19,7 @@ class SendtSykmeldingService(
     private val sendtSykmeldingAivenConsumer: SendtSykmeldingAivenConsumer,
 ) {
     suspend fun start() {
-        log.info("Starting consumer")
+        logger.info("Starting consumer")
         sendtSykmeldingAivenConsumer.subscribe()
         while (applicationState.ready) {
             consumeNewTopic()
@@ -36,14 +36,14 @@ class SendtSykmeldingService(
     private suspend fun handleSendtSykmelding(
         sendSykmeldingAivenKafkaMessage: SendSykmeldingAivenKafkaMessage,
     ) {
-        log.info(
+        logger.info(
             "Mottok sendt sykmelding fra Kafka med sykmeldingId: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.sykmeldingId}, source: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.source}",
         )
         if (sendSykmeldingAivenKafkaMessage.kafkaMetadata.source == "macgyver") {
             return
         }
         val person = pdlClient.getPerson(ident = sendSykmeldingAivenKafkaMessage.kafkaMetadata.fnr)
-        log.info(
+        logger.info(
             "Mottok svar fra PDL for sykmeldingId: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.sykmeldingId}"
         )
         val arbeidsgiver =
@@ -55,7 +55,7 @@ class SendtSykmeldingService(
                 orgnummer = arbeidsgiver.orgnummer,
                 fnr = sendSykmeldingAivenKafkaMessage.kafkaMetadata.fnr,
             )
-        log.info(
+        logger.info(
             "Mottok narmesteleder: ${narmesteLeder != null} for sykmeldingId: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.sykmeldingId}"
         )
         if (beOmNyNLService.skalBeOmNyNL(sendSykmeldingAivenKafkaMessage.event, narmesteLeder)) {

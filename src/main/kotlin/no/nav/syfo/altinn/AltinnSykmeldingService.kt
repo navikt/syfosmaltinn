@@ -18,7 +18,7 @@ import no.nav.syfo.altinn.pdf.PdfgenClient
 import no.nav.syfo.altinn.pdf.toPdfPayload
 import no.nav.syfo.application.metrics.ALTINN_COUNTER
 import no.nav.syfo.juridisklogg.JuridiskLoggService
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import no.nav.syfo.model.sykmeldingstatus.ShortNameDTO
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
@@ -110,12 +110,14 @@ class AltinnSykmeldingService(
                             sykmeldingId,
                         )
                     true ->
-                        log.info("Sykmelding already sendt to altinn, sykmeldingId $sykmeldingId")
+                        logger.info(
+                            "Sykmelding already sendt to altinn, sykmeldingId $sykmeldingId"
+                        )
                 }
                 database.updateSendtToAlinn(sykmeldingId, OffsetDateTime.now(ZoneOffset.UTC))
             }
             else -> {
-                log.info("Sykmelding already sendt to altinn, sykmeldingId $sykmeldingId")
+                logger.info("Sykmelding already sendt to altinn, sykmeldingId $sykmeldingId")
             }
         }
     }
@@ -124,7 +126,7 @@ class AltinnSykmeldingService(
         insertCorrespondenceV2: InsertCorrespondenceV2,
         sykmeldingId: String,
     ) {
-        log.info("Sending sykmelding with id $sykmeldingId to Altinn")
+        logger.info("Sending sykmelding with id $sykmeldingId to Altinn")
         altinnClient.sendToAltinn(insertCorrespondenceV2, sykmeldingId)
         ALTINN_COUNTER.inc()
     }
@@ -145,7 +147,7 @@ class AltinnSykmeldingService(
                 )
             }
             else -> {
-                log.info(
+                logger.info(
                     "Sykmelding ${sykmeldingAltinn.xmlSykmeldingArbeidsgiver.sykmeldingId} already sendt to juridisk logg",
                 )
             }

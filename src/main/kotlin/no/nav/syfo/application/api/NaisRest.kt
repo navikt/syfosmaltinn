@@ -10,7 +10,7 @@ import io.ktor.server.routing.get
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.exporter.common.TextFormat.write004
-import no.nav.syfo.application.ApplicationState
+import no.nav.syfo.ApplicationState
 
 fun Routing.registerNaisApi(
     applicationState: ApplicationState,

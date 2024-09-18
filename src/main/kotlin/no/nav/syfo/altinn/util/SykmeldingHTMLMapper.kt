@@ -10,7 +10,7 @@ import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.stream.StreamSource
 import no.nav.helse.xml.sykmelding.arbeidsgiver.XMLSykmeldingArbeidsgiver
 import no.nav.syfo.exception.AltinnException
-import no.nav.syfo.log
+import no.nav.syfo.logger
 
 class SykmeldingHTMLMapper private constructor() {
     companion object {
@@ -47,7 +47,7 @@ class SykmeldingHTMLMapper private constructor() {
 
         private fun containsInvalidCharacters(sykmeldingXml: String, sykmeldingId: String) {
             if (sykmeldingXml.contains("&#x")) {
-                log.warn("SykmeldingXml contains invalid characters, sykmeldingId $sykmeldingId")
+                logger.warn("SykmeldingXml contains invalid characters, sykmeldingId $sykmeldingId")
             }
         }
 

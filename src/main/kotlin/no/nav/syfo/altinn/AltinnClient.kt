@@ -17,7 +17,7 @@ import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondence
 import no.nav.syfo.altinn.model.AltinnSykmeldingMapper
 import no.nav.syfo.exception.AltinnException
 import no.nav.syfo.helpers.retry
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import no.nav.syfo.securelog
 
 class AltinnClient(
@@ -63,7 +63,7 @@ class AltinnClient(
                 "receiptStatusCode: ${objectMapper.writeValueAsString(receiptExternal.receiptStatusCode )}"
             )
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
-                log.error(
+                logger.error(
                     "Error fra altinn {} for sykmeldingId: {}, {}",
                     receiptExternal.receiptStatusCode,
                     sykmeldingId,
@@ -77,7 +77,7 @@ class AltinnClient(
         }
     }
 
-    suspend fun getAltinnStatus(id: String, orgnummer: String): CorrespondenceStatusResultV3? {
+    fun getAltinnStatus(id: String, orgnummer: String): CorrespondenceStatusResultV3? {
         val altinnResponse =
             iCorrespondenceAgencyExternalBasic.getCorrespondenceStatusDetailsBasicV3(
                 username,
@@ -88,12 +88,12 @@ class AltinnClient(
                     .withReportee(orgnummer)
                     .withServiceEditionCode(2)
             )
-
+        securelog.info("altinnResponse: ${objectMapper.writeValueAsString(altinnResponse)}")
         return altinnResponse
     }
 
     suspend fun isSendt(id: String, orgnummer: String): Boolean {
-        log.info(
+        logger.info(
             "checking if sykmelding is sendt to altinn sykmeldingId: $id: orgnummer: $orgnummer"
         )
         if (cluster == "dev-gcp" && orgnummer == "896929119") {

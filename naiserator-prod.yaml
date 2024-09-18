@@ -16,6 +16,11 @@ spec:
         - application: smarbeidsgiver-pdfgen
           namespace: teamsykmelding
           cluster: prod-gcp
+    inbound:
+      rules:
+        - application: macgyver
+          namespace: teamsykmelding
+          cluster: prod-gcp
   gcp:
     sqlInstances:
       - type: POSTGRES_12

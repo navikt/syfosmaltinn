@@ -12,7 +12,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import no.nav.syfo.securelog
 
 class PdfgenClient(
@@ -37,10 +37,11 @@ class PdfgenClient(
         if (httpResponse.status == HttpStatusCode.OK) {
             return httpResponse.call.response.body()
         } else {
-            log.error(
+            logger.error(
                 "Mottok feilkode fra smarbeidsgiver-pdfgen: {}, for sykmeldingid $sykmeldingsId",
                 httpResponse.status
             )
+
             throw RuntimeException(
                 "Mottok feilkode fra smarbeidsgiver-pdfgen: ${httpResponse.status}, for sykmeldingid $sykmeldingsId"
             )

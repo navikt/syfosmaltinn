@@ -1,5 +1,7 @@
 package no.nav.syfo
 
+import com.auth0.jwk.JwkProvider
+import com.auth0.jwk.JwkProviderBuilder
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -15,22 +17,35 @@ import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.http.*
 import io.ktor.network.sockets.SocketTimeoutException
 import io.ktor.serialization.jackson.jackson
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import io.ktor.server.plugins.callid.*
+import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import io.prometheus.client.hotspot.DefaultExports
+import java.net.URI
+import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import no.nav.syfo.altinn.AltinnClient
 import no.nav.syfo.altinn.AltinnSykmeldingService
+import no.nav.syfo.altinn.api.registerAltinnApi
 import no.nav.syfo.altinn.config.createPort
 import no.nav.syfo.altinn.orgnummer.AltinnOrgnummerLookupFacotry
 import no.nav.syfo.altinn.pdf.PdfgenClient
-import no.nav.syfo.application.ApplicationServer
-import no.nav.syfo.application.ApplicationState
-import no.nav.syfo.application.createApplicationEngine
+import no.nav.syfo.application.api.registerNaisApi
 import no.nav.syfo.application.exception.ServiceUnavailableException
+import no.nav.syfo.application.metrics.monitorHttpRequests
+import no.nav.syfo.application.setupAuth
 import no.nav.syfo.azuread.AccessTokenClient
 import no.nav.syfo.exception.AltinnException
 import no.nav.syfo.juridisklogg.JuridiskLoggService
@@ -62,11 +77,29 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 
-val log: Logger = LoggerFactory.getLogger("no.nav.syfo.syfosmaltinn")
-val securelog = LoggerFactory.getLogger("securelog")
+val logger: Logger = LoggerFactory.getLogger("no.nav.syfo.syfosmaltinn")
+val securelog: Logger = LoggerFactory.getLogger("securelog")
 
 @DelicateCoroutinesApi
 fun main() {
+    val embeddedServer =
+        embeddedServer(
+            Netty,
+            port = Environment().applicationPort,
+            module = Application::module,
+        )
+    Runtime.getRuntime()
+        .addShutdownHook(
+            Thread {
+                logger.info("Shutting down application from shutdown hook")
+                embeddedServer.stop(TimeUnit.SECONDS.toMillis(10), TimeUnit.SECONDS.toMillis(10))
+            },
+        )
+    embeddedServer.start(true)
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun Application.module() {
     val env = Environment()
     DefaultExports.initialize()
     val applicationState = ApplicationState()
@@ -80,8 +113,21 @@ fun main() {
             cluster = env.cluster,
         )
 
-    val applicationEngine = createApplicationEngine(env, applicationState, altinnClient)
-    val applicationServer = ApplicationServer(applicationEngine, applicationState)
+    val jwkProviderAadV2 =
+        JwkProviderBuilder(URI.create(env.jwkKeysUrlV2).toURL())
+            .cached(10, java.time.Duration.ofHours(24))
+            .rateLimited(10, 1, TimeUnit.MINUTES)
+            .build()
+
+    environment.monitor.subscribe(ApplicationStopped) {
+        applicationState.ready = false
+        applicationState.alive = false
+    }
+
+    configureRouting(env, applicationState, altinnClient, jwkProviderAadV2)
+
+    DefaultExports.initialize()
+
     val database = Database(env)
 
     val kafkaProducer =
@@ -90,7 +136,7 @@ fun main() {
                 .toProducerConfig(
                     "${env.applicationName}-producer",
                     JacksonKafkaSerializer::class,
-                    StringSerializer::class
+                    StringSerializer::class,
                 ),
         )
     val kafkaProducerNlResponse =
@@ -99,7 +145,7 @@ fun main() {
                 .toProducerConfig(
                     "${env.applicationName}-producer",
                     JacksonKafkaSerializer::class,
-                    StringSerializer::class
+                    StringSerializer::class,
                 ),
         )
     val nlRequestProducer = NLRequestProducer(kafkaProducer, env.beOmNLKafkaTopic)
@@ -129,13 +175,13 @@ fun main() {
         install(HttpRequestRetry) {
             constantDelay(50, 0, false)
             retryOnExceptionIf(3) { request, throwable ->
-                log.warn("Caught exception ${throwable.message}, for url ${request.url}")
+                logger.warn("Caught exception ${throwable.message}, for url ${request.url}")
                 true
             }
             retryIf(maxRetries) { request, response ->
                 if (response.status.value.let { it in 500..599 }) {
-                    log.warn(
-                        "Retrying for statuscode ${response.status.value}, for url ${request.url}"
+                    logger.warn(
+                        "Retrying for statuscode ${response.status.value}, for url ${request.url}",
                     )
                     true
                 } else {
@@ -149,7 +195,6 @@ fun main() {
             requestTimeoutMillis = 20_000
         }
     }
-
     val httpClient = HttpClient(Apache, config)
     val accessTokenClient =
         AccessTokenClient(
@@ -162,7 +207,7 @@ fun main() {
         PdlClient(
             httpClient,
             env.pdlBasePath,
-            PdlClient::class.java.getResource("/graphql/getPerson.graphql").readText(),
+            PdlClient::class.java.getResource("/graphql/getPerson.graphql")!!.readText(),
             accessTokenClient,
             env.pdlScope,
         )
@@ -195,7 +240,7 @@ fun main() {
         getKafkaConsumer(
             env = env,
             resetConfig = "none",
-            consumerGroup = env.applicationName + "-nl-consumer"
+            consumerGroup = env.applicationName + "-nl-consumer",
         )
 
     val narmestelederConsumer =
@@ -203,7 +248,7 @@ fun main() {
             narmestelederDb,
             aivenKafkaNarmestelederConsumer,
             env.narmestelederLeesahTopic,
-            applicationState
+            applicationState,
         )
 
     narmestelederConsumer.startConsumer()
@@ -211,7 +256,7 @@ fun main() {
     val sendtSykmeldingAivenConsumer =
         SendtSykmeldingAivenConsumer(
             aivenKafkaSykmeldingConsumer,
-            env.sendtSykmeldingAivenKafkaTopic
+            env.sendtSykmeldingAivenKafkaTopic,
         )
     val sendtSykmeldingService =
         SendtSykmeldingService(
@@ -235,8 +280,45 @@ fun main() {
             applicationState.alive = false
         }
     }
+}
 
-    applicationServer.start()
+fun Application.configureRouting(
+    env: Environment,
+    applicationState: ApplicationState,
+    altinnClient: AltinnClient,
+    jwkProviderAadV2: JwkProvider
+) {
+    install(io.ktor.server.plugins.contentnegotiation.ContentNegotiation) {
+        jackson {
+            registerKotlinModule()
+            registerModule(JavaTimeModule())
+            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        }
+    }
+
+    install(CallId) {
+        generate { UUID.randomUUID().toString() }
+        verify { callId: String -> callId.isNotEmpty() }
+        header(HttpHeaders.XCorrelationId)
+    }
+    install(StatusPages) {
+        exception<Throwable> { call, cause ->
+            logger.error("Caught exception", cause)
+            call.respond(HttpStatusCode.InternalServerError, cause.message ?: "Unknown error")
+        }
+    }
+    setupAuth(
+        jwkProviderAadV2 = jwkProviderAadV2,
+        environment = env,
+    )
+
+    routing {
+        registerNaisApi(applicationState)
+        authenticate("servicebrukerAAD") { registerAltinnApi(altinnClient) }
+    }
+
+    intercept(ApplicationCallPipeline.Monitoring, monitorHttpRequests())
 }
 
 private inline fun <reified T : Any> getKafkaConsumer(
@@ -254,3 +336,8 @@ private inline fun <reified T : Any> getKafkaConsumer(
         StringDeserializer(),
         JacksonKafkaDeserializer(T::class),
     )
+
+data class ApplicationState(
+    var alive: Boolean = true,
+    var ready: Boolean = true,
+)
