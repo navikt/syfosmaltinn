@@ -65,7 +65,7 @@ fun Route.registerAltinnApi(altinnClient: AltinnClient) {
             val orgnummer = call.parameters["orgnummer"]!!
 
             val altinnResult = altinnClient.getAltinnStatus(sykmeldingId, orgnummer)
-            if (altinnResult == null) {
+            if (altinnResult == null || altinnResult.correspondenceStatusInformation.correspondenceStatusDetailsList.statusV2.isNullOrEmpty()) {
                 logger.info("No result found for sykmeldingid: $sykmeldingId, orgnummer: $orgnummer")
                 call.respond(HttpStatusCode.NotFound, "No result found for sykmeldingid: $sykmeldingId, orgnummer: $orgnummer")
             } else {
