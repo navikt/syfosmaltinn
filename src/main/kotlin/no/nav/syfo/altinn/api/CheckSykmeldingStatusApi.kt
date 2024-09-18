@@ -1,5 +1,6 @@
 package no.nav.syfo.altinn.api
 
+import io.ktor.http.*
 import io.ktor.server.application.call
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -66,8 +67,7 @@ fun Route.registerAltinnApi(altinnClient: AltinnClient) {
             val altinnResult = altinnClient.getAltinnStatus(sykmeldingId, orgnummer)
             if (altinnResult == null) {
                 logger.info("No result found for sykmeldingid: $sykmeldingId, orgnummer: $orgnummer")
-                call.respondText("No result found")
-                return@get
+                call.respond(HttpStatusCode.NotFound, "No result found for sykmeldingid: $sykmeldingId, orgnummer: $orgnummer")
             } else {
                 val response = serializeToXml(altinnResult)
                 val altinnStatus = mapXmlToObject(response)
