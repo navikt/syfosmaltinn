@@ -69,6 +69,8 @@ fun Route.registerAltinnApi(altinnClient: AltinnClient) {
                 logger.info("No result found for sykmeldingid: $sykmeldingId, orgnummer: $orgnummer")
                 call.respond(HttpStatusCode.NotFound, "No result found for sykmeldingid: $sykmeldingId, orgnummer: $orgnummer")
             } else {
+                logger.info("Got altinnResult for sykmeldingid: $sykmeldingId, orgnummer: $orgnummer")
+
                 val response = serializeToXml(altinnResult)
                 val altinnStatus = mapXmlToObject(response)
 
