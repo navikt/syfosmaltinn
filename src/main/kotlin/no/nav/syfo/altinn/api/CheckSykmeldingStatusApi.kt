@@ -11,6 +11,7 @@ import no.altinn.schemas.services.serviceengine.correspondence._2016._02.Corresp
 import no.nav.syfo.altinn.AltinnClient
 import no.nav.syfo.altinn.model.AltinnStatus
 import no.nav.syfo.altinn.model.StatusChanges
+import no.nav.syfo.logger
 import no.nav.syfo.securelog
 
 fun serializeToXml(obj: CorrespondenceStatusResultV3): String {
@@ -59,12 +60,12 @@ fun mapXmlToObject(xml: String): AltinnStatus {
 fun Route.registerAltinnApi(altinnClient: AltinnClient) {
     route("/internal") {
         get("/altinn/{sykmeldingId}/{orgnummer}") {
-            val altinnResult =
-                altinnClient.getAltinnStatus(
-                    call.parameters["sykmeldingId"]!!,
-                    call.parameters["orgnummer"]!!,
-                )
+            val sykmeldingId = call.parameters["sykmeldingId"]!!
+            val orgnummer = call.parameters["orgnummer"]!!
+
+            val altinnResult = altinnClient.getAltinnStatus(sykmeldingId, orgnummer)
             if (altinnResult == null) {
+                logger.info("No result found for sykmeldingid: $sykmeldingId, orgnummer: $orgnummer")
                 call.respondText("No result found")
                 return@get
             } else {
