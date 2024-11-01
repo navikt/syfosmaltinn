@@ -11,11 +11,11 @@ import no.nav.syfo.altinn.model.StatusChanges
 import no.nav.syfo.logger
 import no.nav.syfo.securelog
 
-
 fun mapToAltinnStatus(correspondenceStatusResultV3: CorrespondenceStatusResultV3): AltinnStatus {
 
     val statusV2 =
-        correspondenceStatusResultV3.correspondenceStatusInformation.correspondenceStatusDetailsList.statusV2
+        correspondenceStatusResultV3.correspondenceStatusInformation.correspondenceStatusDetailsList
+            .statusV2
             .firstOrNull()
     val statusChanges =
         statusV2
@@ -41,11 +41,23 @@ fun Route.registerAltinnApi(altinnClient: AltinnClient) {
             val orgnummer = call.parameters["orgnummer"]!!
 
             val altinnResult = altinnClient.getAltinnStatus(sykmeldingId, orgnummer)
-            if (altinnResult == null || altinnResult.correspondenceStatusInformation.correspondenceStatusDetailsList.statusV2.isNullOrEmpty()) {
-                logger.info("No result found for sykmeldingid: $sykmeldingId, orgnummer: $orgnummer")
-                call.respond(HttpStatusCode.NotFound, "No result found for sykmeldingid: $sykmeldingId, orgnummer: $orgnummer")
+            if (
+                altinnResult == null ||
+                    altinnResult.correspondenceStatusInformation.correspondenceStatusDetailsList
+                        .statusV2
+                        .isNullOrEmpty()
+            ) {
+                logger.info(
+                    "No result found for sykmeldingid: $sykmeldingId, orgnummer: $orgnummer"
+                )
+                call.respond(
+                    HttpStatusCode.NotFound,
+                    "No result found for sykmeldingid: $sykmeldingId, orgnummer: $orgnummer"
+                )
             } else {
-                logger.info("Got altinnResult for sykmeldingid: $sykmeldingId, orgnummer: $orgnummer")
+                logger.info(
+                    "Got altinnResult for sykmeldingid: $sykmeldingId, orgnummer: $orgnummer"
+                )
 
                 val altinnStatus = mapToAltinnStatus(altinnResult)
 

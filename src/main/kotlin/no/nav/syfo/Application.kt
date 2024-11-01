@@ -119,7 +119,7 @@ fun Application.module() {
             .rateLimited(10, 1, TimeUnit.MINUTES)
             .build()
 
-    environment.monitor.subscribe(ApplicationStopped) {
+    monitor.subscribe(ApplicationStopped) {
         applicationState.ready = false
         applicationState.alive = false
     }
