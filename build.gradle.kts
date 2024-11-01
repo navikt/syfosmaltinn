@@ -6,7 +6,7 @@ version = "1.0.0"
 val coroutinesVersion = "1.8.1"
 val jacksonVersion = "2.17.2"
 val kluentVersion = "1.73"
-val ktorVersion = "2.3.12"
+val ktorVersion = "3.0.1"
 val logbackVersion = "1.5.6"
 val logstashEncoderVersion = "8.0"
 val prometheusVersion = "0.16.0"
@@ -23,7 +23,7 @@ val postgresVersion = "42.7.3"
 val flywayVersion = "10.17.0"
 val hikariVersion = "5.1.0"
 val postgresContainerVersion = "1.20.1"
-val kotlinVersion = "2.0.10"
+val kotlinVersion = "2.0.21"
 val googleCloudStorageVersion = "2.41.0"
 val xmlschemaCoreVersion = "2.2.5"
 val jaxbApiVersion = "2.4.0-b180830.0359"
@@ -41,8 +41,8 @@ val kafkaVersion = "3.8.0"
 plugins {
     id("application")
     id("com.diffplug.spotless") version "6.25.0"
-    kotlin("jvm") version "2.0.10"
-    id("com.gradleup.shadow") version "8.3.0"
+    kotlin("jvm") version "2.0.21"
+    id("com.gradleup.shadow") version "8.3.4"
 }
 
 application {
