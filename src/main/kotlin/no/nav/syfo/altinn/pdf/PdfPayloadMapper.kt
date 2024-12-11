@@ -4,6 +4,7 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import no.nav.syfo.model.sykmelding.arbeidsgiver.ArbeidsgiverSykmelding
 import no.nav.syfo.model.sykmelding.arbeidsgiver.BehandlerAGDTO
+import no.nav.syfo.model.sykmelding.arbeidsgiver.KontaktMedPasientAGDTO
 import no.nav.syfo.model.sykmelding.arbeidsgiver.SykmeldingsperiodeAGDTO
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
 import no.nav.syfo.pdl.client.model.Person
@@ -40,6 +41,9 @@ fun ArbeidsgiverSykmelding.toPdfPayload(
                         tlf = behandler?.tlf,
                     ),
                 egenmeldingsdager = egenmeldingsdager,
+                kontaktMedPasient = KontaktMedPasientAGDTO(
+                    kontaktDato = kontaktMedPasient.kontaktDato
+                )
             ),
     )
 }

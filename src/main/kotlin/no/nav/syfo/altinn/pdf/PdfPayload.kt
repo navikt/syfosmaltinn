@@ -3,6 +3,7 @@ package no.nav.syfo.altinn.pdf
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import no.nav.syfo.model.sykmelding.arbeidsgiver.AktivitetIkkeMuligAGDTO
+import no.nav.syfo.model.sykmelding.arbeidsgiver.KontaktMedPasientAGDTO
 import no.nav.syfo.model.sykmelding.arbeidsgiver.PrognoseAGDTO
 import no.nav.syfo.model.sykmelding.model.GradertDTO
 import no.nav.syfo.model.sykmelding.model.PeriodetypeDTO
@@ -30,6 +31,7 @@ data class ArbeidsgiverSykmeldingPdf(
     val meldingTilArbeidsgiver: String?,
     val behandler: BehandlerPdf,
     val egenmeldingsdager: List<LocalDate>?,
+    val kontaktMedPasient: KontaktMedPasientAGDTO,
 )
 
 data class SykmeldingsperiodePdf(
