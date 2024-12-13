@@ -63,7 +63,14 @@ fun getSykmeldingKafkaMessage(
                 behandletTidspunkt = OffsetDateTime.now(),
                 egenmeldt = false,
                 harRedusertArbeidsgiverperiode = false,
-                kontaktMedPasient = KontaktMedPasientAGDTO(LocalDate.of(2016, 12, 7)),
+                kontaktMedPasient =
+                    if (utenlandskSykmelding == null) {
+                        KontaktMedPasientAGDTO(LocalDate.of(2016, 12, 7))
+                    } else {
+                        KontaktMedPasientAGDTO(
+                            kontaktDato = null
+                        )
+                },
                 meldingTilArbeidsgiver = "MeldingTilArbeidsgiver",
                 mottattTidspunkt = OffsetDateTime.now(),
                 papirsykmelding = false,
