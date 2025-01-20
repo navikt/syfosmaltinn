@@ -41,9 +41,8 @@ fun ArbeidsgiverSykmelding.toPdfPayload(
                         tlf = behandler?.tlf,
                     ),
                 egenmeldingsdager = egenmeldingsdager,
-                kontaktMedPasient = KontaktMedPasientAGDTO(
-                    kontaktDato = kontaktMedPasient.kontaktDato
-                )
+                kontaktMedPasient =
+                    KontaktMedPasientAGDTO(kontaktDato = kontaktMedPasient.kontaktDato)
             ),
     )
 }
