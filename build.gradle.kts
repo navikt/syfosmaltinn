@@ -3,14 +3,14 @@ import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransf
 group = "no.nav.syfo"
 version = "1.0.0"
 
-val coroutinesVersion = "1.9.0"
-val jacksonVersion = "2.18.0"
+val coroutinesVersion = "1.10.1"
+val jacksonVersion = "2.18.2"
 val kluentVersion = "1.73"
-val ktorVersion = "3.0.1"
-val logbackVersion = "1.5.6"
+val ktorVersion = "3.0.3"
+val logbackVersion = "1.5.16"
 val logstashEncoderVersion = "8.0"
 val prometheusVersion = "0.16.0"
-val mockkVersion = "1.13.12"
+val mockkVersion = "1.13.16"
 val testContainerKafkaVersion = "1.20.1"
 val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
 val saxonVersion = "12.5"
@@ -18,11 +18,11 @@ val cxfVersion = "3.6.4"
 val jaxsWsApiVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.1"
 val javaxActivationVersion = "1.1.1"
-val postgresVersion = "42.7.3"
-val flywayVersion = "10.17.0"
-val hikariVersion = "5.1.0"
+val postgresVersion = "42.7.5"
+val flywayVersion = "11.2.0"
+val hikariVersion = "6.2.1"
 val postgresContainerVersion = "1.20.1"
-val kotlinVersion = "2.0.21"
+val kotlinVersion = "2.1.0"
 val googleCloudStorageVersion = "2.45.0"
 val xmlschemaCoreVersion = "2.2.5"
 val jaxbApiVersion = "2.4.0-b180830.0359"
@@ -31,19 +31,18 @@ val syfoXmlCodeGen = "2.0.1"
 val jsoupVersion = "1.18.1"
 val ktfmtVersion = "0.44"
 val bcprovJdk15onVersion = "1.70"
-val commonsCollectionsVersion = "3.2.2"
 val junitJupiterVersion="5.10.3"
-val kafkaVersion = "3.8.0"
+val kafkaVersion = "3.9.0"
 
 ///Due to vulnerabilities
-val nettycommonVersion = "4.1.115.Final"
+val commonsCollectionsVersion = "3.2.2"
 val commonsCompressVersion = "1.26.2"
 
 plugins {
     id("application")
-    id("com.diffplug.spotless") version "6.25.0"
-    kotlin("jvm") version "2.0.21"
-    id("com.gradleup.shadow") version "8.3.4"
+    id("com.diffplug.spotless") version "7.0.2"
+    kotlin("jvm") version "2.1.0"
+    id("com.gradleup.shadow") version "8.3.5"
 }
 
 application {
@@ -81,11 +80,7 @@ dependencies {
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    constraints {
-        implementation("io.netty:netty-common:$nettycommonVersion") {
-            because("Due to vulnerabilities in io.ktor:ktor-server-netty")
-        }
-    }
+
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
     implementation("io.ktor:ktor-server-call-id:$ktorVersion")

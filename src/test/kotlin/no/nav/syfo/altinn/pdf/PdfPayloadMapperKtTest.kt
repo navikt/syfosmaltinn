@@ -86,7 +86,8 @@ internal class PdfPayloadMapperKtTest {
                 "telefon",
             )
         pdfPayload.arbeidsgiverSykmelding.egenmeldingsdager?.size shouldBeEqualTo 0
-        pdfPayload.arbeidsgiverSykmelding.kontaktMedPasient.kontaktDato shouldBeEqualTo LocalDate.of(2016, 12, 7)
+        pdfPayload.arbeidsgiverSykmelding.kontaktMedPasient.kontaktDato shouldBeEqualTo
+            LocalDate.of(2016, 12, 7)
         val forstePeriode = pdfPayload.arbeidsgiverSykmelding.sykmeldingsperioder.first()
         forstePeriode.fom shouldBeEqualTo LocalDate.of(2022, 1, 1)
         forstePeriode.tom shouldBeEqualTo LocalDate.of(2022, 1, 6)
@@ -168,7 +169,8 @@ internal class PdfPayloadMapperKtTest {
             LocalDate.of(2022, 10, 3)
         pdfPayload.arbeidsgiverSykmelding.egenmeldingsdager?.get(1) shouldBeEqualTo
             LocalDate.of(2022, 10, 4)
-        pdfPayload.arbeidsgiverSykmelding.kontaktMedPasient.kontaktDato shouldBeEqualTo LocalDate.of(2016, 12, 7)
+        pdfPayload.arbeidsgiverSykmelding.kontaktMedPasient.kontaktDato shouldBeEqualTo
+            LocalDate.of(2016, 12, 7)
         val sykmeldingsperiode = pdfPayload.arbeidsgiverSykmelding.sykmeldingsperioder.first()
         sykmeldingsperiode.fom shouldBeEqualTo LocalDate.of(2022, 10, 3)
         sykmeldingsperiode.tom shouldBeEqualTo LocalDate.of(2022, 11, 6)
