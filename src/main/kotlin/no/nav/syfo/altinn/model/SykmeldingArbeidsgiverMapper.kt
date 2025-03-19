@@ -47,7 +47,7 @@ class SykmeldingArbeidsgiverMapper private constructor() {
                 sendtSykmeldingKafkaMessage.sykmelding.mottattTidspunkt.toLocalDateTime()
             xmlSykmeldingArbeidsgiver.sykmeldingId = sendtSykmeldingKafkaMessage.sykmelding.id
             xmlSykmeldingArbeidsgiver.virksomhetsnummer =
-                sendtSykmeldingKafkaMessage.event.arbeidsgiver!!.orgnummer
+                sendtSykmeldingKafkaMessage.event.arbeidsgiver.orgnummer
             xmlSykmeldingArbeidsgiver.sykmelding =
                 toXMLSykmelding(sendtSykmeldingKafkaMessage, person, egenmeldingsdager)
             return xmlSykmeldingArbeidsgiver

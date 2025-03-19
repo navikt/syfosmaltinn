@@ -70,7 +70,7 @@ class BeOmNyNLService(
                     ),
                 nlAvbrutt =
                     NlAvbrutt(
-                        orgnummer = event.arbeidsgiver!!.orgnummer,
+                        orgnummer = event.arbeidsgiver.orgnummer,
                         sykmeldtFnr = kafkaMetadata.fnr,
                         aktivTom = OffsetDateTime.now(ZoneOffset.UTC),
                     ),

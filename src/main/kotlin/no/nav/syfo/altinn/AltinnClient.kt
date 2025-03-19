@@ -26,7 +26,10 @@ class AltinnClient(
     private val password: String,
     private val cluster: String,
 ) {
-    val SYSTEM_USER_CODE = "NAV_DIGISYFO"
+    companion object {
+        private const val SYSTEM_USER_CODE = "NAV_DIGISYFO"
+    }
+
     val objectMapper: ObjectMapper =
         jacksonObjectMapper().apply {
             registerModule(JavaTimeModule())

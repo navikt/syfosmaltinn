@@ -109,7 +109,7 @@ class SykmeldingArbeidsgiverTestUtils {
             return pasient
         }
 
-        private fun xmlNavn(prefix: String): XMLNavn? {
+        private fun xmlNavn(prefix: String): XMLNavn {
             val navn = OBJECT_FACTORY.createXMLNavn()
             navn.etternavn = prefix + "Etternavn"
             navn.mellomnavn = prefix + "Mellomnavn"
@@ -117,7 +117,7 @@ class SykmeldingArbeidsgiverTestUtils {
             return navn
         }
 
-        fun xmlSykmeldingArbeidsgiverAsString(): String? {
+        fun xmlSykmeldingArbeidsgiverAsString(): String {
             return """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:sykmeldingArbeidsgiver xmlns:ns2="http://nav.no/melding/virksomhet/sykmeldingArbeidsgiver/v1/sykmeldingArbeidsgiver">
     <sykmelding>
