@@ -24,7 +24,7 @@ spec:
   gcp:
     sqlInstances:
       - name: syfosmaltinn-db-instance
-        type: POSTGRES_12
+        type: POSTGRES_17
         diskSize: 10
         databases:
           - name: syfosmaltinn
