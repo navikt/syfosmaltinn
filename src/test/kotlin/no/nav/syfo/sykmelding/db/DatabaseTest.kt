@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.testcontainers.containers.PostgreSQLContainer
 
-class PsqlContainer : PostgreSQLContainer<PsqlContainer>("postgres:12")
+class PsqlContainer : PostgreSQLContainer<PsqlContainer>("postgres:15")
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class DatabaseTest {
