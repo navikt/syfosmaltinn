@@ -14,6 +14,10 @@ updates:
       - dependency-name: "org.apache.cxf:cxf-rt-ws-security"
       - dependency-name: "org.apache.ws.xmlschema:xmlschema-core"
       - dependency-name: "no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic"
+      - dependency-name: "org.apache.kafka:kafka_2.12"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "org.apache.kafka:kafka-streams"
+        update-types: ["version-update:semver-major"]  
     groups:
       dependencies:
         patterns:
