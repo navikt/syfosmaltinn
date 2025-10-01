@@ -68,6 +68,8 @@ import no.nav.syfo.sykmelding.db.Database
 import no.nav.syfo.sykmelding.kafka.aiven.SendtSykmeldingAivenConsumer
 import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
 import no.nav.syfo.sykmelding.kafka.utils.JacksonKafkaDeserializer
+import org.apache.cxf.common.logging.LogUtils
+import org.apache.cxf.common.logging.Slf4jLogger
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -82,6 +84,7 @@ val securelog: Logger = LoggerFactory.getLogger("securelog")
 
 @DelicateCoroutinesApi
 fun main() {
+    LogUtils.setLoggerClass(Slf4jLogger::class.java)
     val embeddedServer =
         embeddedServer(
             Netty,
@@ -125,8 +128,6 @@ fun Application.module() {
     }
 
     configureRouting(env, applicationState, altinnClient, jwkProviderAadV2)
-
-    DefaultExports.initialize()
 
     val database = Database(env)
 
