@@ -25,7 +25,7 @@ spec:
     sqlInstances:
       - name: syfosmaltinn-db-instance
         type: POSTGRES_15
-        diskSize: 10
+        diskSize: 15
         databases:
           - name: syfosmaltinn
             envVarPrefix: NAIS_DATABASE
