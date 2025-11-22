@@ -42,7 +42,7 @@ plugins {
     id("application")
     id("com.diffplug.spotless") version "8.0.0"
     kotlin("jvm") version "2.2.21"
-    id("com.gradleup.shadow") version "9.2.2"
+    id("com.gradleup.shadow") version "8.3.8"
 }
 
 application {
