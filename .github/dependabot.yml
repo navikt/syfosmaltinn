@@ -4,7 +4,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 15
+    cooldown:
+      default-days: 7
     ignore:
       - dependency-name: "org.glassfish.jaxb:jaxb-runtime"
       - dependency-name: "com.sun.xml.ws:jaxws-tools"
@@ -26,4 +27,5 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 15
+    cooldown:
+      default-days: 7
