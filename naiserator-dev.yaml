@@ -13,6 +13,8 @@ spec:
         - host: tt02.altinn.no
         - host: pdl-api.dev-fss-pub.nais.io
       rules:
+        - application: logging
+          namespace: nais-system
         - application: smarbeidsgiver-pdfgen
           namespace: teamsykmelding
           cluster: dev-gcp
@@ -80,8 +82,6 @@ spec:
       tenant: trygdeetaten.no
   filesFrom:
     - secret: syfosmaltinn-secrets
-  secureLogs:
-    enabled: true
   env:
     - name: PDL_GRAPHQL_PATH
       value: https://pdl-api.dev-fss-pub.nais.io/graphql
