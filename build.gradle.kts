@@ -7,11 +7,11 @@ val coroutinesVersion = "1.10.2"
 val jacksonVersion = "2.20.2"
 val kluentVersion = "1.73"
 val ktorVersion = "3.4.0"
-val logbackVersion = "1.5.20"
+val logbackVersion = "1.5.26"
 val logstashEncoderVersion = "9.0"
 val prometheusVersion = "0.16.0"
 val mockkVersion = "1.14.6"
-val testContainerKafkaVersion = "1.21.3"
+val testcontainerVersion = "2.0.1"
 val altinnCorrespondenceAgencyExternalVersion = "1.2020.01.20-15.44-063ae9f84815"
 val saxonVersion = "12.9"
 val cxfVersion = "3.6.4"
@@ -97,7 +97,7 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
-    implementation("org.apache.kafka:kafka_2.12:$kafkaVersion")
+    implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
     implementation("org.apache.kafka:kafka-streams:$kafkaVersion")
 
     implementation("org.postgresql:postgresql:$postgresVersion")
@@ -138,17 +138,10 @@ dependencies {
 
     testImplementation("org.jsoup:jsoup:$jsoupVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
-    testImplementation("org.testcontainers:postgresql:$postgresContainerVersion")
-    constraints {
-        implementation("org.apache.commons:commons-compress:$commonsCompressVersion") {
-            because("Due to vulnerabilities, see CVE-2024-26308")
-        }
-    }
+    testImplementation("org.testcontainers:testcontainers-postgresql:$testcontainerVersion")
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
-    testImplementation("org.testcontainers:kafka:$testContainerKafkaVersion") {
-        exclude(group = "junit", module = "junit")
-    }
+    testImplementation("org.testcontainers:testcontainers-kafka:$testcontainerVersion")
     testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
