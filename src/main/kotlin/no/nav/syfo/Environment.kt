@@ -35,6 +35,11 @@ data class Environment(
             "PDF_GEN_URL",
             "http://smarbeidsgiver-pdfgen/api/v1/genpdf/smarbeidsgiver/smarbeidsgiver"
         ),
+    val pdfgenUrlRs: String =
+        getEnvVar(
+            "PDF_GENRS_URL",
+            "http://smarbeidsgiver-pdfgenrs/api/v1/genpdf/smarbeidsgiver/smarbeidsgiver"
+        ),
 ) {
     fun jdbcUrl(): String {
         return "jdbc:postgresql://$dbHost:$dbPort/$dbName"
