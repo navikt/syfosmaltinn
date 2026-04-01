@@ -42,6 +42,7 @@ import no.nav.syfo.altinn.api.registerAltinnApi
 import no.nav.syfo.altinn.config.createPort
 import no.nav.syfo.altinn.orgnummer.AltinnOrgnummerLookupFacotry
 import no.nav.syfo.altinn.pdf.PdfgenClient
+import no.nav.syfo.altinn.pdf.PdfgenClientRs
 import no.nav.syfo.application.api.registerNaisApi
 import no.nav.syfo.application.exception.ServiceUnavailableException
 import no.nav.syfo.application.metrics.monitorHttpRequests
@@ -225,6 +226,7 @@ fun Application.module() {
     val juridiskLoggService = JuridiskLoggService(env.juridiskloggBucketName, juridiskloggStorage)
 
     val pdfgenClient = PdfgenClient(env.pdfgenUrl, httpClient)
+    val pdfgenClientRs = PdfgenClientRs(env.pdfgenUrlRs, httpClient)
 
     val altinnSendtSykmeldingService =
         AltinnSykmeldingService(
@@ -233,6 +235,7 @@ fun Application.module() {
             juridiskLoggService,
             database,
             pdfgenClient,
+            pdfgenClientRs
         )
 
     val aivenKafkaSykmeldingConsumer: KafkaConsumer<String, SendSykmeldingAivenKafkaMessage> =
