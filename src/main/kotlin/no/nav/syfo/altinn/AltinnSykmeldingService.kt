@@ -31,6 +31,7 @@ import no.nav.syfo.sykmelding.db.insertStatus
 import no.nav.syfo.sykmelding.db.updateSendtToAlinn
 import no.nav.syfo.sykmelding.db.updateSendtToLogg
 import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
+import no.nav.syfo.securelog
 
 class AltinnSykmeldingService(
     private val altinnClient: AltinnClient,
@@ -73,6 +74,7 @@ class AltinnSykmeldingService(
                     ),
                     sendSykmeldingAivenKafkaMessage.sykmelding.id,
                 )
+                securelog.info("Pdfgenrs created pdf: ${pdf}")
         } catch (exception: Exception) {
             logger.warn("Error during pdfgenClientRs", exception)
         }
