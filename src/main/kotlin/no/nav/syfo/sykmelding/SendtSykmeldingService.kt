@@ -39,7 +39,7 @@ class SendtSykmeldingService(
         logger.info(
             "Mottok sendt sykmelding fra Kafka med sykmeldingId: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.sykmeldingId}, source: ${sendSykmeldingAivenKafkaMessage.kafkaMetadata.source}",
         )
-        if (sendSykmeldingAivenKafkaMessage.kafkaMetadata.source == "macgyver") {
+        if (sendSykmeldingAivenKafkaMessage.kafkaMetadata.source == "macgyver" || sendSykmeldingAivenKafkaMessage.kafkaMetadata.sykmeldingId == "1f4efa45-ee7b-4208-8282-14ac1852fe39") {
             return
         }
         val person = pdlClient.getPerson(ident = sendSykmeldingAivenKafkaMessage.kafkaMetadata.fnr)
