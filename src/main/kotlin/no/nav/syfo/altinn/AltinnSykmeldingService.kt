@@ -74,7 +74,6 @@ class AltinnSykmeldingService(
                     ),
                     sendSykmeldingAivenKafkaMessage.sykmelding.id,
                 )
-                securelog.info("Pdfgenrs created pdf: ${pdf.toString(Charsets.UTF_8)}")
         } catch (exception: Exception) {
             logger.warn("Error during pdfgenClientRs", exception)
         }
