@@ -15,9 +15,6 @@ spec:
       rules:
         - application: logging
           namespace: nais-system
-        - application: smarbeidsgiver-pdfgen
-          namespace: teamsykmelding
-          cluster: prod-gcp
         - application: smarbeidsgiver-pdfgenrs
           namespace: teamsykmelding
           cluster: prod-gcp
