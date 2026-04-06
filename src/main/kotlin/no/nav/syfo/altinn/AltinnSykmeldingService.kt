@@ -14,7 +14,6 @@ import no.nav.syfo.altinn.model.AltinnSykmeldingMapper
 import no.nav.syfo.altinn.model.SykmeldingAltinn
 import no.nav.syfo.altinn.model.SykmeldingArbeidsgiverMapper
 import no.nav.syfo.altinn.orgnummer.AltinnOrgnummerLookup
-import no.nav.syfo.altinn.pdf.PdfgenClient
 import no.nav.syfo.altinn.pdf.PdfgenClientRs
 import no.nav.syfo.altinn.pdf.toPdfPayload
 import no.nav.syfo.application.metrics.ALTINN_COUNTER
@@ -38,7 +37,6 @@ class AltinnSykmeldingService(
     private val altinnOrgnummerLookup: AltinnOrgnummerLookup,
     private val juridiskLoggService: JuridiskLoggService,
     private val database: DatabaseInterface,
-    private val pdfgenClient: PdfgenClient,
     private val pdfgenClientRs: PdfgenClientRs,
 ) {
 
@@ -55,16 +53,7 @@ class AltinnSykmeldingService(
                 pasient,
                 egenmeldingsdager,
             )
-        val pdf =
-            pdfgenClient.createPdf(
-                sendSykmeldingAivenKafkaMessage.sykmelding.toPdfPayload(
-                    pasient,
-                    narmesteLeder,
-                    egenmeldingsdager,
-                ),
-                sendSykmeldingAivenKafkaMessage.sykmelding.id,
-            )
-        try {
+        
             val pdf =
                 pdfgenClientRs.createPdf(
                     sendSykmeldingAivenKafkaMessage.sykmelding.toPdfPayload(
@@ -74,9 +63,7 @@ class AltinnSykmeldingService(
                     ),
                     sendSykmeldingAivenKafkaMessage.sykmelding.id,
                 )
-        } catch (exception: Exception) {
-            logger.warn("Error during pdfgenClientRs", exception)
-        }
+                
         val sykmeldingAltinn =
             SykmeldingAltinn(
                 xmlSykmeldingArbeidsgiver,
