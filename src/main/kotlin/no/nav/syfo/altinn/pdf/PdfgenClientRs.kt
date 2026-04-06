@@ -1,4 +1,4 @@
-package no.nav.syfo.altinn.pdf
+package no.nav.syfo.altinn.pdfrs
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
