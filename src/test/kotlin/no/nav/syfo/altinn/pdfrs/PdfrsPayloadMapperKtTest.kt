@@ -1,4 +1,4 @@
-package no.nav.syfo.altinn.pdfrs
+package no.nav.syfo.altinn.pdf
 
 import java.time.LocalDate
 import java.util.UUID
