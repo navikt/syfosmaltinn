@@ -31,7 +31,6 @@ class AltinnSykmeldingServiceTest {
     val altinnOrgnummerLookup = mockk<AltinnOrgnummerLookup>(relaxed = true)
     val juridiskLoggService = mockk<JuridiskLoggService>(relaxed = true)
     val database = mockk<DatabaseInterface>(relaxed = true)
-    val pdfgenClient = mockk<PdfgenClient>()
     val pdfgenClientRs = mockk<PdfgenClientRs>()
     val altinnSykmeldingService =
         AltinnSykmeldingService(
@@ -39,7 +38,6 @@ class AltinnSykmeldingServiceTest {
             altinnOrgnummerLookup,
             juridiskLoggService,
             database,
-            pdfgenClient,
             pdfgenClientRs
         )
 
