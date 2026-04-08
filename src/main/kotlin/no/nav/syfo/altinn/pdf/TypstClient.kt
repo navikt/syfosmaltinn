@@ -10,6 +10,9 @@ class TypstClient(
     private val typstBinaryPath: String = "/app/typst-pdf/typst",
     private val templatePath: String = "/app/typst-pdf/smarbeidsgiver.typ",
     private val fontPath: String = "/app/typst-pdf/fonts",
+    private val processBuilderFactory: (List<String>) -> ProcessBuilder = { commands ->
+        ProcessBuilder(commands)
+    },
 ) {
     private val objectMapper =
         jacksonObjectMapper().apply {
@@ -23,14 +26,16 @@ class TypstClient(
         val jsonData = objectMapper.writeValueAsString(payload)
 
         val process =
-            ProcessBuilder(
-                    typstBinaryPath,
-                    "compile",
-                    "--pdf-standard=a-2a",
-                    "--font-path=$fontPath",
-                    "--input=data=$jsonData",
-                    templatePath,
-                    "-",
+            processBuilderFactory(
+                    listOf(
+                        typstBinaryPath,
+                        "compile",
+                        "--pdf-standard=a-2a",
+                        "--font-path=$fontPath",
+                        "--input=data=$jsonData",
+                        templatePath,
+                        "-",
+                    )
                 )
                 .redirectError(ProcessBuilder.Redirect.PIPE)
                 .start()
