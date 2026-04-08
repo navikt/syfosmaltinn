@@ -72,6 +72,7 @@ class AltinnSykmeldingService(
                     egenmeldingsdager,
                 ),
             )
+            logger.info("PDF generation with TypstClient")
         } catch (exception: Exception) {
             logger.warn("Error during PDF generation with TypstClient", exception)
         }
