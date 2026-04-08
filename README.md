@@ -46,7 +46,9 @@ Find the newest version of gradle here: https://gradle.org/releases/ Then run th
 
 [pdf](smarbeidsgiver.pdf)
 
-[![Preview](smarbeidsgiver.png)](smarbeidsgiver.png)
+[![Page 1](smarbeidsgiver-1.png)](smarbeidsgiver-1.png)
+[![Page 2](smarbeidsgiver-2.png)](smarbeidsgiver-2.png)
+[![Page 3](smarbeidsgiver-3.png)](smarbeidsgiver-3.png)
 
 ### Contact
 
