@@ -42,6 +42,14 @@ Find the newest version of gradle here: https://gradle.org/releases/ Then run th
 ./gradlew wrapper --gradle-version $gradleVersjon
 ```
 
+### Example PDF output
+
+[pdf](smarbeidsgiver.pdf)
+
+[![Page 1](smarbeidsgiver-1.png)](smarbeidsgiver-1.png)
+[![Page 2](smarbeidsgiver-2.png)](smarbeidsgiver-2.png)
+[![Page 3](smarbeidsgiver-3.png)](smarbeidsgiver-3.png)
+
 ### Contact
 
 This project is maintained by navikt/teamsykmelding
