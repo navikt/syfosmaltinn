@@ -12,7 +12,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.syfo.Environment
 import no.nav.syfo.altinn.orgnummer.AltinnOrgnummerLookup
 import no.nav.syfo.altinn.pdf.PdfgenClient
-import no.nav.syfo.altinn.pdf.PdfgenClientRs
+import no.nav.syfo.altinn.pdf.TypstClient
 import no.nav.syfo.juridisklogg.JuridiskLoggService
 import no.nav.syfo.pdl.client.model.Person
 import no.nav.syfo.sykmelding.altinn.model.getSykmeldingKafkaMessage
@@ -32,7 +32,7 @@ class AltinnSykmeldingServiceTest {
     val juridiskLoggService = mockk<JuridiskLoggService>(relaxed = true)
     val database = mockk<DatabaseInterface>(relaxed = true)
     val pdfgenClient = mockk<PdfgenClient>()
-    val pdfgenClientRs = mockk<PdfgenClientRs>()
+    val typstClient = mockk<TypstClient>(relaxed = true)
     val altinnSykmeldingService =
         AltinnSykmeldingService(
             altinnClient,
@@ -40,7 +40,7 @@ class AltinnSykmeldingServiceTest {
             juridiskLoggService,
             database,
             pdfgenClient,
-            pdfgenClientRs
+            typstClient
         )
 
     val sendtSykmeldingKafkaMessage = getSykmeldingKafkaMessage("2")
