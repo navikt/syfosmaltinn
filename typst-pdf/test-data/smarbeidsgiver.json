@@ -1,0 +1,100 @@
+{
+  "ansatt": {
+    "fnr": "12345678910",
+    "navn": "Navn Navnesen"
+  },
+  "narmesteleder": {
+    "fnr": "01987654321",
+    "navn": "Leder Ledesen",
+    "telefonnummer": "90909090",
+    "epost": "test@nav.no",
+    "aktivFom": "2017-05-09"
+  },
+  "arbeidsgiverSykmelding": {
+    "id": "b5e84795-43a8-4adb-ac1d-4b2e1e0c5fb7",
+    "syketilfelleStartDato": "2019-05-09",
+    "behandletTidspunkt": "2019-12-18T23:00:00.296954Z",
+    "arbeidsgiverNavn": "Min Bedrift",
+    "sykmeldingsperioder": [
+      {
+        "fom": "2020-01-03",
+        "tom": "2020-01-04",
+        "varighet": 2,
+        "gradert": null,
+        "behandlingsdager": 0,
+        "innspillTilArbeidsgiver": null,
+        "type": "AKTIVITET_IKKE_MULIG",
+        "aktivitetIkkeMulig": {
+          "arbeidsrelatertArsak": {
+            "beskrivelse": "beskrivelse",
+            "arsak": [
+              "MANGLENDE_TILRETTELEGGING"
+            ]
+          }
+        },
+        "reisetilskudd": false
+      },
+      {
+        "fom": "2020-01-05",
+        "tom": "2020-01-06",
+        "varighet": 2,
+        "gradert": {
+          "reisetilskudd": false,
+          "grad": 50
+        },
+        "behandlingsdager": 0,
+        "innspillTilArbeidsgiver": null,
+        "type": "GRADERT",
+        "aktivitetIkkeMulig": null,
+        "reisetilskudd": false
+      },
+      {
+        "fom": "2020-01-07",
+        "tom": "2020-01-08",
+        "varighet": 2,
+        "gradert": null,
+        "behandlingsdager": 1,
+        "innspillTilArbeidsgiver": null,
+        "type": "BEHANDLINGSDAGER",
+        "aktivitetIkkeMulig": null,
+        "reisetilskudd": false
+      },
+      {
+        "fom": "2020-01-09",
+        "tom": "2020-01-10",
+        "varighet": 2,
+        "gradert": null,
+        "behandlingsdager": 0,
+        "innspillTilArbeidsgiver": "innspill",
+        "type": "AVVENTENDE",
+        "aktivitetIkkeMulig": null,
+        "reisetilskudd": false
+      },
+      {
+        "fom": "2020-01-11",
+        "tom": "2020-01-12",
+        "varighet": 2,
+        "gradert": null,
+        "behandlingsdager": 0,
+        "innspillTilArbeidsgiver": null,
+        "type": "REISETILSKUDD",
+        "aktivitetIkkeMulig": null,
+        "reisetilskudd": true
+      }
+    ],
+    "prognose": {
+      "arbeidsforEtterPeriode": true,
+      "hensynArbeidsplassen": "hensyn"
+    },
+    "tiltakArbeidsplassen": "tiltak",
+    "meldingTilArbeidsgiver": "melding",
+    "behandler": {
+      "navn": "Trond Lege Superlege",
+      "tlf": "Tel:37375555"
+    },
+    "egenmeldingsdager": ["2020-01-11", "2020-01-12"],
+    "kontaktMedPasient": {
+      "kontaktDato": "2020-01-03"
+    }
+  }
+}

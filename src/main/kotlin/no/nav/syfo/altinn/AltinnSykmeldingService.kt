@@ -15,7 +15,7 @@ import no.nav.syfo.altinn.model.SykmeldingAltinn
 import no.nav.syfo.altinn.model.SykmeldingArbeidsgiverMapper
 import no.nav.syfo.altinn.orgnummer.AltinnOrgnummerLookup
 import no.nav.syfo.altinn.pdf.PdfgenClient
-import no.nav.syfo.altinn.pdf.PdfgenClientRs
+import no.nav.syfo.altinn.pdf.TypstClient
 import no.nav.syfo.altinn.pdf.toPdfPayload
 import no.nav.syfo.application.metrics.ALTINN_COUNTER
 import no.nav.syfo.juridisklogg.JuridiskLoggService
@@ -39,7 +39,7 @@ class AltinnSykmeldingService(
     private val juridiskLoggService: JuridiskLoggService,
     private val database: DatabaseInterface,
     private val pdfgenClient: PdfgenClient,
-    private val pdfgenClientRs: PdfgenClientRs,
+    private val typstClient: TypstClient,
 ) {
 
     suspend fun handleSendtSykmelding(
@@ -65,17 +65,15 @@ class AltinnSykmeldingService(
                 sendSykmeldingAivenKafkaMessage.sykmelding.id,
             )
         try {
-            val pdf =
-                pdfgenClientRs.createPdf(
-                    sendSykmeldingAivenKafkaMessage.sykmelding.toPdfPayload(
-                        pasient,
-                        narmesteLeder,
-                        egenmeldingsdager,
-                    ),
-                    sendSykmeldingAivenKafkaMessage.sykmelding.id,
-                )
+            typstClient.createPdf(
+                sendSykmeldingAivenKafkaMessage.sykmelding.toPdfPayload(
+                    pasient,
+                    narmesteLeder,
+                    egenmeldingsdager,
+                ),
+            )
         } catch (exception: Exception) {
-            logger.warn("Error during pdfgenClientRs", exception)
+            logger.warn("Error during PDF generation with TypstClient", exception)
         }
         val sykmeldingAltinn =
             SykmeldingAltinn(

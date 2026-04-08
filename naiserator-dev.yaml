@@ -18,9 +18,6 @@ spec:
         - application: smarbeidsgiver-pdfgen
           namespace: teamsykmelding
           cluster: dev-gcp
-        - application: smarbeidsgiver-pdfgenrs
-          namespace: teamsykmelding
-          cluster: dev-gcp
     inbound:
       rules:
         - application: macgyver
