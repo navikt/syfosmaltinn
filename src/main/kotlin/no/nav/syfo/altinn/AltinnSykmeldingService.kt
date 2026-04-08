@@ -73,7 +73,7 @@ class AltinnSykmeldingService(
                 ),
             )
         } catch (exception: Exception) {
-            logger.warn("Error during typstClient", exception)
+            logger.warn("Error during PDF generation with TypstClient", exception)
         }
         val sykmeldingAltinn =
             SykmeldingAltinn(
