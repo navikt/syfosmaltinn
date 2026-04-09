@@ -19,13 +19,9 @@ import org.testcontainers.utility.DockerImageName
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class TypstClientTest {
 
-    private companion object {
-        private const val MAX_DIRECTORY_TRAVERSAL_DEPTH = 6
-
-        private val typstContainer =
-            GenericContainer(DockerImageName.parse("ghcr.io/typst/typst:v0.12.0"))
-                .withCommand("--version")
-    }
+    private val typstContainer =
+        GenericContainer(DockerImageName.parse("ghcr.io/typst/typst:latest"))
+            .withCommand("--version")
 
     private lateinit var typstBinaryPath: String
     private lateinit var templatePath: String
@@ -51,7 +47,7 @@ internal class TypstClientTest {
     private fun findTypstPdfDir(): String {
         var dir: java.io.File? = java.io.File(System.getProperty("user.dir"))
         var depth = 0
-        while (dir != null && depth < MAX_DIRECTORY_TRAVERSAL_DEPTH) {
+        while (dir != null && depth < 6) {
             val candidate = dir.resolve("typst-pdf")
             if (candidate.isDirectory && candidate.resolve("smarbeidsgiver.typ").exists()) {
                 return candidate.absolutePath
@@ -136,7 +132,8 @@ internal class TypstClientTest {
                             tlf = "12345678",
                         ),
                     egenmeldingsdager = listOf(LocalDate.of(2022, 12, 30)),
-                    kontaktMedPasient = KontaktMedPasientAGDTO(kontaktDato = LocalDate.of(2023, 1, 1)),
+                    kontaktMedPasient =
+                        KontaktMedPasientAGDTO(kontaktDato = LocalDate.of(2023, 1, 1)),
                 ),
         )
 }
