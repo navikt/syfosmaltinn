@@ -68,7 +68,7 @@ class AltinnSykmeldingService(
         logger.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
 
         try {
-            val startTime = System.currentTimeMillis()
+            val startTimeTypst = System.currentTimeMillis()
             typstClient.createPdf(
                 sendSykmeldingAivenKafkaMessage.sykmelding.toPdfPayload(
                     pasient,
@@ -76,7 +76,7 @@ class AltinnSykmeldingService(
                     egenmeldingsdager,
                 ),
             )            
-            logger.info("Done generating typst PDF in ${System.currentTimeMillis() - startTime}ms")
+            logger.info("Done generating typst PDF in ${System.currentTimeMillis() - startTimeTypst}ms")
         } catch (exception: Exception) {
             logger.warn("Error during PDF generation with Typst", exception)
         }
