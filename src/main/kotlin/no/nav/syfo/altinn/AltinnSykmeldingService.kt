@@ -14,7 +14,6 @@ import no.nav.syfo.altinn.model.AltinnSykmeldingMapper
 import no.nav.syfo.altinn.model.SykmeldingAltinn
 import no.nav.syfo.altinn.model.SykmeldingArbeidsgiverMapper
 import no.nav.syfo.altinn.orgnummer.AltinnOrgnummerLookup
-import no.nav.syfo.altinn.pdf.PdfgenClient
 import no.nav.syfo.altinn.pdf.TypstClient
 import no.nav.syfo.altinn.pdf.toPdfPayload
 import no.nav.syfo.application.metrics.ALTINN_COUNTER
@@ -38,7 +37,6 @@ class AltinnSykmeldingService(
     private val altinnOrgnummerLookup: AltinnOrgnummerLookup,
     private val juridiskLoggService: JuridiskLoggService,
     private val database: DatabaseInterface,
-    private val pdfgenClient: PdfgenClient,
     private val typstClient: TypstClient,
 ) {
 
@@ -57,29 +55,14 @@ class AltinnSykmeldingService(
             )
         val startTime = System.currentTimeMillis()
         val pdf =
-            pdfgenClient.createPdf(
-                sendSykmeldingAivenKafkaMessage.sykmelding.toPdfPayload(
-                    pasient,
-                    narmesteLeder,
-                    egenmeldingsdager,
-                ),
-                sendSykmeldingAivenKafkaMessage.sykmelding.id,
-            )
-        logger.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
-
-        try {
-            val startTimeTypst = System.currentTimeMillis()
             typstClient.createPdf(
                 sendSykmeldingAivenKafkaMessage.sykmelding.toPdfPayload(
                     pasient,
                     narmesteLeder,
                     egenmeldingsdager,
                 ),
-            )            
-            logger.info("Done generating typst PDF in ${System.currentTimeMillis() - startTimeTypst}ms")
-        } catch (exception: Exception) {
-            logger.warn("Error during PDF generation with Typst", exception)
-        }
+            )
+        logger.info("Done generating PDF in ${System.currentTimeMillis() - startTime}ms")
         val sykmeldingAltinn =
             SykmeldingAltinn(
                 xmlSykmeldingArbeidsgiver,
