@@ -11,7 +11,6 @@ import java.time.OffsetDateTime
 import kotlinx.coroutines.runBlocking
 import no.nav.syfo.Environment
 import no.nav.syfo.altinn.orgnummer.AltinnOrgnummerLookup
-import no.nav.syfo.altinn.pdf.PdfgenClient
 import no.nav.syfo.altinn.pdf.TypstClient
 import no.nav.syfo.juridisklogg.JuridiskLoggService
 import no.nav.syfo.pdl.client.model.Person
@@ -31,7 +30,6 @@ class AltinnSykmeldingServiceTest {
     val altinnOrgnummerLookup = mockk<AltinnOrgnummerLookup>(relaxed = true)
     val juridiskLoggService = mockk<JuridiskLoggService>(relaxed = true)
     val database = mockk<DatabaseInterface>(relaxed = true)
-    val pdfgenClient = mockk<PdfgenClient>()
     val typstClient = mockk<TypstClient>(relaxed = true)
     val altinnSykmeldingService =
         AltinnSykmeldingService(
@@ -39,7 +37,6 @@ class AltinnSykmeldingServiceTest {
             altinnOrgnummerLookup,
             juridiskLoggService,
             database,
-            pdfgenClient,
             typstClient
         )
 
@@ -51,7 +48,7 @@ class AltinnSykmeldingServiceTest {
         clearAllMocks()
         mockkStatic("no.nav.syfo.sykmelding.db.DatabaseQueriesKt")
         every { env.cluster } returns "dev-gcp"
-        coEvery { pdfgenClient.createPdf(any(), any()) } returns "pdf".toByteArray()
+        every { typstClient.createPdf(any()) } returns "pdf".toByteArray()
     }
 
     @Test
