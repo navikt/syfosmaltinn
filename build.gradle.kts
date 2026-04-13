@@ -32,7 +32,7 @@ val jsoupVersion = "1.21.2"
 val ktfmtVersion = "0.44"
 val bcprovJdk15onVersion = "1.70"
 val junitJupiterVersion="6.0.1"
-val kafkaVersion = "3.9.1"
+val kafkaVersion = "4.2.0"
 
 ///Due to vulnerabilities
 val commonsCollectionsVersion = "3.2.2"
