@@ -45,9 +45,9 @@ Find the newest version of gradle here: https://gradle.org/releases/ Then run th
 ### Local development pdf
 Download and install typst: https://typst.app/open-source/#download
 
- To render the template locally with repository test data, run:
+To render the template locally with repository test data, run:
 ```bash
-typst compile --pdf-standard=a-2a --font-path=typst-pdf/fonts --input=data="$(cat typst-pdf/test-data/smarbeidsgiver.json)" typst-pdf/smarbeidsgiver.typ smarbeidsgiver-local.pdf
+typst watch --pdf-standard=a-2a --font-path=typst-pdf/fonts --input=data="$(cat typst-pdf/test-data/smarbeidsgiver.json)" typst-pdf/smarbeidsgiver.typ smarbeidsgiver-local.pdf
 ```
 
 ### Example PDF output
