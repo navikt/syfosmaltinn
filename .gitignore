@@ -15,3 +15,6 @@ src/generated
 
 # Kotlin 2.0
 .kotlin/
+
+#Pdf
+/smarbeidsgiver-local.pdf

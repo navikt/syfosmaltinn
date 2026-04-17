@@ -41,7 +41,6 @@ import no.nav.syfo.altinn.AltinnSykmeldingService
 import no.nav.syfo.altinn.api.registerAltinnApi
 import no.nav.syfo.altinn.config.createPort
 import no.nav.syfo.altinn.orgnummer.AltinnOrgnummerLookupFacotry
-import no.nav.syfo.altinn.pdf.PdfgenClient
 import no.nav.syfo.altinn.pdf.TypstClient
 import no.nav.syfo.application.api.registerNaisApi
 import no.nav.syfo.application.exception.ServiceUnavailableException
@@ -225,7 +224,6 @@ fun Application.module() {
         StorageOptions.newBuilder().setRetrySettings(retrySettings).build().service
     val juridiskLoggService = JuridiskLoggService(env.juridiskloggBucketName, juridiskloggStorage)
 
-    val pdfgenClient = PdfgenClient(env.pdfgenUrl, httpClient)
     val typstClient = TypstClient()
 
     val altinnSendtSykmeldingService =
@@ -234,7 +232,6 @@ fun Application.module() {
             altinnOrgnummerLookup,
             juridiskLoggService,
             database,
-            pdfgenClient,
             typstClient
         )
 
