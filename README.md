@@ -6,6 +6,7 @@ This project contains the application code and infrastructure for syfosmaltinn
 ## Technologies used
 * Kotlin
 * Ktor
+* Typst
 * Gradle
 * Junit
 
