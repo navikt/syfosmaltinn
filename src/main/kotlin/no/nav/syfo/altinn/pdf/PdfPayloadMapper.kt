@@ -49,9 +49,7 @@ fun ArbeidsgiverSykmelding.toPdfPayload(
 
 private fun String.withoutIllegalCharacters(): String = this.replace(regex = Regex("\\p{C}"), "")
 
-private fun String?.withoutIllegalCharactersOrNull(): String? {
-    return if (this == null) null else this.withoutIllegalCharacters()
-}
+private fun String?.withoutIllegalCharactersOrNull(): String? = this?.withoutIllegalCharacters()
 
 private fun SykmeldingsperiodeAGDTO.toSykmeldingsPeriodePdf(): SykmeldingsperiodePdf {
     return SykmeldingsperiodePdf(
