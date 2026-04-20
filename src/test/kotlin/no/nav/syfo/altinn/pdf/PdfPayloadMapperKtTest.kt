@@ -238,7 +238,7 @@ internal class PdfPayloadMapperKtTest {
     }
 
     @Test
-    internal fun `Mapper sykmelding riktig med ugyldigetegn i tiltakArbeidsplassen`() {
+    internal fun `Mapper sykmelding riktig med ugyldige tegn i tiltakArbeidsplassen`() {
         val sykmeldingId = UUID.randomUUID().toString()
         val perioder =
             listOf(
@@ -289,5 +289,34 @@ internal class PdfPayloadMapperKtTest {
         sykmeldingsperiode.type shouldBeEqualTo PeriodetypeDTO.AKTIVITET_IKKE_MULIG
         sykmeldingsperiode.aktivitetIkkeMulig shouldBeEqualTo AktivitetIkkeMuligAGDTO(null)
         sykmeldingsperiode.reisetilskudd shouldBeEqualTo false
+    }
+
+    @Test
+    internal fun `Mapper sykmelding riktig med ugyldige tegn i behandlernavn`() {
+        val sykmeldingId = UUID.randomUUID().toString()
+        val sykmeldingKafkaMessage = getSykmeldingKafkaMessage(sykmeldingId)
+        val sykmeldingMedUgyldigBehandlernavn =
+            sykmeldingKafkaMessage.copy(
+                sykmelding =
+                    sykmeldingKafkaMessage.sykmelding.copy(
+                        behandler =
+                            sykmeldingKafkaMessage.sykmelding.behandler?.copy(
+                                fornavn = "Behandler\u0098Fornavn"
+                            )
+                    )
+            )
+
+        val pdfPayload =
+            sykmeldingMedUgyldigBehandlernavn.sykmelding.toPdfPayload(
+                person,
+                narmesteLeder,
+                emptyList(),
+            )
+
+        pdfPayload.arbeidsgiverSykmelding.behandler shouldBeEqualTo
+            BehandlerPdf(
+                "Behandlerfornavn Behandlermellomnavn Behandleretternavn",
+                "telefon",
+            )
     }
 }
