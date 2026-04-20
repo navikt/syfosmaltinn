@@ -32,8 +32,7 @@ fun ArbeidsgiverSykmelding.toPdfPayload(
                 sykmeldingsperioder =
                     sykmeldingsperioder.map { it.toSykmeldingsPeriodePdf() }.sortedBy { it.fom },
                 prognose = prognose,
-                tiltakArbeidsplassen =
-                    tiltakArbeidsplassen.withoutIllegalCharactersOrNull(),
+                tiltakArbeidsplassen = tiltakArbeidsplassen.withoutIllegalCharactersOrNull(),
                 meldingTilArbeidsgiver = meldingTilArbeidsgiver,
                 behandler =
                     BehandlerPdf(

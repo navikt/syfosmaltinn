@@ -30,7 +30,6 @@ import no.nav.syfo.sykmelding.db.insertStatus
 import no.nav.syfo.sykmelding.db.updateSendtToAlinn
 import no.nav.syfo.sykmelding.db.updateSendtToLogg
 import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
-import no.nav.syfo.securelog
 
 class AltinnSykmeldingService(
     private val altinnClient: AltinnClient,

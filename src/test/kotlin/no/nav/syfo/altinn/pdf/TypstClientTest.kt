@@ -1,6 +1,5 @@
 package no.nav.syfo.altinn.pdf
 
-import java.nio.file.Files
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import no.nav.syfo.model.sykmelding.arbeidsgiver.AktivitetIkkeMuligAGDTO
@@ -8,60 +7,25 @@ import no.nav.syfo.model.sykmelding.arbeidsgiver.KontaktMedPasientAGDTO
 import no.nav.syfo.model.sykmelding.arbeidsgiver.PrognoseAGDTO
 import no.nav.syfo.model.sykmelding.model.PeriodetypeDTO
 import no.nav.syfo.narmesteleder.model.NarmesteLeder
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.testcontainers.containers.GenericContainer
-import org.testcontainers.utility.DockerImageName
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class TypstClientTest {
 
-    private val typstContainer =
-        GenericContainer(DockerImageName.parse("ghcr.io/typst/typst:latest"))
-            .withCommand("--version")
+    private val typstPdfDir = "typst-pdf"
+    private val templatePath = "$typstPdfDir/smarbeidsgiver.typ"
+    private val fontPath = "$typstPdfDir/fonts"
+    private val typstBinaryPath: String
 
-    private lateinit var typstBinaryPath: String
-    private lateinit var templatePath: String
-    private lateinit var fontPath: String
-    private lateinit var tempDir: java.io.File
-
-    @BeforeAll
-    fun setup() {
-        typstContainer.start()
-
-        tempDir = Files.createTempDirectory("typst-test").toFile()
-
-        val binaryFile = tempDir.resolve("typst")
-        typstContainer.copyFileFromContainer("/bin/typst", binaryFile.absolutePath)
-        binaryFile.setExecutable(true)
-        typstBinaryPath = binaryFile.absolutePath
-
-        val typstPdfDir = findTypstPdfDir()
-        fontPath = "$typstPdfDir/fonts"
-        templatePath = "$typstPdfDir/smarbeidsgiver.typ"
-    }
-
-    private fun findTypstPdfDir(): String {
-        var dir: java.io.File? = java.io.File(System.getProperty("user.dir"))
-        var depth = 0
-        while (dir != null && depth < 6) {
-            val candidate = dir.resolve("typst-pdf")
-            if (candidate.isDirectory && candidate.resolve("smarbeidsgiver.typ").exists()) {
-                return candidate.absolutePath
-            }
-            dir = dir.parentFile
-            depth++
+    init {
+        val typst = java.io.File("$typstPdfDir/typst")
+        if (typst.isFile && typst.canExecute()) {
+            typstBinaryPath = typst.absolutePath
+        } else {
+            typstBinaryPath = "typst"
         }
-        error("Could not find typst-pdf directory containing smarbeidsgiver.typ")
-    }
-
-    @AfterAll
-    fun teardown() {
-        typstContainer.stop()
-        tempDir.deleteRecursively()
     }
 
     @Test
