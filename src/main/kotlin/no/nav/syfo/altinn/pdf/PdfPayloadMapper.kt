@@ -37,7 +37,7 @@ fun ArbeidsgiverSykmelding.toPdfPayload(
                 meldingTilArbeidsgiver = meldingTilArbeidsgiver,
                 behandler =
                     BehandlerPdf(
-                        navn = (behandler?.getFormattertNavn() ?: "").withoutIllegalCharacters().orEmpty(),
+                        navn = (behandler?.getFormattertNavn() ?: "").withoutIllegalCharacters() ?: "",
                         tlf = behandler?.tlf,
                     ),
                 egenmeldingsdager = egenmeldingsdager,

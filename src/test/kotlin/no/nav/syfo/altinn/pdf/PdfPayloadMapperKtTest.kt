@@ -238,7 +238,7 @@ internal class PdfPayloadMapperKtTest {
     }
 
     @Test
-    internal fun `Mapper sykmelding riktig med ugyldigetegn i tiltakArbeidsplassen`() {
+    internal fun `Mapper sykmelding riktig med ugyldige tegn i tiltakArbeidsplassen`() {
         val sykmeldingId = UUID.randomUUID().toString()
         val perioder =
             listOf(
@@ -292,7 +292,7 @@ internal class PdfPayloadMapperKtTest {
     }
 
     @Test
-    internal fun `Mapper sykmelding riktig med ugyldigetegn i behandlernavn`() {
+    internal fun `Mapper sykmelding riktig med ugyldige tegn i behandlernavn`() {
         val sykmeldingId = UUID.randomUUID().toString()
         val sykmeldingKafkaMessage = getSykmeldingKafkaMessage(sykmeldingId)
         val sykmeldingMedUgyldigBehandlernavn =
