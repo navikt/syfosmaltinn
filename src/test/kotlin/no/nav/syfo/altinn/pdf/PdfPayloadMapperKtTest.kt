@@ -290,4 +290,33 @@ internal class PdfPayloadMapperKtTest {
         sykmeldingsperiode.aktivitetIkkeMulig shouldBeEqualTo AktivitetIkkeMuligAGDTO(null)
         sykmeldingsperiode.reisetilskudd shouldBeEqualTo false
     }
+
+    @Test
+    internal fun `Mapper sykmelding riktig med ugyldigetegn i behandlernavn`() {
+        val sykmeldingId = UUID.randomUUID().toString()
+        val sykmeldingKafkaMessage = getSykmeldingKafkaMessage(sykmeldingId)
+        val sykmeldingMedUgyldigBehandlernavn =
+            sykmeldingKafkaMessage.copy(
+                sykmelding =
+                    sykmeldingKafkaMessage.sykmelding.copy(
+                        behandler =
+                            sykmeldingKafkaMessage.sykmelding.behandler?.copy(
+                                fornavn = "Behandler\u0098Fornavn"
+                            )
+                    )
+            )
+
+        val pdfPayload =
+            sykmeldingMedUgyldigBehandlernavn.sykmelding.toPdfPayload(
+                person,
+                narmesteLeder,
+                emptyList(),
+            )
+
+        pdfPayload.arbeidsgiverSykmelding.behandler shouldBeEqualTo
+            BehandlerPdf(
+                "Behandlerfornavn Behandlermellomnavn Behandleretternavn",
+                "telefon",
+            )
+    }
 }
