@@ -1,5 +1,7 @@
 package no.nav.syfo.sykmelding
 
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import no.nav.syfo.ApplicationState
 import no.nav.syfo.altinn.AltinnSykmeldingService
 import no.nav.syfo.logger
@@ -9,6 +11,8 @@ import no.nav.syfo.pdl.client.PdlClient
 import no.nav.syfo.sykmelding.exceptions.ArbeidsgiverNotFoundException
 import no.nav.syfo.sykmelding.kafka.aiven.SendtSykmeldingAivenConsumer
 import no.nav.syfo.sykmelding.kafka.aiven.model.SendSykmeldingAivenKafkaMessage
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class SendtSykmeldingService(
     private val applicationState: ApplicationState,
@@ -18,10 +22,13 @@ class SendtSykmeldingService(
     private val beOmNyNLService: BeOmNyNLService,
     private val sendtSykmeldingAivenConsumer: SendtSykmeldingAivenConsumer,
 ) {
+    private val cutoffDatetime =  ZonedDateTime.of(2026, 6, 15, 12, 0, 0, 0, ZoneId.of("Europe/Oslo")).toOffsetDateTime()
+
     suspend fun start() {
         logger.info("Starting consumer")
         sendtSykmeldingAivenConsumer.subscribe()
-        while (applicationState.ready) {
+
+        while (applicationState.ready && OffsetDateTime.now().isBefore(cutoffDatetime)) {
             consumeNewTopic()
         }
     }
@@ -29,7 +36,13 @@ class SendtSykmeldingService(
     private suspend fun consumeNewTopic() {
         val sykmeldinger = sendtSykmeldingAivenConsumer.poll()
         sykmeldinger.forEach { sendtSykmeldingAivenKafkaMessage ->
-            handleSendtSykmelding(sendtSykmeldingAivenKafkaMessage)
+            if (OffsetDateTime.now().isBefore(cutoffDatetime)) {
+                handleSendtSykmelding(sendtSykmeldingAivenKafkaMessage)
+            } else {
+                logger.info(
+                    "Should not sendt sykmelding to altinn ${sendtSykmeldingAivenKafkaMessage.sykmelding.id}"
+                )
+            }
         }
     }
 
